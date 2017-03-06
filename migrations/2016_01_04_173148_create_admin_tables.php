@@ -31,6 +31,7 @@ class CreateAdminTables extends Migration
             $table->timestamps();
         });
 
+        //权限的设置应该是伴随模块设置的,使用routeName作为权限名
         Schema::connection($connection)->create(config('admin.database.permissions_table'), function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 50)->unique();
@@ -45,6 +46,7 @@ class CreateAdminTables extends Migration
             $table->string('title', 50);
             $table->string('icon', 50);
             $table->string('uri', 50);
+            $table->string('route_name', 50);
 
             $table->timestamps();
         });

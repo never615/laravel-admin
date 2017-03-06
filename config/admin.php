@@ -120,4 +120,17 @@ return [
      * Version displayed in footer.
      */
     'version'   => '1.0',
+
+
+
+    //角色
+    'roles' => [
+        'owner' => 'owner',   //项目的拥有者
+        'admin' => 'admin'    //超级管理员
+    ],
+
+    //权限
+    'permissions' => [
+
+    ]
 ];

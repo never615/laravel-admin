@@ -16,20 +16,32 @@ class AdminTablesSeeder extends Seeder
         // create a user.
         Administrator::truncate();
         Administrator::create([
+            'username'  => 'mallto',
+            'password'  => bcrypt('owner'),
+            'name'      => '墨兔科技',
+        ]);
+        Administrator::create([
             'username'  => 'admin',
             'password'  => bcrypt('admin'),
-            'name'      => 'Administrator',
+            'name'      => '管理员',
         ]);
 
         // create a role.
         Role::truncate();
         Role::create([
+            'name'  => 'Owner',
+            'slug'  => '项目拥有者',
+        ]);
+        Role::create([
             'name'  => 'Administrator',
-            'slug'  => 'administrator',
+            'slug'  => '项目管理员',
         ]);
 
         // add role to user.
+        //设置角色项目拥有者给账号mallto
         Administrator::first()->roles()->save(Role::first());
+        //设置角色项目管理员设置给账号admin
+        Administrator::where('id',2)->first()->roles()->save(Role::where('id',2)->first());
 
         // add default menus.
         Menu::truncate();
@@ -37,84 +49,88 @@ class AdminTablesSeeder extends Seeder
             [
                 'parent_id' => 0,
                 'order'     => 1,
-                'title'     => 'Index',
+                'title'     => '控制中心',
                 'icon'      => 'fa-bar-chart',
-                'uri'       => '/',
+                'route_name'       => 'index',
             ],
             [
                 'parent_id' => 0,
                 'order'     => 2,
-                'title'     => 'Admin',
+                'title'     => '管理',
                 'icon'      => 'fa-tasks',
-                'uri'       => '',
+                'route_name'       => '',
             ],
             [
                 'parent_id' => 2,
                 'order'     => 3,
-                'title'     => 'Users',
+                'title'     => '账号',
                 'icon'      => 'fa-users',
-                'uri'       => 'auth/users',
+                'route_name'       => 'auth/users.index',
             ],
             [
                 'parent_id' => 2,
                 'order'     => 4,
-                'title'     => 'Roles',
+                'title'     => '角色',
                 'icon'      => 'fa-user',
-                'uri'       => 'auth/roles',
+                'route_name'       => 'auth/roles.index',
             ],
             [
                 'parent_id' => 2,
                 'order'     => 5,
-                'title'     => 'Permission',
+                'title'     => '权限',
                 'icon'      => 'fa-user',
-                'uri'       => 'auth/permissions',
+                'route_name'       => 'auth/permissions.index',
             ],
             [
                 'parent_id' => 2,
                 'order'     => 6,
-                'title'     => 'Menu',
+                'title'     => '菜单',
                 'icon'      => 'fa-bars',
-                'uri'       => 'auth/menu',
+                'route_name'       => 'auth/menu.index',
             ],
             [
                 'parent_id' => 2,
                 'order'     => 7,
-                'title'     => 'Operation log',
+                'title'     => '操作日志',
                 'icon'      => 'fa-history',
-                'uri'       => 'auth/logs',
+                'route_name'       => 'auth/logs.index',
             ],
             [
                 'parent_id' => 0,
                 'order'     => 8,
                 'title'     => 'Helpers',
                 'icon'      => 'fa-gears',
-                'uri'       => '',
+                'route_name'       => '',
             ],
             [
                 'parent_id' => 8,
                 'order'     => 9,
                 'title'     => 'Scaffold',
                 'icon'      => 'fa-keyboard-o',
-                'uri'       => 'helpers/scaffold',
+                'route_name'       => 'helpers/scaffold.index',
             ],
             [
                 'parent_id' => 8,
                 'order'     => 10,
                 'title'     => 'Database terminal',
                 'icon'      => 'fa-database',
-                'uri'       => 'helpers/terminal/database',
+                'route_name'       => 'terminal.database',
             ],
             [
                 'parent_id' => 8,
                 'order'     => 11,
                 'title'     => 'Laravel artisan',
                 'icon'      => 'fa-terminal',
-                'uri'       => 'helpers/terminal/artisan',
+                'route_name'       => 'terminal.artisan',
             ],
         ]);
 
         // add role to menu.
         Menu::find(2)->roles()->save(Role::first());
         Menu::find(8)->roles()->save(Role::first());
+
+//        Menu::find(2)->roles()->save(Role::where('id',2)->first());
+
+
     }
 }

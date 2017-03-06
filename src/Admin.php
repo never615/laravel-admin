@@ -108,10 +108,16 @@ class Admin
     {
         $directory = config('admin.directory');
 
-        return ltrim(implode('\\',
-              array_map('ucfirst',
-                  explode(DIRECTORY_SEPARATOR, str_replace(app()->basePath(), '', $directory)))), '\\')
-              .'\\Controllers';
+        return
+            ltrim(
+                implode('\\',
+                    array_map('ucfirst',
+                        explode(DIRECTORY_SEPARATOR,
+                            str_replace(app()->basePath(), '', $directory)
+                        ))
+                )
+                , '\\')
+            . '\\Controllers';
     }
 
     /**
@@ -124,7 +130,7 @@ class Admin
     public static function css($css = null)
     {
         if (!is_null($css)) {
-            self::$css = array_merge(self::$css, (array) $css);
+            self::$css = array_merge(self::$css, (array)$css);
 
             return;
         }
@@ -146,7 +152,7 @@ class Admin
     public static function js($js = null)
     {
         if (!is_null($js)) {
-            self::$js = array_merge(self::$js, (array) $js);
+            self::$js = array_merge(self::$js, (array)$js);
 
             return;
         }
@@ -166,7 +172,7 @@ class Admin
     public static function script($script = '')
     {
         if (!empty($script)) {
-            self::$script = array_merge(self::$script, (array) $script);
+            self::$script = array_merge(self::$script, (array)$script);
 
             return;
         }
@@ -183,13 +189,13 @@ class Admin
      */
     public static function url($url)
     {
-        $prefix = (string) config('admin.prefix');
+        $prefix = (string)config('admin.prefix');
 
         if (empty($prefix) || $prefix == '/') {
-            return '/'.trim($url, '/');
+            return '/' . trim($url, '/');
         }
 
-        return "/$prefix/".trim($url, '/');
+        return "/$prefix/" . trim($url, '/');
     }
 
     /**
@@ -249,9 +255,9 @@ class Admin
     public function registerAuthRoutes()
     {
         $attributes = [
-            'prefix'        => config('admin.prefix'),
-            'namespace'     => 'Encore\Admin\Controllers',
-            'middleware'    => ['web', 'admin'],
+            'prefix' => config('admin.prefix'),
+            'namespace' => 'Encore\Admin\Controllers',
+            'middleware' => ['web', 'admin'],
         ];
 
         Route::group($attributes, function ($router) {
@@ -259,11 +265,14 @@ class Admin
 
             /* @var \Illuminate\Routing\Router $router */
             $router->group($attributes, function ($router) {
+                //todo 权限的创建管理只能是项目的拥有者处理
+                $router->resource('auth/permissions', 'PermissionController');
+
+                //其他的每个主题都可以拥有自己的
+                $router->resource('auth/logs', 'LogController', ['only' => ['index', 'destroy']]);
                 $router->resource('auth/users', 'UserController');
                 $router->resource('auth/roles', 'RoleController');
-                $router->resource('auth/permissions', 'PermissionController');
                 $router->resource('auth/menu', 'MenuController', ['except' => ['create']]);
-                $router->resource('auth/logs', 'LogController', ['only' => ['index', 'destroy']]);
             });
 
             $router->get('auth/login', 'AuthController@getLogin');
@@ -277,19 +286,22 @@ class Admin
     public function registerHelpersRoutes($attributes = [])
     {
         $attributes = array_merge([
-            'prefix'     => trim(config('admin.prefix'), '/').'/helpers',
+            'prefix' => trim(config('admin.prefix'), '/') . '/helpers',
             'middleware' => ['web', 'admin'],
         ], $attributes);
 
         Route::group($attributes, function ($router) {
 
             /* @var \Illuminate\Routing\Router $router */
-            $router->get('terminal/database', 'Encore\Admin\Controllers\TerminalController@database');
+            $router->get('terminal/database', 'Encore\Admin\Controllers\TerminalController@database')->name("terminal.database");
             $router->post('terminal/database', 'Encore\Admin\Controllers\TerminalController@runDatabase');
-            $router->get('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@artisan');
+            
+            $router->get('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@artisan')->name("terminal.artisan");
             $router->post('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@runArtisan');
-            $router->get('scaffold', 'Encore\Admin\Controllers\ScaffoldController@index');
-            $router->post('scaffold', 'Encore\Admin\Controllers\ScaffoldController@store');
+
+            $router->resource('scaffold', 'Encore\Admin\Controllers\ScaffoldController', ['only' => ['index', 'store']]);
+//            $router->get('scaffold', 'Encore\Admin\Controllers\ScaffoldController@index');
+//            $router->post('scaffold', 'Encore\Admin\Controllers\ScaffoldController@store');
         });
     }
 }

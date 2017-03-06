@@ -29,6 +29,8 @@ class AdminServiceProvider extends ServiceProvider
         'admin.log'         => \Encore\Admin\Middleware\OperationLog::class,
         'admin.permission'  => \Encore\Admin\Middleware\PermissionMiddleware::class,
         'admin.bootstrap'   => \Encore\Admin\Middleware\BootstrapMiddleware::class,
+        'admin.auto_permission'   => \Encore\Admin\Middleware\AutoPermissionMiddleware::class,
+        'admin.sidebar'   => \Encore\Admin\Middleware\Sidebar::class,
     ];
 
     /**
@@ -109,6 +111,11 @@ class AdminServiceProvider extends ServiceProvider
      */
     protected function registerRouteMiddleware()
     {
+        // 5.4 开始
+        //Illuminate\Routing\Router类的middleware方法已经被重命名为aliasMiddleware()。
+        //似乎大多数应用都不会直接手动调用这个方法，因为这个方法只会被HTTP kernel调用，
+        //用于注册定义在$routeMiddleware数组中的路由级别的中间件。
+        
         // register route middleware.
         foreach ($this->routeMiddleware as $key => $middleware) {
             app('router')->aliasMiddleware($key, $middleware);
