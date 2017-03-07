@@ -2,6 +2,8 @@
 
 namespace Encore\Admin\Auth\Database;
 
+use Illuminate\Support\Facades\Log;
+
 trait AdminPermission
 {
     /**
@@ -14,7 +16,7 @@ trait AdminPermission
     public function getAvatarAttribute($avatar)
     {
         if ($avatar) {
-            return rtrim(config('admin.upload.host'), '/').'/'.trim($avatar, '/');
+            return rtrim(config('admin.upload.host'), '/') . '/' . trim($avatar, '/');
         }
 
         return asset('/packages/admin/AdminLTE/dist/img/user2-160x160.jpg');
@@ -46,6 +48,16 @@ trait AdminPermission
         $relatedModel = config('admin.database.permissions_model');
 
         return $this->belongsToMany($relatedModel, $pivotTable, 'user_id', 'permission_id');
+    }
+
+    /**
+     * 返回所有权限slug以index结尾的
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function getIndexPermissions()
+    {
+        return $this->permissions()->where('slug', 'like', '%index')->get();
     }
 
     /**
@@ -88,6 +100,17 @@ trait AdminPermission
         return !$this->can($permission);
     }
 
+
+    /**
+     * Check if user is owner.
+     *
+     * @return mixed
+     */
+    public function isOwner()
+    {
+        return $this->isRole(config("admin.roles.owner"));
+    }
+
     /**
      * Check if user is administrator.
      *
@@ -95,7 +118,7 @@ trait AdminPermission
      */
     public function isAdministrator()
     {
-        return $this->isRole('administrator');
+        return $this->isRole(config("admin.roles.admin"));
     }
 
     /**
@@ -119,7 +142,7 @@ trait AdminPermission
      */
     public function inRoles($roles = [])
     {
-        return $this->roles()->whereIn('slug', (array) $roles)->exists();
+        return $this->roles()->whereIn('slug', (array)$roles)->exists();
     }
 
     /**
@@ -137,10 +160,37 @@ trait AdminPermission
 
         $roles = array_column($roles, 'slug');
 
-        if ($this->inRoles($roles) || $this->isAdministrator()) {
+        if ($this->inRoles($roles) || $this->isOwner()) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * 返回用户所有的权限,slug是以index结尾的
+     * 包括角色包含的和单独权限拥有的
+     *
+     */
+    public function allIndexPermissionArr()
+    {
+        $roles = $this->roles;
+        Log::info("roles");
+        Log::info($roles);
+        $indexPermissions = $this->getIndexPermissions()->toArray();
+        foreach ($roles as $role) {
+            $arr=$role->getIndexPermissions()->toArray();
+            Log::info("arr");
+            Log::info($arr);
+            $indexPermissions=array_merge($indexPermissions,$arr);
+//            $indexPermissions->merge($arr);
+//            $permissionsTemp = $role->indexPermissions();
+//            $indexPermissions = array_merge($indexPermissions, $permissionsTemp);
+        }
+
+        Log::info("index permissions");
+        Log::info($indexPermissions);
+
+        return $indexPermissions;
     }
 }

@@ -4,6 +4,7 @@ namespace Encore\Admin\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 trait ModelTree
@@ -151,6 +152,9 @@ trait ModelTree
             $nodes = $this->allNodes();
         }
 
+        Log::info("nodes");
+        Log::info($nodes);
+
         foreach ($nodes as $node) {
             if ($node[$this->parentColumn] == $parentId) {
                 $children = $this->buildNestedArray($nodes, $node[$this->getKeyName()]);
@@ -162,6 +166,9 @@ trait ModelTree
                 $branch[] = $node;
             }
         }
+
+        Log::info("branch");
+        Log::info($branch);
 
         return $branch;
     }

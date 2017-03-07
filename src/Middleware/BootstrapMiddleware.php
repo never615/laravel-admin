@@ -5,6 +5,7 @@ namespace Encore\Admin\Middleware;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class BootstrapMiddleware
 {

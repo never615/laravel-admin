@@ -44,6 +44,7 @@ class AdminServiceProvider extends ServiceProvider
             'admin.pjax',
             'admin.log',
             'admin.bootstrap',
+            'admin.auto_permission'
         ],
     ];
 
@@ -55,16 +56,19 @@ class AdminServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadViewsFrom(__DIR__.'/../../views', 'admin');
-        $this->loadTranslationsFrom(__DIR__.'/../../lang/', 'admin');
+        $this->loadTranslationsFrom(__DIR__.'/../../lang', 'admin');
+        $this->loadMigrationsFrom(__DIR__.'/../../migrations');
 
         $this->publishes([__DIR__.'/../../config/admin.php' => config_path('admin.php')], 'laravel-admin');
         $this->publishes([__DIR__.'/../../assets' => public_path('packages/admin')], 'laravel-admin');
 
         Admin::registerAuthRoutes();
 
-        if (file_exists($routes = admin_path('routes.php'))) {
-            require $routes;
-        }
+        $this->loadRoutesFrom(admin_path('routes.php'));
+
+//        if (file_exists($routes = admin_path('routes.php'))) {
+//            require $routes;
+//        }
     }
 
     /**

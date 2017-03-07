@@ -45,7 +45,7 @@ class CreateAdminTables extends Migration
             $table->integer('order')->default(0);
             $table->string('title', 50);
             $table->string('icon', 50);
-            $table->string('uri', 50);
+//            $table->string('uri', 50);
             $table->string('route_name', 50);
 
             $table->timestamps();

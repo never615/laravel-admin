@@ -15,6 +15,7 @@ namespace Encore\Admin\Middleware;
 
 
 use Closure;
+use Encore\Admin\Auth\Database\Permission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -30,7 +31,8 @@ class Sidebar
     public function handle($request, Closure $next)
     {
         //view()->share('comData',$this->getMenu());
-        $request->attributes->set('comData_menu', $this->getMenu());
+//        $request->attributes->set('comData_menu', $this->getMenu());
+        $request->attributes->set('sidebar', $this->getSidebar());
         return $next($request);
     }
 
@@ -38,11 +40,13 @@ class Sidebar
      * 获取左边菜单栏
      * @return array
      */
-    private function getMenu()
+    private function getSidebar()
     {
         $menus = [];
         if (Auth::user()->hasRole(config('auth.roles.owner'))) {
             //如果是项目的拥有者,直接返回所有的菜单
+            
+            
             $permissions = Permission::where('name', 'like', '%index')->get();
             $menus = $this->generateMenu($permissions, $menus);
             return $menus;

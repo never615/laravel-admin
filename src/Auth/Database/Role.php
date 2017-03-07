@@ -53,6 +53,15 @@ class Role extends Model
     }
 
     /**
+     * 返回所有slug以index结尾的权限
+     */
+    public function getIndexPermissions()
+    {
+        return $this->permissions()->where('slug', "like", "%index")->get();
+    }
+
+
+    /**
      * Check user has permission.
      *
      * @param $permission

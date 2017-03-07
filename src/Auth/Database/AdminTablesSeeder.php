@@ -29,12 +29,12 @@ class AdminTablesSeeder extends Seeder
         // create a role.
         Role::truncate();
         Role::create([
-            'name'  => 'Owner',
-            'slug'  => '项目拥有者',
+            'name'  => '项目拥有者',
+            'slug'  => 'owner',
         ]);
         Role::create([
-            'name'  => 'Administrator',
-            'slug'  => '项目管理员',
+            'name'  => '管理员',
+            'slug'  => 'administrator',
         ]);
 
         // add role to user.
@@ -49,7 +49,7 @@ class AdminTablesSeeder extends Seeder
             [
                 'parent_id' => 0,
                 'order'     => 1,
-                'title'     => '控制中心',
+                'title'     => '控制面板',
                 'icon'      => 'fa-bar-chart',
                 'route_name'       => 'index',
             ],
@@ -65,35 +65,35 @@ class AdminTablesSeeder extends Seeder
                 'order'     => 3,
                 'title'     => '账号',
                 'icon'      => 'fa-users',
-                'route_name'       => 'auth/users.index',
+                'route_name'       => 'admins.index',
             ],
             [
                 'parent_id' => 2,
                 'order'     => 4,
                 'title'     => '角色',
                 'icon'      => 'fa-user',
-                'route_name'       => 'auth/roles.index',
+                'route_name'       => 'roles.index',
             ],
             [
                 'parent_id' => 2,
                 'order'     => 5,
                 'title'     => '权限',
                 'icon'      => 'fa-user',
-                'route_name'       => 'auth/permissions.index',
+                'route_name'       => 'permissions.index',
             ],
             [
                 'parent_id' => 2,
                 'order'     => 6,
                 'title'     => '菜单',
                 'icon'      => 'fa-bars',
-                'route_name'       => 'auth/menu.index',
+                'route_name'       => 'menu.index',
             ],
             [
                 'parent_id' => 2,
                 'order'     => 7,
                 'title'     => '操作日志',
                 'icon'      => 'fa-history',
-                'route_name'       => 'auth/logs.index',
+                'route_name'       => 'logs.index',
             ],
             [
                 'parent_id' => 0,
@@ -107,21 +107,21 @@ class AdminTablesSeeder extends Seeder
                 'order'     => 9,
                 'title'     => 'Scaffold',
                 'icon'      => 'fa-keyboard-o',
-                'route_name'       => 'helpers/scaffold.index',
+                'route_name'       => 'scaffold.index',
             ],
             [
                 'parent_id' => 8,
                 'order'     => 10,
                 'title'     => 'Database terminal',
                 'icon'      => 'fa-database',
-                'route_name'       => 'terminal.database',
+                'route_name'       => 'database.index',
             ],
             [
                 'parent_id' => 8,
                 'order'     => 11,
                 'title'     => 'Laravel artisan',
                 'icon'      => 'fa-terminal',
-                'route_name'       => 'terminal.artisan',
+                'route_name'       => 'artisan.index',
             ],
         ]);
 

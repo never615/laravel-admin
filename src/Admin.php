@@ -261,7 +261,8 @@ class Admin
         ];
 
         Route::group($attributes, function ($router) {
-            $attributes = ['middleware' => 'admin.permission:allow,administrator'];
+//            $attributes = ['middleware' => 'admin.permission:allow,administrator'];
+            $attributes = [];
 
             /* @var \Illuminate\Routing\Router $router */
             $router->group($attributes, function ($router) {
@@ -270,7 +271,7 @@ class Admin
 
                 //其他的每个主题都可以拥有自己的
                 $router->resource('auth/logs', 'LogController', ['only' => ['index', 'destroy']]);
-                $router->resource('auth/users', 'UserController');
+                $router->resource('auth/admins', 'AdminController');
                 $router->resource('auth/roles', 'RoleController');
                 $router->resource('auth/menu', 'MenuController', ['except' => ['create']]);
             });
@@ -293,10 +294,10 @@ class Admin
         Route::group($attributes, function ($router) {
 
             /* @var \Illuminate\Routing\Router $router */
-            $router->get('terminal/database', 'Encore\Admin\Controllers\TerminalController@database')->name("terminal.database");
+            $router->get('terminal/database', 'Encore\Admin\Controllers\TerminalController@database')->name("database.index");
             $router->post('terminal/database', 'Encore\Admin\Controllers\TerminalController@runDatabase');
-            
-            $router->get('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@artisan')->name("terminal.artisan");
+
+            $router->get('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@artisan')->name("artisan.index");
             $router->post('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@runArtisan');
 
             $router->resource('scaffold', 'Encore\Admin\Controllers\ScaffoldController', ['only' => ['index', 'store']]);

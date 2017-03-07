@@ -5,6 +5,7 @@ namespace Encore\Admin\Middleware;
 use Closure;
 use Encore\Admin\Auth\Database\Permission;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -39,28 +40,26 @@ class AutoPermissionMiddleware
 //        $isOwen = Auth::user()->hasRole(config('auth.roles.owner'));
 //        $permission = Permission::where('name', $currentRouteName)->first();
 
-        if (Auth::guard("admin")->user()->hasRole(config('admin.roles.owner'))) {
+        if (Auth::guard("admin")->user()->inRoles(config('admin.roles.owner'))) {
             //pass
             return $next($request);
         } else {
-            $permission = Permission::where('name', $currentRouteName)->first();
-            if (Auth::guard("admin")->user()->can($permission->name)) {
-                //有这个权限 pass
-                return $next($request);
-            } else {
-                //没有这个权限
-                $permission = Permission::where('name', $currentRouteName)->first();
-                if ($permission) {
+            $permission = Permission::where('slug', $currentRouteName)->first();
+            if ($permission) {
+                if (Auth::guard("admin")->user()->can($permission->slug)) {
+                    //有这个权限 pass
+                    return $next($request);
+                } else {
                     //denied
                     if ($request->expectsJson()) {
                         throw new AccessDeniedHttpException(trans("errors.forbidden"));
                     } else {
                         return response()->view('errors.403', compact('previousUrl'));
                     }
-                } else {
-                    //没有这个权限,但是也没有创建这个权限,删除
-                    return $next($request);
                 }
+            } else {
+                //没有这个权限,但是也没有创建这个权限,删除
+                return $next($request);
             }
         }
     }

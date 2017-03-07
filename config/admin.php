@@ -10,12 +10,12 @@ return [
     /*
      * Logo in admin panel header.
      */
-    'logo'      => '<b>Laravel</b> admin',
+    'logo'      => '<b>墨兔</b> 科技',
 
     /*
      * Mini-logo in admin panel header.
      */
-    'logo-mini' => '<b>La</b>',
+    'logo-mini' => '<b>墨</b>',
 
     /*
      * Laravel-admin url prefix.
@@ -126,7 +126,7 @@ return [
     //角色
     'roles' => [
         'owner' => 'owner',   //项目的拥有者
-        'admin' => 'admin'    //超级管理员
+        'admin' => 'administrator'    //超级管理员
     ],
 
     //权限
