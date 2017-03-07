@@ -3,6 +3,7 @@
 namespace Encore\Admin\Form\Field;
 
 use Encore\Admin\Form\Field;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -85,7 +86,7 @@ class File extends Field
     {
         $this->renameIfExists($file);
 
-        $target = $this->getDirectory().'/'.$this->name;
+        $target = $this->getDirectory() . '/' . $this->name;
 
         $this->storage->put($target, file_get_contents($file->getRealPath()));
 
