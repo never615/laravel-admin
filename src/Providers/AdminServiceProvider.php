@@ -30,7 +30,6 @@ class AdminServiceProvider extends ServiceProvider
         'admin.permission'  => \Encore\Admin\Middleware\PermissionMiddleware::class,
         'admin.bootstrap'   => \Encore\Admin\Middleware\BootstrapMiddleware::class,
         'admin.auto_permission'   => \Encore\Admin\Middleware\AutoPermissionMiddleware::class,
-        'admin.sidebar'   => \Encore\Admin\Middleware\Sidebar::class,
     ];
 
     /**
@@ -44,7 +43,6 @@ class AdminServiceProvider extends ServiceProvider
             'admin.pjax',
             'admin.log',
             'admin.bootstrap',
-            'admin.auto_permission'
         ],
     ];
 

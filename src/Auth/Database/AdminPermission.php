@@ -175,21 +175,14 @@ trait AdminPermission
     public function allIndexPermissionArr()
     {
         $roles = $this->roles;
-        Log::info("roles");
-        Log::info($roles);
         $indexPermissions = $this->getIndexPermissions()->toArray();
         foreach ($roles as $role) {
             $arr=$role->getIndexPermissions()->toArray();
-            Log::info("arr");
-            Log::info($arr);
             $indexPermissions=array_merge($indexPermissions,$arr);
 //            $indexPermissions->merge($arr);
 //            $permissionsTemp = $role->indexPermissions();
 //            $indexPermissions = array_merge($indexPermissions, $permissionsTemp);
         }
-
-        Log::info("index permissions");
-        Log::info($indexPermissions);
 
         return $indexPermissions;
     }

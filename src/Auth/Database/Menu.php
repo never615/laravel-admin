@@ -75,19 +75,12 @@ class Menu extends Model
         } else {
             $indexPermissionSlugArr=array_pluck(Auth::guard("admin")->user()->allIndexPermissionArr(),'slug');
 //            $indexPermissionSlugArr = Auth::guard("admin")->user()->allIndexPermissionArr()->pluck('slug');
-            Log::info("not owner");
-            Log::info($indexPermissionSlugArr);
-
             $parent_ids=static::whereIn('route_name', $indexPermissionSlugArr)->get()->pluck("parent_id");
 
-            //todo 查出来的菜单如果有父菜单也要返回
+            //查出来的菜单如果有父菜单也要返回
             $result= static::whereIn('route_name', $indexPermissionSlugArr)
                 ->orWhereIn('id',$parent_ids)
                 ->orderByRaw($byOrder)->get()->toArray();
-            
-            
-            Log::info("result");
-            Log::info($result);
             return $result;
         }
     }

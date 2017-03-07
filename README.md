@@ -1,6 +1,11 @@
 laravel-admin
-=====
+=============
 
+## CHANGELOG
+* 根据账户拥有的权限自动生成左侧菜单
+* 根据账户用户的权限自动进行权限校验,不用额外编写代码
+
+## 原文档
 [![Build Status](https://travis-ci.org/z-song/laravel-admin.svg?branch=master)](https://travis-ci.org/z-song/laravel-admin)
 [![StyleCI](https://styleci.io/repos/48796179/shield)](https://styleci.io/repos/48796179)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/z-song/laravel-admin/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/z-song/laravel-admin/?branch=master)

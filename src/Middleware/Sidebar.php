@@ -70,8 +70,6 @@ class Sidebar
      */
     private function generateMenu($permissions, $menus)
     {
-//        Log::info($permissions);
-
         foreach ($permissions as $permission) {
             if (!array_key_exists($permission->group, $menus)) {
                 $menus[$permission->group] = [];

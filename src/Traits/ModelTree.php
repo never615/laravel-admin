@@ -152,9 +152,6 @@ trait ModelTree
             $nodes = $this->allNodes();
         }
 
-        Log::info("nodes");
-        Log::info($nodes);
-
         foreach ($nodes as $node) {
             if ($node[$this->parentColumn] == $parentId) {
                 $children = $this->buildNestedArray($nodes, $node[$this->getKeyName()]);
@@ -166,9 +163,6 @@ trait ModelTree
                 $branch[] = $node;
             }
         }
-
-        Log::info("branch");
-        Log::info($branch);
 
         return $branch;
     }

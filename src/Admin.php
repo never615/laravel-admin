@@ -262,25 +262,30 @@ class Admin
 
         Route::group($attributes, function ($router) {
 //            $attributes = ['middleware' => 'admin.permission:allow,administrator'];
-            $attributes = [];
+            $attributes = ['middleware' => 'admin.auto_permission'];
+
 
             /* @var \Illuminate\Routing\Router $router */
             $router->group($attributes, function ($router) {
-                //todo 权限的创建管理只能是项目的拥有者处理
-                $router->resource('auth/permissions', 'PermissionController');
+
+                $router->group(['middleware' => 'admin.permission:allow,owner'], function ($router) {
+                    $router->resource('auth/permissions', 'PermissionController');
+                    $router->resource('auth/menu', 'MenuController', ['except' => ['create']]);
+                });
 
                 //其他的每个主题都可以拥有自己的
                 $router->resource('auth/logs', 'LogController', ['only' => ['index', 'destroy']]);
                 $router->resource('auth/admins', 'AdminController');
                 $router->resource('auth/roles', 'RoleController');
-                $router->resource('auth/menu', 'MenuController', ['except' => ['create']]);
+
+                $router->get('auth/setting', 'AuthController@getSetting');
+                $router->put('auth/setting', 'AuthController@putSetting');
             });
 
             $router->get('auth/login', 'AuthController@getLogin');
             $router->post('auth/login', 'AuthController@postLogin');
             $router->get('auth/logout', 'AuthController@getLogout');
-            $router->get('auth/setting', 'AuthController@getSetting');
-            $router->put('auth/setting', 'AuthController@putSetting');
+
         });
     }
 
@@ -288,10 +293,11 @@ class Admin
     {
         $attributes = array_merge([
             'prefix' => trim(config('admin.prefix'), '/') . '/helpers',
-            'middleware' => ['web', 'admin'],
+            'middleware' => ['web', 'admin', 'admin.permission:allow,owner'],
         ], $attributes);
 
         Route::group($attributes, function ($router) {
+
 
             /* @var \Illuminate\Routing\Router $router */
             $router->get('terminal/database', 'Encore\Admin\Controllers\TerminalController@database')->name("database.index");
