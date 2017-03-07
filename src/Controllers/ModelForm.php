@@ -4,6 +4,7 @@ namespace Encore\Admin\Controllers;
 
 trait ModelForm
 {
+    
     public function show($id)
     {
         return $this->edit($id);
@@ -18,12 +19,12 @@ trait ModelForm
     {
         if ($this->form()->destroy($id)) {
             return response()->json([
-                'status'  => true,
+                'status' => true,
                 'message' => trans('admin::lang.delete_succeeded'),
             ]);
         } else {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => trans('admin::lang.delete_failed'),
             ]);
         }

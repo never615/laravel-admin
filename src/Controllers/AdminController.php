@@ -10,6 +10,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -79,14 +80,27 @@ class AdminController extends Controller
                     $actions->disableDelete();
                 }
             });
+            
+            //非项目拥有者不能查看,拥有者账号
+            if(Auth::guard("admin")->user()->id!=1){
+                $grid->model()->where('id', '!=', 1);
+            }
+            
 
             $grid->tools(function (Grid\Tools $tools) {
                 $tools->batch(function (Grid\Tools\BatchActions $actions) {
                     $actions->disableDelete();
                 });
             });
-
+            
             $grid->disableExport();
+
+            // filter($callback)方法用来设置表格的简单搜索框
+            $grid->filter(function ($filter) {
+
+                // 设置created_at字段的范围查询
+                $filter->between('created_at', '创建时间')->datetime();
+            });
         });
     }
 

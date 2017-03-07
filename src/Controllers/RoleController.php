@@ -9,6 +9,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class RoleController extends Controller
 {
@@ -72,6 +73,11 @@ class RoleController extends Controller
 
             $grid->created_at(trans('admin::lang.created_at'));
             $grid->updated_at(trans('admin::lang.updated_at'));
+
+            //非项目拥有者不能查看owner
+            if (Auth::guard("admin")->user()->id != 1) {
+                $grid->model()->where('id', '!=', 1);
+            }
 
             $grid->actions(function (Grid\Displayers\Actions $actions) {
                 if ($actions->row->slug == 'administrator') {

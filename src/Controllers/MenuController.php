@@ -3,7 +3,6 @@
 namespace Encore\Admin\Controllers;
 
 use Encore\Admin\Auth\Database\Menu;
-use Encore\Admin\Auth\Database\Role;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Layout\Column;
@@ -12,6 +11,10 @@ use Encore\Admin\Layout\Row;
 use Encore\Admin\Tree;
 use Encore\Admin\Widgets\Box;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class MenuController extends Controller
 {
@@ -38,8 +41,8 @@ class MenuController extends Controller
                     $form->select('parent_id', trans('admin::lang.parent_id'))->options(Menu::selectOptions());
                     $form->text('title', trans('admin::lang.title'))->rules('required');
                     $form->icon('icon', trans('admin::lang.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
-                    $form->text('uri', trans('admin::lang.uri'));
-                    $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
+                    $form->text('route_name', trans('admin::lang.route_name'));
+//                    $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
 
                     $column->append((new Box(trans('admin::lang.new'), $form))->style('success'));
                 });
@@ -73,7 +76,8 @@ class MenuController extends Controller
                 $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$branch['title']}</strong>";
 
                 if (!isset($branch['children'])) {
-                    $uri = admin_url($branch['uri']);
+//                    $uri = admin_url($branch['route_name']);
+                    $uri = route($branch['route_name']);
 
                     $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
                 }
@@ -100,6 +104,24 @@ class MenuController extends Controller
         });
     }
 
+
+    /**
+     * 保存之前判断路由名是否存在
+     *
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function store()
+    {
+        $routeName = Input::get('route_name');
+
+        if (Route::has($routeName)) {
+            //Route exists
+            return $this->form()->store();
+        } else {
+            throw new RouteNotFoundException();
+        }
+    }
+
     /**
      * Make a form builder.
      *
@@ -113,8 +135,8 @@ class MenuController extends Controller
             $form->select('parent_id', trans('admin::lang.parent_id'))->options(Menu::selectOptions());
             $form->text('title', trans('admin::lang.title'))->rules('required');
             $form->icon('icon', trans('admin::lang.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
-            $form->text('uri', trans('admin::lang.uri'));
-            $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
+            $form->text('route_name', trans('admin::lang.route_name'));
+//            $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
 
             $form->display('created_at', trans('admin::lang.created_at'));
             $form->display('updated_at', trans('admin::lang.updated_at'));
