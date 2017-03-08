@@ -66,6 +66,8 @@ trait UploadField
             'overwriteInitial' => false,
             'initialPreviewAsData' => true,
             'browseLabel' => trans('admin::lang.browse'),
+            'showClose'=>false,
+            'browseOnZoneClick'=>true,
             'showRemove' => false,
             'showUpload' => false,
             'initialCaption' => $this->initialCaption($this->value),
