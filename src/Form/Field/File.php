@@ -3,7 +3,6 @@
 namespace Encore\Admin\Form\Field;
 
 use Encore\Admin\Form\Field;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -28,6 +27,7 @@ class File extends Field
     protected static $js = [
         '/packages/admin/bootstrap-fileinput/js/plugins/canvas-to-blob.min.js?v=4.3.7',
         '/packages/admin/bootstrap-fileinput/js/fileinput.min.js?v=4.3.7',
+        '/packages/admin/bootstrap-fileinput/js/fileinput_locale_zh_CN.js'
     ];
 
     /**
@@ -142,18 +142,15 @@ class File extends Field
      */
     public function render()
     {
-        $this->setupDefaultOptions();
-
         if (!empty($this->value)) {
             $this->setupPreviewOptions();
         }
 
+        $this->setupDefaultOptions();
+
         $this->options(['overwriteInitial' => true]);
 
         $options = json_encode($this->options);
-
-        Log::info("options");
-        Log::info($options);
 
 
         $this->script = <<<EOT

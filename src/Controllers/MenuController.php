@@ -77,7 +77,7 @@ class MenuController extends Controller
 
                 if (!isset($branch['children'])) {
 //                    $uri = admin_url($branch['route_name']);
-                    $uri = route($branch['route_name']);
+                    $uri = Route::has($branch['route_name'])?route($branch['route_name']):"";
 
                     $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
                 }
@@ -112,13 +112,17 @@ class MenuController extends Controller
      */
     public function store()
     {
-        $routeName = Input::get('route_name');
+        $routeName = Input::get('route_name',null);
 
-        if (Route::has($routeName)) {
-            //Route exists
+        if($routeName!=null){
+            if (Route::has($routeName)) {
+                //Route exists
+                return $this->form()->store();
+            } else {
+                throw new RouteNotFoundException($routeName);
+            }
+        }else{
             return $this->form()->store();
-        } else {
-            throw new RouteNotFoundException();
         }
     }
 

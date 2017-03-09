@@ -63,20 +63,25 @@ trait UploadField
     public function setupDefaultOptions()
     {
         $this->options([
+            'language' => 'zh_CN',
             'overwriteInitial' => false,
             'initialPreviewAsData' => true,
             'browseLabel' => trans('admin::lang.browse'),
-            'showClose'=>false,
-            'browseOnZoneClick'=>true,
+            'showClose' => true,
+            'browseOnZoneClick' => true,
             'showRemove' => false,
             'showUpload' => false,
             'initialCaption' => $this->initialCaption($this->value),
-            'deleteUrl' => $this->form->resource() . '/' . $this->form->model()->getKey(),
+//            'deleteUrl' => $this->form->resource() . '/' . $this->form->model()->getKey(),
+            'deleteUrl' => admin_url('default/delete'),
             'deleteExtraData' => [
                 $this->column => '',
                 static::FILE_DELETE_FLAG => '',
                 '_token' => csrf_token(),
                 '_method' => 'PUT'
+            ],
+            'ajaxDeleteSettings' => [
+                'type' => 'DELETE'
             ]
         ]);
     }

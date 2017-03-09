@@ -33,4 +33,7 @@ class Administrator extends Model implements AuthenticatableContract
 
         parent::__construct($attributes);
     }
+    
+    
+    
 }

@@ -1,6 +1,6 @@
 @if(!isset($item['children']))
     <li>
-        <a href="{{ route($item['route_name'])}}"><i class="fa {{$item['icon']}}"></i>
+        <a href="{{ Route::has($item['route_name'])?route($item['route_name']):""}}"><i class="fa {{$item['icon']}}"></i>
             <span>{{$item['title']}}</span>
         </a>
     </li>
