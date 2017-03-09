@@ -3,8 +3,10 @@
 namespace Encore\Admin\Form\Field;
 
 use Encore\Admin\Form\Field;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+
+//use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class File extends Field
 {

@@ -2,10 +2,11 @@
 
 namespace Encore\Admin\Form\Field;
 
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\MessageBag;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+//use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait UploadField
 {
@@ -82,7 +83,10 @@ trait UploadField
             ],
             'ajaxDeleteSettings' => [
                 'type' => 'DELETE'
-            ]
+            ],
+            'slugCallback' => 'function (filename) {
+                    return String(filename).replace(/[\-\[\]\/\{}:;#%=\(\)\*\+\?\\\^\$\|<>&"\']/g, \'_\');
+                }'
         ]);
     }
 
@@ -215,7 +219,9 @@ trait UploadField
             return $this->name;
         }
 
-        return $file->getClientOriginalName();
+
+        return $file->hashName();
+//        return $file->getClientOriginalName();
     }
 
     /**
@@ -254,7 +260,6 @@ trait UploadField
      * If name already exists, rename it.
      *
      * @param $file
-     *
      * @return void
      */
     public function renameIfExists(UploadedFile $file)
