@@ -66,7 +66,8 @@ class PermissionController extends Controller
     {
         return Admin::grid(Permission::class, function (Grid $grid) {
             $grid->id('ID')->sortable();
-            $grid->slug(trans('admin::lang.slug'));
+//            $grid->slug(trans('admin::lang.slug'));
+            $grid->slug("路径");
             $grid->name(trans('admin::lang.name'));
 
             $grid->created_at(trans('admin::lang.created_at'));
@@ -90,7 +91,8 @@ class PermissionController extends Controller
         return Admin::form(Permission::class, function (Form $form) {
             $form->display('id', 'ID');
 
-            $form->text('slug', trans('admin::lang.slug'))->rules('required');
+//            $form->text('slug', trans('admin::lang.slug'))->rules('required');
+            $form->text('slug', "路径")->rules('required');
             $form->text('name', trans('admin::lang.name'))->rules('required');
 
             $form->display('created_at', trans('admin::lang.created_at'));

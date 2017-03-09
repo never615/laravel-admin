@@ -2,8 +2,6 @@
 
 namespace Encore\Admin\Auth\Database;
 
-use Illuminate\Support\Facades\Log;
-
 trait AdminPermission
 {
     /**
@@ -51,16 +49,6 @@ trait AdminPermission
     }
 
     /**
-     * 返回所有权限slug以index结尾的
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function getIndexPermissions()
-    {
-        return $this->permissions()->where('slug', 'like', '%index')->get();
-    }
-
-    /**
      * Check if user has permission.
      *
      * @param $permission
@@ -69,7 +57,7 @@ trait AdminPermission
      */
     public function can($permission)
     {
-        if ($this->isAdministrator()) {
+        if ($this->isOwner()) {
             return true;
         }
 
@@ -118,7 +106,8 @@ trait AdminPermission
      */
     public function isAdministrator()
     {
-        return $this->isRole(config("admin.roles.admin"));
+        return $this->isRole(config("admin.roles.owner"));
+//        return $this->isRole(config("admin.roles.admin"));
     }
 
     /**
@@ -172,18 +161,15 @@ trait AdminPermission
      * 包括角色包含的和单独权限拥有的
      *
      */
-    public function allIndexPermissionArr()
+    public function allPermissionArr()
     {
         $roles = $this->roles;
-        $indexPermissions = $this->getIndexPermissions()->toArray();
+        $permissions = $this->permissions->toArray();
         foreach ($roles as $role) {
-            $arr=$role->getIndexPermissions()->toArray();
-            $indexPermissions=array_merge($indexPermissions,$arr);
-//            $indexPermissions->merge($arr);
-//            $permissionsTemp = $role->indexPermissions();
-//            $indexPermissions = array_merge($indexPermissions, $permissionsTemp);
+            $arr = $role->permissions->toArray();
+            $permissions = array_merge($permissions, $arr);
         }
 
-        return $indexPermissions;
+        return $permissions;
     }
 }

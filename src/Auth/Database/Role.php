@@ -52,13 +52,13 @@ class Role extends Model
         return $this->belongsToMany($relatedModel, $pivotTable, 'role_id', 'permission_id');
     }
 
-    /**
-     * 返回所有slug以index结尾的权限
-     */
-    public function getIndexPermissions()
-    {
-        return $this->permissions()->where('slug', "like", "%index")->get();
-    }
+//    /**
+//     * 返回所有slug以index结尾的权限
+//     */
+//    public function getIndexPermissions()
+//    {
+//        return $this->permissions()->where('slug', "like", "%index")->get();
+//    }
 
 
     /**
