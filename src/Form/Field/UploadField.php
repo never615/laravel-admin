@@ -41,7 +41,7 @@ trait UploadField
      * Create a new File instance.
      *
      * @param string $column
-     * @param array $arguments
+     * @param array  $arguments
      */
     public function __construct($column, $arguments = [])
     {
@@ -60,23 +60,22 @@ trait UploadField
         $this->disk(config('admin.upload.disk'));
     }
 
-
     public function setupDefaultOptions()
     {
         array_merge(
             [
-                'overwriteInitial' => false,
+                'overwriteInitial'     => false,
                 'initialPreviewAsData' => true,
-                'browseLabel' => trans('admin::lang.browse'),
-                'showRemove' => false,
-                'showUpload' => false,
-                'initialCaption' => $this->initialCaption($this->value),
-                'deleteUrl' => $this->form->resource().'/'.$this->form->model()->getKey(),
-                'deleteExtraData' => [
-                    $this->column => '',
+                'browseLabel'          => trans('admin::lang.browse'),
+                'showRemove'           => false,
+                'showUpload'           => false,
+                'initialCaption'       => $this->initialCaption($this->value),
+                'deleteUrl'            => $this->form->resource().'/'.$this->form->model()->getKey(),
+                'deleteExtraData'      => [
+                    $this->column            => '',
                     static::FILE_DELETE_FLAG => '',
-                    '_token' => csrf_token(),
-                    '_method' => 'PUT',
+                    '_token'                 => csrf_token(),
+                    '_method'                => 'PUT',
                 ],
             ],
             $this->options()
@@ -87,7 +86,7 @@ trait UploadField
     {
         $this->options(
             [
-                'initialPreview' => $this->preview(),
+                'initialPreview'       => $this->preview(),
                 'initialPreviewConfig' => $this->initialPreviewConfig(),
             ]
         );
@@ -119,7 +118,7 @@ trait UploadField
         if (!array_key_exists($disk, config('filesystems.disks'))) {
             $error = new MessageBag(
                 [
-                    'title' => 'Config error.',
+                    'title'   => 'Config error.',
                     'message' => "Disk [$disk] not configured, please add a disk config in `config/filesystems.php`.",
                 ]
             );
@@ -135,7 +134,7 @@ trait UploadField
     /**
      * Specify the directory and name for upload file.
      *
-     * @param string $directory
+     * @param string      $directory
      * @param null|string $name
      *
      * @return $this
