@@ -60,31 +60,37 @@ trait UploadField
         $this->disk(config('admin.upload.disk'));
     }
 
+
     public function setupDefaultOptions()
     {
-        $this->options([
-            'overwriteInitial'     => false,
-            'initialPreviewAsData' => true,
-            'browseLabel'          => trans('admin::lang.browse'),
-            'showRemove'           => false,
-            'showUpload'           => false,
-            'initialCaption'   => $this->initialCaption($this->value),
-            'deleteUrl'        => $this->form->resource() . '/'. $this->form->model()->getKey(),
-            'deleteExtraData'  => [
-                $this->column       => '',
-                static::FILE_DELETE_FLAG => '',
-                '_token'            => csrf_token(),
-                '_method'           => 'PUT'
-            ]
-        ]);
+        array_merge(
+            [
+                'overwriteInitial' => false,
+                'initialPreviewAsData' => true,
+                'browseLabel' => trans('admin::lang.browse'),
+                'showRemove' => false,
+                'showUpload' => false,
+                'initialCaption' => $this->initialCaption($this->value),
+                'deleteUrl' => $this->form->resource().'/'.$this->form->model()->getKey(),
+                'deleteExtraData' => [
+                    $this->column => '',
+                    static::FILE_DELETE_FLAG => '',
+                    '_token' => csrf_token(),
+                    '_method' => 'PUT',
+                ],
+            ],
+            $this->options()
+        );
     }
 
     public function setupPreviewOptions()
     {
-        $this->options([
-            'initialPreview'        => $this->preview(),
-            'initialPreviewConfig'  => $this->initialPreviewConfig(),
-        ]);
+        $this->options(
+            [
+                'initialPreview' => $this->preview(),
+                'initialPreviewConfig' => $this->initialPreviewConfig(),
+            ]
+        );
     }
 
     /**
@@ -111,10 +117,12 @@ trait UploadField
     public function disk($disk)
     {
         if (!array_key_exists($disk, config('filesystems.disks'))) {
-            $error = new MessageBag([
-                'title'   => 'Config error.',
-                'message' => "Disk [$disk] not configured, please add a disk config in `config/filesystems.php`.",
-            ]);
+            $error = new MessageBag(
+                [
+                    'title' => 'Config error.',
+                    'message' => "Disk [$disk] not configured, please add a disk config in `config/filesystems.php`.",
+                ]
+            );
 
             return session()->flash('error', $error);
         }
@@ -236,7 +244,7 @@ trait UploadField
     {
         $this->renameIfExists($file);
 
-        $target = $this->getDirectory() . '/' . $this->name;
+        $target = $this->getDirectory().'/'.$this->name;
 
         $this->storage->put($target, file_get_contents($file->getRealPath()));
 
@@ -270,7 +278,7 @@ trait UploadField
             return $path;
         }
 
-        return rtrim(config('admin.upload.host'), '/') . '/' . trim($path, '/');
+        return rtrim(config('admin.upload.host'), '/').'/'.trim($path, '/');
     }
 
     /**
