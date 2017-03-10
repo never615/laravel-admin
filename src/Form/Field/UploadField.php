@@ -3,6 +3,7 @@
 namespace Encore\Admin\Form\Field;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\MessageBag;
@@ -63,7 +64,7 @@ trait UploadField
 
     public function setupDefaultOptions()
     {
-        $this->options([
+        $this->options = array_merge([
             'language' => 'zh_CN',
             'overwriteInitial' => false,
             'initialPreviewAsData' => true,
@@ -87,7 +88,34 @@ trait UploadField
             'slugCallback' => 'function (filename) {
                     return String(filename).replace(/[\-\[\]\/\{}:;#%=\(\)\*\+\?\\\^\$\|<>&"\']/g, \'_\');
                 }'
-        ]);
+        ],$this->options);
+
+
+//        $this->options([
+//            'language' => 'zh_CN',
+//            'overwriteInitial' => false,
+//            'initialPreviewAsData' => true,
+//            'browseLabel' => trans('admin::lang.browse'),
+//            'showClose' => true,
+//            'browseOnZoneClick' => true,
+//            'showRemove' => false,
+//            'showUpload' => false,
+//            'initialCaption' => $this->initialCaption($this->value),
+////            'deleteUrl' => $this->form->resource() . '/' . $this->form->model()->getKey(),
+//            'deleteUrl' => admin_url('default/delete'),
+//            'deleteExtraData' => [
+//                $this->column => '',
+//                static::FILE_DELETE_FLAG => '',
+//                '_token' => csrf_token(),
+//                '_method' => 'PUT'
+//            ],
+//            'ajaxDeleteSettings' => [
+//                'type' => 'DELETE'
+//            ],
+//            'slugCallback' => 'function (filename) {
+//                    return String(filename).replace(/[\-\[\]\/\{}:;#%=\(\)\*\+\?\\\^\$\|<>&"\']/g, \'_\');
+//                }'
+//        ]);
     }
 
     public function setupPreviewOptions()
@@ -107,6 +135,9 @@ trait UploadField
      */
     public function options($options = [])
     {
+
+//        Log::info($options);
+
         $this->options = array_merge($this->options, $options);
 
         return $this;

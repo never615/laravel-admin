@@ -18,6 +18,7 @@ class WangEditor extends Field
 
     protected static $js = [
         '/packages/wangEditor-2.1.23/dist/js/wangEditor.min.js',
+        '/packages/qiniu/qiniu.min.js',
     ];
 
     public function render()
@@ -25,6 +26,11 @@ class WangEditor extends Field
         $this->script = <<<EOT
 
 var editor = new wangEditor('{$this->id}');
+
+
+    editor.config.uploadImgUrl = '/upload';
+    editor.config.hideLinkImg = true;
+
     editor.create();
 
 EOT;
