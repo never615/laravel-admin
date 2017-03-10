@@ -5,7 +5,7 @@ namespace Encore\Admin\Middleware;
 use Closure;
 use Encore\Admin\Auth\Database\Permission;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -36,14 +36,13 @@ class AutoPermissionMiddleware
         $previousUrl = URL::previous();
         $currentUrl = $request->path();
         $currentUrl=substr($currentUrl,5);  //admin
-        
-//        $currentRouteName = Route::currentRouteName();
+        $currentRouteName = Route::currentRouteName();
 
         if (Auth::guard("admin")->user()->inRoles(config('admin.roles.owner'))) {
             //pass
             return $next($request);
         } else {
-            $permission = Permission::where('slug', $currentUrl)->first();
+            $permission = Permission::where('slug', $currentUrl)->orWhere('slug', $currentRouteName)->first();
             if ($permission) {
                 if (Auth::guard("admin")->user()->can($permission->slug)) {
                     //有这个权限 pass
