@@ -73,7 +73,6 @@ class Menu extends Model
         if (Auth::guard("admin")->user()->isOwner()) {
             return static::orderByRaw($byOrder)->get()->toArray();
         } else {
-//            $indexPermissionSlugArr=array_pluck(Auth::guard("admin")->user()->allIndexPermissionArr(),'slug');
             $permissionSlugArr=array_pluck(Auth::guard("admin")->user()->allPermissionArr(),'slug');
             $parent_ids=static::whereIn('url', $permissionSlugArr)->get()->pluck("parent_id");
 

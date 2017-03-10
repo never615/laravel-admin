@@ -37,8 +37,6 @@ class AutoPermissionMiddleware
         $currentUrl = $request->path();
         $currentUrl=substr($currentUrl,5);  //admin
         
-        Log::info($currentUrl);
-
 //        $currentRouteName = Route::currentRouteName();
 
         if (Auth::guard("admin")->user()->inRoles(config('admin.roles.owner'))) {

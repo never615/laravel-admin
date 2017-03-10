@@ -2,6 +2,7 @@
 
 namespace Encore\Admin\Exception;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
 
@@ -16,6 +17,8 @@ class Handle
      */
     public static function renderException(\Exception $exception)
     {
+        Log::info("laravel admin handler");
+
         $error = new MessageBag([
             'type'      => get_class($exception),
             'message'   => $exception->getMessage(),

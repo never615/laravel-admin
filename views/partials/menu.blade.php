@@ -1,7 +1,7 @@
 @if(!isset($item['children']))
     <li>
-        {{--<a href="{{ Route::has($item['route_name'])?route($item['route_name']):""}}"><i class="fa {{$item['icon']}}"></i> --}}
-        <a href="{{ admin_url($item['url'])}}"><i class="fa {{$item['icon']}}"></i>
+        <a href="{{ Route::has($item['url'])?route($item['url']):$item['url']}}"><i class="fa {{$item['icon']}}"></i>
+        {{--<a href="{{ admin_url($item['url'])}}"><i class="fa {{$item['icon']}}"></i>--}}
             <span>{{$item['title']}}</span>
         </a>
     </li>

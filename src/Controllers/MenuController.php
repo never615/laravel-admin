@@ -40,9 +40,8 @@ class MenuController extends Controller
                     $form->select('parent_id', trans('admin::lang.parent_id'))->options(Menu::selectOptions());
                     $form->text('title', trans('admin::lang.title'))->rules('required');
                     $form->icon('icon', trans('admin::lang.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
-                    $form->text('url', trans('admin::lang.url'));
-//                    $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
-
+                    $form->text('url', trans('admin::lang.uri'));
+//                  $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
                     $column->append((new Box(trans('admin::lang.new'), $form))->style('success'));
                 });
             });
@@ -75,8 +74,8 @@ class MenuController extends Controller
                 $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$branch['title']}</strong>";
 
                 if (!isset($branch['children'])) {
-                    $uri = admin_url($branch['url']);
-//                    $uri = Route::has($branch['route_name'])?route($branch['route_name']):"";
+//                    $uri = admin_url($branch['url']);
+                    $uri = Route::has($branch['url'])?route($branch['url']):admin_url($branch['url']);
 
                     $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
                 }
@@ -103,28 +102,6 @@ class MenuController extends Controller
         });
     }
 
-//
-//    /**
-//     * 保存之前判断路由名是否存在
-//     *
-//     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-//     */
-//    public function store()
-//    {
-//        $routeName = Input::get('route_name', null);
-//
-//        if ($routeName != null) {
-//            if (Route::has($routeName)) {
-//                //Route exists
-//                return $this->form()->store();
-//            } else {
-//                throw new RouteNotFoundException($routeName);
-//            }
-//        } else {
-//            return $this->form()->store();
-//        }
-//    }
-
     /**
      * Make a form builder.
      *
@@ -138,7 +115,7 @@ class MenuController extends Controller
             $form->select('parent_id', trans('admin::lang.parent_id'))->options(Menu::selectOptions());
             $form->text('title', trans('admin::lang.title'))->rules('required');
             $form->icon('icon', trans('admin::lang.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
-            $form->text('url', trans('admin::lang.url'));
+            $form->text('url', trans('admin::lang.uri'));
 //            $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
 
             $form->display('created_at', trans('admin::lang.created_at'));

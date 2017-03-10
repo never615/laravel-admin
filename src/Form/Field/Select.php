@@ -57,7 +57,7 @@ class Select extends Field
         if (is_callable($options)) {
             $this->options = $options;
         } else {
-            $this->options = (array) $options;
+            $this->options = (array)$options;
         }
 
         return $this;
@@ -83,6 +83,19 @@ class Select extends Field
         }
 
         $script = <<<EOT
+        
+        
+    var current=$("{$this->getElementClassSelector()}");
+    var target = current.closest('.fields-group').find(".$class");
+    $.get("$sourceUrl?q="+current.val(), function (data) {
+        $(target).select2({
+            data: $.map(data, function (d) {
+                d.id = d.$idField;
+                d.text = d.$textField;
+                return d;
+            })
+        }).trigger('change');
+    });    
 
 $(document).on('change', "{$this->getElementClassSelector()}", function () {
     var target = $(this).closest('.fields-group').find(".$class");
@@ -97,6 +110,11 @@ $(document).on('change', "{$this->getElementClassSelector()}", function () {
         }).trigger('change');
     });
 });
+
+var loadSource=function(){
+
+}
+
 EOT;
 
         Admin::script($script);
@@ -108,15 +126,15 @@ EOT;
      * Load options from remote.
      *
      * @param string $url
-     * @param array  $parameters
-     * @param array  $options
+     * @param array $parameters
+     * @param array $options
      *
      * @return $this
      */
     protected function loadOptionsFromRemote($url, $parameters = [], $options = [])
     {
         $ajaxOptions = [
-            'url' => $url.'?'.http_build_query($parameters),
+            'url' => $url . '?' . http_build_query($parameters),
         ];
 
         $ajaxOptions = json_encode(array_merge($ajaxOptions, $options));
