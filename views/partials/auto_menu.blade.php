@@ -1,13 +1,6 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: never615
- * Date: 12/03/2017
- * Time: 9:50 PM
- */
 @if(!isset($item['children']))
     <li>
-        <a href="{{ Route::has($item['url'])?route($item['url']): Admin::url($item['uri'])}}"><i class="fa {{$item['icon']}}"></i>
+        <a href="{{ Route::has($item['uri'])?route($item['uri']): Admin::url($item['uri'])}}"><i class="fa {{$item['icon']}}"></i>
             <span>{{$item['title']}}</span>
         </a>
     </li>
@@ -20,7 +13,7 @@
         </a>
         <ul class="treeview-menu">
             @foreach($item['children'] as $item)
-                @include('admin::partials.menu', $item)
+                @include('admin::partials.auto_menu', $item)
             @endforeach
         </ul>
     </li>

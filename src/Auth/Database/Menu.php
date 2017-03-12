@@ -72,10 +72,10 @@ class Menu extends Model
                 return static::orderByRaw($byOrder)->get()->toArray();
             } else {
                 $permissionSlugArr = array_pluck(Auth::guard("admin")->user()->allPermissionArr(), 'slug');
-                $parent_ids = static::whereIn('url', $permissionSlugArr)->get()->pluck("parent_id");
+                $parent_ids = static::whereIn('uri', $permissionSlugArr)->get()->pluck("parent_id");
 
                 //查出来的菜单如果有父菜单也要返回
-                $result = static::whereIn('url', $permissionSlugArr)
+                $result = static::whereIn('uri', $permissionSlugArr)
                     ->orWhereIn('id', $parent_ids)
                     ->orderByRaw($byOrder)->get()->toArray();
 

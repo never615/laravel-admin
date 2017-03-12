@@ -85,7 +85,7 @@ trait AdminPermission
      */
     public function cannot($permission)
     {
-        return !$this->can($permission);
+        return ! $this->can($permission);
     }
 
     /**
@@ -119,7 +119,7 @@ trait AdminPermission
      */
     public function inRoles($roles = [])
     {
-        return $this->roles()->whereIn('slug', (array) $roles)->exists();
+        return $this->roles()->whereIn('slug', (array)$roles)->exists();
     }
 
     /**
@@ -156,6 +156,7 @@ trait AdminPermission
             $arr = $role->permissions->toArray();
             $permissions = array_merge($permissions, $arr);
         }
+
         return $permissions;
     }
 }
