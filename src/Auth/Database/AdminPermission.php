@@ -156,7 +156,6 @@ trait AdminPermission
             $arr = $role->permissions->toArray();
             $permissions = array_merge($permissions, $arr);
         }
-
         return $permissions;
     }
 }

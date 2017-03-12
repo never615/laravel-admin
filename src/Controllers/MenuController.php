@@ -38,10 +38,12 @@ class MenuController extends Controller
 
                     $form->select('parent_id', trans('admin::lang.parent_id'))->options(Menu::selectOptions());
                     $form->text('title', trans('admin::lang.title'))->rules('required');
-                    $form->icon('icon', trans('admin::lang.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
+                    $form->icon('icon',
+                        trans('admin::lang.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
                     $form->text('uri', trans('admin::lang.uri'));
-                    if(!config("admin.auto_menu")){
-                        $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
+                    if (! config("admin.auto_menu")) {
+                        $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name',
+                            'id'));
                     }
 
                     $column->append((new Box(trans('admin::lang.new'), $form))->style('success'));
@@ -75,8 +77,8 @@ class MenuController extends Controller
             $tree->branch(function ($branch) {
                 $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$branch['title']}</strong>";
 
-                if (!isset($branch['children'])) {
-                    $uri = Route::has($branch['url'])?route($branch['url']):admin_url($branch['url']);
+                if (! isset($branch['children'])) {
+                    $uri = Route::has($branch['url']) ? route($branch['url']) : admin_url($branch['url']);
 
                     $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
                 }
@@ -115,9 +117,10 @@ class MenuController extends Controller
 
             $form->select('parent_id', trans('admin::lang.parent_id'))->options(Menu::selectOptions());
             $form->text('title', trans('admin::lang.title'))->rules('required');
-            $form->icon('icon', trans('admin::lang.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
+            $form->icon('icon',
+                trans('admin::lang.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
             $form->text('uri', trans('admin::lang.uri'));
-            if(!config("admin.auto_menu")) {
+            if (! config("admin.auto_menu")) {
                 $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
             }
 
