@@ -12,6 +12,7 @@ use Encore\Admin\Layout\Row;
 use Encore\Admin\Tree;
 use Encore\Admin\Widgets\Box;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Route;
 
 class MenuController extends Controller
 {
@@ -39,7 +40,9 @@ class MenuController extends Controller
                     $form->text('title', trans('admin::lang.title'))->rules('required');
                     $form->icon('icon', trans('admin::lang.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
                     $form->text('uri', trans('admin::lang.uri'));
-                    $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
+                    if(!config("admin.auto_menu")){
+                        $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
+                    }
 
                     $column->append((new Box(trans('admin::lang.new'), $form))->style('success'));
                 });
@@ -73,7 +76,7 @@ class MenuController extends Controller
                 $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$branch['title']}</strong>";
 
                 if (!isset($branch['children'])) {
-                    $uri = admin_url($branch['uri']);
+                    $uri = Route::has($branch['url'])?route($branch['url']):admin_url($branch['url']);
 
                     $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
                 }
