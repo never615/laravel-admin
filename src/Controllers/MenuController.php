@@ -78,7 +78,7 @@ class MenuController extends Controller
                 $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$branch['title']}</strong>";
 
                 if (! isset($branch['children'])) {
-                    $uri = Route::has($branch['url']) ? route($branch['url']) : admin_url($branch['url']);
+                    $uri = Route::has($branch['uri']) ? route($branch['uri']) : admin_url($branch['uri']);
 
                     $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
                 }

@@ -134,7 +134,7 @@ return [
      * 
      * 菜单按钮全局配置
      */
-    'editor_menu'          => [
+    'editor_menu'   => [
         'source',
         '|',
         'bold',
