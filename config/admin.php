@@ -5,37 +5,37 @@ return [
     /*
      * Laravel-admin name.
      */
-    'name'      => 'Laravel-admin',
+    'name'          => 'Laravel-admin',
 
     /*
      * Logo in admin panel header.
      */
-    'logo'      => '<b>Laravel</b> admin',
+    'logo'          => '<b>Laravel</b> admin',
 
     /*
      * Mini-logo in admin panel header.
      */
-    'logo-mini' => '<b>La</b>',
+    'logo-mini'     => '<b>La</b>',
 
     /*
      * Laravel-admin url prefix.
      */
-    'prefix'    => 'admin',
+    'prefix'        => 'admin',
 
     /*
      * Laravel-admin install directory.
      */
-    'directory' => app_path('Admin'),
+    'directory'     => app_path('Admin'),
 
     /*
      * Laravel-admin html title.
      */
-    'title'  => 'Admin',
+    'title'         => 'Admin',
 
     /*
      * Laravel-admin auth setting.
      */
-    'auth' => [
+    'auth'          => [
         'driver'   => 'session',
         'provider' => '',
         'model'    => Encore\Admin\Auth\Database\Administrator::class,
@@ -44,13 +44,13 @@ return [
     /*
      * Laravel-admin upload setting.
      */
-    'upload'  => [
+    'upload'        => [
 
         'disk' => 'admin',
 
-        'directory'  => [
-            'image'  => 'image',
-            'file'   => 'file',
+        'directory' => [
+            'image' => 'image',
+            'file'  => 'file',
         ],
 
         'host' => 'http://localhost:8000/upload/',
@@ -59,26 +59,26 @@ return [
     /*
      * Laravel-admin database setting.
      */
-    'database' => [
+    'database'      => [
 
         // Database connection for following tables.
-        'connection'  => '',
+        'connection'             => '',
 
         // User tables and model.
-        'users_table' => 'admin_users',
-        'users_model' => Encore\Admin\Auth\Database\Administrator::class,
+        'users_table'            => 'admin_users',
+        'users_model'            => Encore\Admin\Auth\Database\Administrator::class,
 
         // Role table and model.
-        'roles_table' => 'admin_roles',
-        'roles_model' => Encore\Admin\Auth\Database\Role::class,
+        'roles_table'            => 'admin_roles',
+        'roles_model'            => Encore\Admin\Auth\Database\Role::class,
 
         // Permission table and model.
-        'permissions_table' => 'admin_permissions',
-        'permissions_model' => Encore\Admin\Auth\Database\Permission::class,
+        'permissions_table'      => 'admin_permissions',
+        'permissions_model'      => Encore\Admin\Auth\Database\Permission::class,
 
         // Menu table and model.
-        'menu_table'  => 'admin_menu',
-        'menu_model'  => Encore\Admin\Auth\Database\Menu::class,
+        'menu_table'             => 'admin_menu',
+        'menu_model'             => Encore\Admin\Auth\Database\Menu::class,
 
         // Pivot table for table above.
         'operation_log_table'    => 'admin_operation_log',
@@ -91,7 +91,7 @@ return [
     /*
      * By setting this option to open or close operation log in laravel-admin.
      */
-    'operation_log'   => true,
+    'operation_log' => true,
 
     /*
     |---------------------------------------------------------|
@@ -103,7 +103,7 @@ return [
     |               | skin-green                              |
     |---------------------------------------------------------|
      */
-    'skin'    => 'skin-blue',
+    'skin'          => 'skin-blue',
 
     /*
     |---------------------------------------------------------|
@@ -114,12 +114,12 @@ return [
     |               | sidebar-mini                            |
     |---------------------------------------------------------|
      */
-    'layout'  => ['sidebar-mini'],
+    'layout'        => ['sidebar-mini'],
 
     /*
      * Version displayed in footer.
      */
-    'version'   => '1.0',
+    'version'       => '1.0',
 
     /*
      * Automatically generate a menu based on user-owned permissions.
@@ -127,5 +127,46 @@ return [
      * 在这种模式下,不需要根据用户角色创建菜单.只会有一份菜单,然后不同权限的人会根据自己的权限显示相应的菜单.
      *
      */
-    'auto_menu'=>false,
+    'auto_menu'     => false,
+
+    /*
+     * WangEditor 
+     * 
+     * 菜单按钮全局配置
+     */
+    'editor_menu'          => [
+        'source',
+        '|',
+        'bold',
+        'underline',
+        'italic',
+        'strikethrough',
+        'eraser',
+        'forecolor',
+        'bgcolor',
+        '|',
+        'quote',
+        'fontfamily',
+        'fontsize',
+        'head',
+        'unorderlist',
+        'orderlist',
+        'alignleft',
+        'aligncenter',
+        'alignright',
+        '|',
+        'link',
+        'unlink',
+        'table',
+        'emotion',
+        '|',
+        'img',
+        'video',
+        'location',
+        'insertcode',
+        '|',
+        'undo',
+        'redo',
+        'fullscreen',
+    ],
 ];
