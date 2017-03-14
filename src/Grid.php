@@ -269,7 +269,7 @@ class Grid
 
             $label = empty($label) ? ucfirst($relationColumn) : $label;
 
-            $name = snake_case($relationName) . '.' . $relationColumn;
+            $name = snake_case($relationName).'.'.$relationColumn;
         }
 
         $column = $this->addColumn($name, $label);
@@ -934,13 +934,26 @@ class Grid
      * @param string $view
      * @param array  $variables
      */
-    public function view($view, $variables = [])
+    public function setView($view, $variables = [])
     {
         if (!empty($variables)) {
             $this->with($variables);
         }
 
         $this->view = $view;
+    }
+
+    /**
+     * Set a view to render.
+     *
+     * @param string $view
+     * @param array  $variables
+     *
+     * @deprecated
+     */
+    public function view($view, $variables = [])
+    {
+        $this->setView($view, $variables);
     }
 
     /**
