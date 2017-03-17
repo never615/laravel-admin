@@ -484,7 +484,7 @@ class Form
             ]);
         }
 
-        /* @var Model $this ->model */
+        /* @var Model $this->model */
         $this->model = $this->model->with($this->getRelations())->findOrFail($id);
 
         $this->setFieldOriginalValue();
