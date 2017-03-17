@@ -826,19 +826,6 @@ class Form
         return $this;
     }
 
-    /**
-     * Ignore fields to create.
-     *
-     * @param string|array $fields
-     *
-     * @return $this
-     */
-
-    public function hiddenInCreate($fields)
-    {
-        $this->builder->hiddenInCreate($fields);
-        return $this;
-    }
 
     /**
      * Hide fields to create.

@@ -508,19 +508,6 @@ EOT;
         });
     }
 
-
-    /**
-     * Ignore fields to create.
-     *
-     * @param string|array $fields
-     *
-     * @return $this
-     */
-    public function hiddenInCreate($fields)
-    {
-        $this->ignoredCreateFields = array_merge($this->ignoredCreateFields, (array)$fields);
-    }
-
     /**
      * Hide fields to create.
      *
