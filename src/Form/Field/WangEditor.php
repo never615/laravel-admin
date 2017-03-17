@@ -34,9 +34,10 @@ class WangEditor extends Field
      */
     public function __construct($column, $arguments = [])
     {
-        parent::__construct($column, $arguments = []);
         $this->domian = rtrim(config("filesystems.disks.qiniu.domains.default"), '/').'/';
         $this->menuOption = config("admin.editor_menu");
+
+        parent::__construct($column, $arguments);
     }
 
 
