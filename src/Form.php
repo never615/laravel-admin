@@ -54,7 +54,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @method Field\Number         number($column, $label = '')
  * @method Field\Currency       currency($column, $label = '')
  * @method Field\HasMany        hasMany($relationName, $callback)
- * @method Field\SwitchField    switch($column, $label = '')
+ * @method Field\SwitchField    switch ($column, $label = '')
  * @method Field\Display        display($column, $label = '')
  * @method Field\Rate           rate($column, $label = '')
  * @method Field\Divide         divider()
@@ -137,6 +137,13 @@ class Form
     protected $ignored = [];
 
     /**
+     * Ignored creating fields.
+     *
+     * @var array
+     */
+    protected $ignoredCreate = [];
+
+    /**
      * Collected field assets.
      *
      * @var array
@@ -156,7 +163,7 @@ class Form
     /**
      * Create a new form instance.
      *
-     * @param $model
+     * @param          $model
      * @param \Closure $callback
      */
     public function __construct($model, Closure $callback)
@@ -367,7 +374,7 @@ class Form
         $request = Request::capture();
 
         // ajax but not pjax
-        if ($request->ajax() && !$request->pjax()) {
+        if ($request->ajax() && ! $request->pjax()) {
             return response()->json([
                 'status'  => true,
                 'message' => $message,
@@ -410,6 +417,7 @@ class Form
 
         return $input;
     }
+
 
     /**
      * Get inputs for relations.
@@ -483,7 +491,7 @@ class Form
             ]);
         }
 
-        /* @var Model $this->model */
+        /* @var Model $this ->model */
         $this->model = $this->model->with($this->getRelations())->findOrFail($id);
 
         $this->setFieldOriginalValue();
@@ -501,7 +509,7 @@ class Form
             $updates = $this->prepareUpdate($this->updates);
 
             foreach ($updates as $column => $value) {
-                /* @var Model $this->model */
+                /* @var Model $this ->model */
                 $this->model->setAttribute($column, $value);
             }
 
@@ -605,7 +613,7 @@ class Form
     protected function updateRelation($relationsData)
     {
         foreach ($relationsData as $name => $values) {
-            if (!method_exists($this->model, $name)) {
+            if (! method_exists($this->model, $name)) {
                 continue;
             }
 
@@ -673,7 +681,7 @@ class Form
      * Prepare input data for update.
      *
      * @param array $updates
-     * @param bool  $hasDot  If column name contains a 'dot', only has-one relation column use this.
+     * @param bool  $hasDot If column name contains a 'dot', only has-one relation column use this.
      *
      * @return array
      */
@@ -720,9 +728,10 @@ class Form
      */
     public function invalidColumn($columns, $hasDot = false)
     {
-        foreach ((array) $columns as $column) {
-            if ((!$hasDot && Str::contains($column, '.')) ||
-                ($hasDot && !Str::contains($column, '.'))) {
+        foreach ((array)$columns as $column) {
+            if ((! $hasDot && Str::contains($column, '.')) ||
+                ($hasDot && ! Str::contains($column, '.'))
+            ) {
                 return true;
             }
         }
@@ -774,7 +783,7 @@ class Form
     {
         $first = current($inserts);
 
-        if (!is_array($first)) {
+        if (! is_array($first)) {
             return false;
         }
 
@@ -818,10 +827,34 @@ class Form
      */
     public function ignore($fields)
     {
-        $this->ignored = array_merge($this->ignored, (array) $fields);
+        $this->ignored = array_merge($this->ignored, (array)$fields);
 
         return $this;
     }
+
+    /**
+     * Ignore fields to create.
+     *
+     * @param string|array $fields
+     *
+     * @return $this
+     */
+    public function ignoreCreate($fields)
+    {
+        $this->ignoredCreate = array_merge($this->ignoredCreate, (array)$fields);
+
+        return $this;
+    }
+
+
+    /**
+     * Remove ignoredCreate fields.
+     */
+    protected function removeNoCreateFields()
+    {
+        $this->builder->fields()->forget($this->ignoredCreate);
+    }
+
 
     /**
      * @param array        $data
@@ -922,11 +955,11 @@ class Form
         $failedValidators = [];
 
         foreach ($this->builder->fields() as $field) {
-            if (!$validator = $field->getValidator($input)) {
+            if (! $validator = $field->getValidator($input)) {
                 continue;
             }
 
-            if (($validator instanceof Validator) && !$validator->passes()) {
+            if (($validator instanceof Validator) && ! $validator->passes()) {
                 $failedValidators[] = $validator;
             }
         }
@@ -1009,7 +1042,7 @@ class Form
     public function setWidth($fieldWidth = 8, $labelWidth = 2)
     {
         $this->builder()->fields()->each(function ($field) use ($fieldWidth, $labelWidth) {
-            /* @var Field $field  */
+            /* @var Field $field */
             $field->setWidth($fieldWidth, $labelWidth);
         });
 
@@ -1094,6 +1127,7 @@ class Form
     public function render()
     {
         try {
+            $this->removeNoCreateFields();
             return $this->builder->render();
         } catch (\Exception $e) {
             return Handle::renderException($e);
@@ -1226,7 +1260,7 @@ class Form
      */
     public static function collectFieldAssets()
     {
-        if (!empty(static::$collectedAssets)) {
+        if (! empty(static::$collectedAssets)) {
             return static::$collectedAssets;
         }
 
@@ -1234,7 +1268,7 @@ class Form
         $js = collect();
 
         foreach (static::$availableFields as $field) {
-            if (!method_exists($field, 'getAssets')) {
+            if (! method_exists($field, 'getAssets')) {
                 continue;
             }
 
@@ -1266,7 +1300,7 @@ class Form
      * Setter.
      *
      * @param string $name
-     * @param $value
+     * @param        $value
      */
     public function __set($name, $value)
     {
