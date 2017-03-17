@@ -48,6 +48,9 @@ class Select extends Field
         $script = <<<EOT
         
 $.get("{$this->sourceUrl}?{$this->idField}={$this->value}&father_value="+target.val(), function (data) {
+    
+    console.log(data);
+
     current.append("<option value='"+data.id+"' selected>"+data.text?data.text:""+"</option>");
 });    
 EOT;

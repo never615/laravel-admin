@@ -27,7 +27,7 @@ use Illuminate\Support\Collection;
  * @method Field\File           file($column, $label = '')
  * @method Field\Image          image($column, $label = '')
  * @method Field\Date           date($column, $label = '')
- * @method Field\Datetime       datetime($column, $label = '')
+ * @method Field\Datetime      datetime($column, $label = '')
  * @method Field\Time           time($column, $label = '')
  * @method Field\Year           year($column, $label = '')
  * @method Field\Month          month($column, $label = '')
