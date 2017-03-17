@@ -833,9 +833,10 @@ class Form
      *
      * @return $this
      */
-    public function ignoreCreate($fields)
+
+    public function hiddenInCreate($fields)
     {
-        $this->builder->ignoreCreate($fields);
+        $this->builder->hiddenInCreate($fields);
         return $this;
     }
 
