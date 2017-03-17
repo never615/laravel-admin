@@ -39,6 +39,13 @@ class Builder
     protected $fields;
 
     /**
+     * Ignored creating fields.
+     *
+     * @var array
+     */
+    protected $ignoredCreateFields = [];
+
+    /**
      * @var array
      */
     protected $options = [
@@ -352,7 +359,7 @@ class Builder
     {
         $previous = URL::previous();
 
-        if (!$previous || $previous == URL::current()) {
+        if (! $previous || $previous == URL::current()) {
             return;
         }
 
@@ -420,7 +427,7 @@ class Builder
             return '';
         }
 
-        if (!$this->options['enableSubmit']) {
+        if (! $this->options['enableSubmit']) {
             return '';
         }
 
@@ -440,7 +447,7 @@ EOT;
      */
     public function resetButton()
     {
-        if (!$this->options['enableReset']) {
+        if (! $this->options['enableReset']) {
             return '';
         }
 
@@ -460,7 +467,7 @@ EOT;
      */
     protected function removeReservedFields()
     {
-        if (!$this->isMode(static::MODE_CREATE)) {
+        if (! $this->isMode(static::MODE_CREATE)) {
             return;
         }
 
@@ -475,6 +482,30 @@ EOT;
         });
     }
 
+
+    /**
+     * Ignore fields to create.
+     *
+     * @param string|array $fields
+     *
+     * @return $this
+     */
+    public function ignoreCreate($fields)
+    {
+        $this->ignoredCreateFields = array_merge($this->ignoredCreateFields, (array)$fields);
+    }
+
+    /**
+     * Remove ignoredCreate fields.
+     */
+    protected function removeNoCreateFields()
+    {
+        $ignoredCreate = $this->ignoredCreateFields;
+        $this->fields = $this->fields()->reject(function ($field) use ($ignoredCreate) {
+            return in_array($field->column(), $ignoredCreate);
+        });
+    }
+
     /**
      * Render form.
      *
@@ -482,11 +513,15 @@ EOT;
      */
     public function render()
     {
+        if ($this->mode == self::MODE_CREATE) {
+            $this->removeNoCreateFields();
+        }
+
         $this->removeReservedFields();
 
         $tabObj = $this->form->getTab();
 
-        if (!$tabObj->isEmpty()) {
+        if (! $tabObj->isEmpty()) {
             $script = <<<'SCRIPT'
 
 var hash = document.location.hash;
@@ -514,9 +549,9 @@ SCRIPT;
         }
 
         $data = [
-            'form'     => $this,
-            'tabObj'   => $tabObj,
-            'width'    => $this->width,
+            'form'   => $this,
+            'tabObj' => $tabObj,
+            'width'  => $this->width,
         ];
 
         return view($this->view, $data)->render();
