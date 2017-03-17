@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Validator;
@@ -837,6 +836,7 @@ class Form
     public function hiddenInCreate($fields)
     {
         $this->builder->hiddenInCreate($fields);
+
         return $this;
     }
 
