@@ -522,6 +522,18 @@ EOT;
     }
 
     /**
+     * Hide fields to create.
+     *
+     * @param string|array $fields
+     *
+     * @return $this
+     */
+    public function hiddenInCreate($fields)
+    {
+        $this->ignoredCreateFields = array_merge($this->ignoredCreateFields, (array)$fields);
+    }
+
+    /**
      * Render form.
      *
      * @return string
