@@ -6,6 +6,7 @@
     <title>{{ Admin::title() }}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link rel="stylesheet" href="{{ asset("/packages/admin/AdminLTE/bootstrap/css/bootstrap.min.css") }}">
     <!-- Font Awesome -->
@@ -58,12 +59,15 @@
 <script src="{{ asset ("/packages/admin/nestable/jquery.nestable.js") }}"></script>
 <script src="{{ asset ("/packages/admin/toastr/build/toastr.min.js") }}"></script>
 <script src="{{ asset ("/packages/admin/bootstrap3-editable/js/bootstrap-editable.min.js") }}"></script>
+<script src="{{ asset ("/packages/admin/notify/notify.js") }}"></script>
+
 
 {!! Admin::js() !!}
 
 <script>
 
-    function LA() {}
+    function LA() {
+    }
     LA.token = "{{ csrf_token() }}";
 
     $.fn.editable.defaults.params = function (params) {
@@ -86,39 +90,39 @@
         container: '#pjax-container'
     });
 
-    $(document).on('submit', 'form[pjax-container]', function(event) {
+    $(document).on('submit', 'form[pjax-container]', function (event) {
         $.pjax.submit(event, '#pjax-container')
     });
 
-    $(document).on("pjax:popstate", function() {
+    $(document).on("pjax:popstate", function () {
 
-        $(document).one("pjax:end", function(event) {
-            $(event.target).find("script[data-exec-on-popstate]").each(function() {
+        $(document).one("pjax:end", function (event) {
+            $(event.target).find("script[data-exec-on-popstate]").each(function () {
                 $.globalEval(this.text || this.textContent || this.innerHTML || '');
             });
         });
     });
-    
-    $(document).on('pjax:send', function(xhr) {
-        if(xhr.relatedTarget && xhr.relatedTarget.tagName && xhr.relatedTarget.tagName.toLowerCase() === 'form') {
+
+    $(document).on('pjax:send', function (xhr) {
+        if (xhr.relatedTarget && xhr.relatedTarget.tagName && xhr.relatedTarget.tagName.toLowerCase() === 'form') {
             $submit_btn = $('form[pjax-container] :submit');
-            if($submit_btn) {
+            if ($submit_btn) {
                 $submit_btn.button('loading')
             }
         }
     })
-    
-    $(document).on('pjax:complete', function(xhr) {
-        if(xhr.relatedTarget && xhr.relatedTarget.tagName && xhr.relatedTarget.tagName.toLowerCase() === 'form') {
+
+    $(document).on('pjax:complete', function (xhr) {
+        if (xhr.relatedTarget && xhr.relatedTarget.tagName && xhr.relatedTarget.tagName.toLowerCase() === 'form') {
             $submit_btn = $('form[pjax-container] :submit');
-            if($submit_btn) {
+            if ($submit_btn) {
                 $submit_btn.button('reset')
             }
         }
     })
 
-    $(function(){
-        $('.sidebar-menu li:not(.treeview) > a').on('click', function(){
+    $(function () {
+        $('.sidebar-menu li:not(.treeview) > a').on('click', function () {
             var $parent = $(this).parent().addClass('active');
             $parent.siblings('.treeview.active').find('> a').trigger('click');
             $parent.siblings().removeClass('active').find('li').removeClass('active');
@@ -126,6 +130,6 @@
     });
 
 </script>
-
+<script src="{{ asset ("/packages/admin/common.js") }}"></script>
 </body>
 </html>
