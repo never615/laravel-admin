@@ -6,6 +6,7 @@ use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
+use Never615\Mall\Module\UserCardCoupon\UserCardCoupon;
 
 /**
  * Class Administrator.
@@ -33,6 +34,4 @@ class Administrator extends Model implements AuthenticatableContract
 
         parent::__construct($attributes);
     }
-    
-    
 }
