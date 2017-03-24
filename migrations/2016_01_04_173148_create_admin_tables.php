@@ -16,7 +16,7 @@ class CreateAdminTables extends Migration
 
         Schema::connection($connection)->create(config('admin.database.users_table'), function (Blueprint $table) {
             $table->increments('id');
-            $table->string('username', 190)->unique();
+            $table->string('username', 190);
             $table->string('password', 60);
             $table->string('name');
             $table->string('avatar')->nullable();
@@ -26,7 +26,7 @@ class CreateAdminTables extends Migration
 
         Schema::connection($connection)->create(config('admin.database.roles_table'), function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 50)->unique();
+            $table->string('name', 50);
             $table->string('slug', 50);
             $table->timestamps();
         });
@@ -41,7 +41,7 @@ class CreateAdminTables extends Migration
 
         Schema::connection($connection)->create(config('admin.database.menu_table'), function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('parent_id')->default(0);
+            $table->integer('parent_id')->nullable();
             $table->integer('order')->default(0);
             $table->string('title', 50);
             $table->string('icon', 50);

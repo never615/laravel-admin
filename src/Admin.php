@@ -38,7 +38,7 @@ class Admin
     public static $js = [];
 
     /**
-     * @param $model
+     * @param         $model
      * @param Closure $callable
      *
      * @return \Encore\Admin\Grid
@@ -49,7 +49,7 @@ class Admin
     }
 
     /**
-     * @param $model
+     * @param         $model
      * @param Closure $callable
      *
      * @return \Encore\Admin\Form
@@ -109,9 +109,9 @@ class Admin
         $directory = config('admin.directory');
 
         return ltrim(implode('\\',
-              array_map('ucfirst',
-                  explode(DIRECTORY_SEPARATOR, str_replace(app()->basePath(), '', $directory)))), '\\')
-              .'\\Controllers';
+            array_map('ucfirst',
+                explode(DIRECTORY_SEPARATOR, str_replace(app()->basePath(), '', $directory)))), '\\')
+        .'\\Controllers';
     }
 
     /**
@@ -166,7 +166,7 @@ class Admin
     public static function script($script = '')
     {
         if (!empty($script)) {
-            self::$script = array_merge( (array) $script,self::$script);
+            self::$script = array_merge((array) $script, self::$script);
 
             return;
         }
@@ -249,9 +249,9 @@ class Admin
     public function registerAuthRoutes()
     {
         $attributes = [
-            'prefix'        => config('admin.prefix'),
-            'namespace'     => 'Encore\Admin\Controllers',
-            'middleware'    => ['web', 'admin'],
+            'prefix'     => config('admin.prefix'),
+            'namespace'  => 'Encore\Admin\Controllers',
+            'middleware' => ['web', 'admin'],
         ];
 
         Route::group($attributes, function ($router) {
@@ -278,7 +278,7 @@ class Admin
             $router->get('uptoken', 'FileController@getUploadToken');
             //上传图片(富文本编辑器需要使用)
             $router->post('upload', 'FileController@upload');
-            
+
         });
     }
 
@@ -286,17 +286,19 @@ class Admin
     {
         $attributes = array_merge([
             'prefix'     => trim(config('admin.prefix'), '/').'/helpers',
-            'middleware' => ['web', 'admin','admin.auto_permission'],
+            'middleware' => ['web', 'admin', 'admin.auto_permission'],
         ], $attributes);
 
         Route::group($attributes, function ($router) {
 
             /* @var \Illuminate\Routing\Router $router */
-            $router->get('terminal/database', 'Encore\Admin\Controllers\TerminalController@database');
+            $router->get('terminal/database',
+                'Encore\Admin\Controllers\TerminalController@database')->name("database.index");
             $router->post('terminal/database', 'Encore\Admin\Controllers\TerminalController@runDatabase');
-            $router->get('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@artisan');
+            $router->get('terminal/artisan',
+                'Encore\Admin\Controllers\TerminalController@artisan')->name("artisan.index");
             $router->post('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@runArtisan');
-            $router->get('scaffold', 'Encore\Admin\Controllers\ScaffoldController@index');
+            $router->get('scaffold', 'Encore\Admin\Controllers\ScaffoldController@index')->name("scaffold.index");
             $router->post('scaffold', 'Encore\Admin\Controllers\ScaffoldController@store');
         });
     }
