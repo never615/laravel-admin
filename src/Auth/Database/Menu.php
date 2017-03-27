@@ -68,7 +68,7 @@ class Menu extends Model
             //菜单不跟角色挂钩,只有一份菜单
             //每个人能看到的菜单,由其拥有的权限决定
             //如果是管理员,返回所有菜单;如果是其他账号,返回相应菜单
-            if (Auth::guard("admin")->user()->isAdministrator()) {
+            if (Auth::guard("admin")->user()->isOwner()) {
                 return static::orderByRaw($byOrder)->get()->toArray();
             } else {
                 $permissionSlugArr = array_pluck(Auth::guard("admin")->user()->allPermissionArr(), 'slug');

@@ -260,7 +260,7 @@ class Admin
 
             /* @var \Illuminate\Routing\Router $router */
             $router->group($attributes, function ($router) {
-                $router->resource('auth/users', 'UserController');
+                $router->resource('auth/admins', 'UserController');
                 $router->resource('auth/roles', 'RoleController');
                 $router->resource('auth/permissions', 'PermissionController');
                 $router->resource('auth/menu', 'MenuController', ['except' => ['create']]);

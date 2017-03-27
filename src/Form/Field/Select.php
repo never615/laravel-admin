@@ -46,8 +46,12 @@ class Select extends Field
     private function initDefaultValue()
     {
         $script = <<<EOT
+var fatherValue="";        
+if(typeof target != "undefined"){
+fatherValue=target.val();
+}
         
-$.get("{$this->sourceUrl}?{$this->idField}={$this->value}&father_value="+target.val(), function (data) {
+$.get("{$this->sourceUrl}?{$this->idField}={$this->value}&father_value="+fatherValue, function (data) {
     current.append("<option value='"+data.id+"' selected>"+(data.text?data.text:"")+"</option>");
 });    
 EOT;
@@ -179,7 +183,6 @@ EOT;
         }
 
         $script = <<<EOT
-
 $(document).on('change', "{$this->getElementClassSelector()}", function () {
     var target = $(this).closest('.fields-group').find(".$class");
     $.get("$sourceUrl?q="+this.value, function (data) {
@@ -239,7 +242,12 @@ EOT;
      */
     public function ajax($url, $idField = 'id', $textField = 'text')
     {
+
+        $this->sourceUrl = $url;
+        $this->idField = $idField;
+        
         $this->script = <<<EOT
+var current=$("{$this->getElementClassSelector()}");
 
 $("{$this->getElementClassSelector()}").select2({
   ajax: {

@@ -169,4 +169,12 @@ return [
         'redo',
         'fullscreen',
     ],
+
+    /*
+    * 角色名字 
+    */
+    'roles'         => [
+        'owner' => 'owner',
+        'admin' => 'admin',
+    ],
 ];

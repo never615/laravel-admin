@@ -85,7 +85,7 @@ trait AdminPermission
      */
     public function cannot($permission)
     {
-        return ! $this->can($permission);
+        return !$this->can($permission);
     }
 
     /**
@@ -95,7 +95,17 @@ trait AdminPermission
      */
     public function isAdministrator()
     {
-        return $this->isRole('administrator');
+        return $this->isRole(config("admin.roles.admin"));
+    }
+
+    /**
+     * Check if user is owner
+     *
+     * @return mixed
+     */
+    public function isOwner()
+    {
+        return $this->isRole(config("admin.roles.owner"));
     }
 
     /**
@@ -119,7 +129,7 @@ trait AdminPermission
      */
     public function inRoles($roles = [])
     {
-        return $this->roles()->whereIn('slug', (array)$roles)->exists();
+        return $this->roles()->whereIn('slug', (array) $roles)->exists();
     }
 
     /**
@@ -156,6 +166,7 @@ trait AdminPermission
             $arr = $role->permissions->toArray();
             $permissions = array_merge($permissions, $arr);
         }
+
         return $permissions;
     }
 }

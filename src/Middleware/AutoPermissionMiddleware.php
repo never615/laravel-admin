@@ -34,7 +34,7 @@ class AutoPermissionMiddleware
         $currentUrl = substr($currentUrl, 6);  //admin
         $currentRouteName = Route::currentRouteName();
 
-        if (Auth::guard("admin")->user()->isAdministrator()) {
+        if (Auth::guard("admin")->user()->isOwner()) {
             //pass
             return $next($request);
         } else {
@@ -45,7 +45,7 @@ class AutoPermissionMiddleware
                     return $next($request);
                 } else {
                     //denied
-                    throw new AccessDeniedHttpException(trans("errors.deny"));
+                    throw new AccessDeniedHttpException(trans("errors.permission_denied"));
                 }
             } else {
                 //Does not have to create this permission.
