@@ -4,7 +4,6 @@ namespace Encore\Admin\Middleware;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class OperationLog
 {
@@ -18,20 +17,17 @@ class OperationLog
      */
     public function handle(Request $request, \Closure $next)
     {
-//        Log::info(Admin::user());
+        if (config('admin.operation_log') && Admin::user()) {
+            $log = [
+                'user_id'    => Admin::user()->id,
+                'path'       => $request->path(),
+                'method'     => $request->method(),
+                'ip'         => $request->getClientIp(),
+                'input'      => json_encode($request->input()),
+            ];
 
-//        if (config('admin.operation_log') && Admin::user()) {
-//            $log = [
-//                'user_id'    => Admin::user()->id,
-//                'path'       => $request->path(),
-//                'method'     => $request->method(),
-//                'ip'         => $request->getClientIp(),
-//                'input'      => json_encode($request->input()),
-//                'subject_id' => Admin::user()->subject->id,
-//            ];
-//
-//            \Encore\Admin\Auth\Database\OperationLog::create($log);
-//        }
+            \Encore\Admin\Auth\Database\OperationLog::create($log);
+        }
 
         return $next($request);
     }

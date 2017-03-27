@@ -26,7 +26,7 @@ class AdminServiceProvider extends ServiceProvider
     protected $routeMiddleware = [
         'admin.auth'        => \Encore\Admin\Middleware\Authenticate::class,
         'admin.pjax'        => \Encore\Admin\Middleware\PjaxMiddleware::class,
-        'admin.log'         => \Encore\Admin\Middleware\OperationLog::class,
+//        'admin.log'         => \Encore\Admin\Middleware\OperationLog::class,
         'admin.permission'  => \Encore\Admin\Middleware\PermissionMiddleware::class,
         'admin.bootstrap'   => \Encore\Admin\Middleware\BootstrapMiddleware::class,
         'admin.auto_permission'=>\Encore\Admin\Middleware\AutoPermissionMiddleware::class
