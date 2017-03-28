@@ -4,6 +4,7 @@ namespace Encore\Admin\Auth\Database;
 
 use Encore\Admin\Traits\AdminBuilder;
 use Encore\Admin\Traits\ModelTree;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -71,13 +72,27 @@ class Menu extends Model
             if (Auth::guard("admin")->user()->isOwner()) {
                 return static::orderByRaw($byOrder)->get()->toArray();
             } else {
+
                 $permissionSlugArr = array_pluck(Auth::guard("admin")->user()->allPermissionArr(), 'slug');
-                $parent_ids = static::whereIn('uri', $permissionSlugArr)->get()->pluck("parent_id");
+                $menu=new Collection();
+
+                //如果权限是父级权限,那么子级权限也要自动加上
+                foreach ($permissionSlugArr as $item){
+                    $menu=$menu->merge(static::where('uri','like',"%$item%")->get());
+                }
+
+//                $parent_ids = static::whereIn('uri', $permissionSlugArr)->get()->pluck("parent_id");
+
+                $parent_ids=$menu->pluck("parent_id");
 
                 //查出来的菜单如果有父菜单也要返回
-                $result = static::whereIn('uri', $permissionSlugArr)
-                    ->orWhereIn('id', $parent_ids)
-                    ->orderByRaw($byOrder)->get()->toArray();
+                $menu=$menu->merge(static::whereIn('id', $parent_ids)->get());
+                $result=$menu->sortBy($orderColumn)->toArray();
+
+//                //查出来的菜单如果有父菜单也要返回
+//                $result = static::whereIn('uri', $permissionSlugArr)
+//                    ->orWhereIn('id', $parent_ids)
+//                    ->orderByRaw($byOrder)->get()->toArray();
 
                 return $result;
             }

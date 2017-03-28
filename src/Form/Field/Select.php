@@ -38,8 +38,7 @@ class Select extends Field
         }
 
         $this->options = array_filter($this->options);
-
-
+        
         return parent::render()->with(['options' => $this->options]);
     }
 

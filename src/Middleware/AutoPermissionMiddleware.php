@@ -12,10 +12,16 @@ namespace Encore\Admin\Middleware;
 use Closure;
 use Encore\Admin\Auth\Database\Permission;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
+/**
+ * Class AutoPermissionMiddleware
+ *
+ *
+ *
+ * @package Encore\Admin\Middleware
+ */
 class AutoPermissionMiddleware
 {
     protected $except = [
@@ -31,16 +37,19 @@ class AutoPermissionMiddleware
     public function handle($request, Closure $next)
     {
 
+
 //        $currentUrl = $request->path();
 //        $currentUrl = substr($currentUrl, 6);  //admin
         $currentRouteName = Route::currentRouteName();
+        $routenameArr = explode(".", $currentRouteName);
 
         if (Auth::guard("admin")->user()->isOwner()) {
             //pass
             return $next($request);
         } else {
 //            $permission = Permission::where('slug', $currentUrl)->orWhere('slug', $currentRouteName)->first();
-            $permission = Permission::where('slug', $currentRouteName)->first();
+            //拥有父级权限,则通过所有子级权限
+            $permission = Permission::where('slug', "like", "%$routenameArr[0]%")->first();
 
             if ($permission) {
 

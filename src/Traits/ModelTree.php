@@ -231,12 +231,17 @@ trait ModelTree
      *
      * @return \Illuminate\Support\Collection
      */
-    public static function selectOptions()
+    public static function selectOptions(array $nodes = [], $root = true, $defaultBlack = true)
     {
-        $options = (new static())->buildSelectOptions();
+        $options = (new static())->buildSelectOptions($nodes, 0, "", $defaultBlack);
 
-        return collect($options)->prepend('Root', 0)->all();
+        if ($root) {
+            return collect($options)->prepend('Root', 0)->all();
+        } else {
+            return collect($options)->all();
+        }
     }
+
 
     /**
      * Build options of select field in form.
@@ -247,9 +252,13 @@ trait ModelTree
      *
      * @return array
      */
-    protected function buildSelectOptions(array $nodes = [], $parentId = 0, $prefix = '')
+    protected function buildSelectOptions(array $nodes = [], $parentId = 0, $prefix = '', $defaultBlack = true)
     {
-        $prefix = $prefix ?: str_repeat('&nbsp;', 6);
+        if ($defaultBlack) {
+            $prefix = $prefix ?: str_repeat('&nbsp;', 6);
+        } else {
+            $prefix = $prefix ?: str_repeat('&nbsp;', 2);
+        }
 
         $options = [];
 
@@ -258,7 +267,9 @@ trait ModelTree
         }
 
         foreach ($nodes as $node) {
-            $node[$this->titleColumn] = $prefix.'&nbsp;'.$node[$this->titleColumn];
+            if ($defaultBlack) {
+                $node[$this->titleColumn] = $prefix.'&nbsp;'.$node[$this->titleColumn];
+            }
             if ($node[$this->parentColumn] == $parentId) {
                 $children = $this->buildSelectOptions($nodes, $node[$this->getKeyName()], $prefix.$prefix);
 
