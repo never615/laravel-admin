@@ -20,6 +20,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Validator;
 use Spatie\EloquentSortable\Sortable;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 /**
  * Class Form.
@@ -691,7 +692,7 @@ class Form
 
             try {
                 $value = $this->getDataByColumn($updates, $columns);
-            } catch (NotFoundException $e) {
+            } catch (NotFoundResourceException $e) {
                 continue;
             }
 
@@ -852,7 +853,7 @@ class Form
             if (array_has($data, $columns)) {
                 return array_get($data, $columns);
             } else {
-                throw new NotFoundException();
+                throw new NotFoundResourceException();
             }
         }
 
@@ -866,12 +867,12 @@ class Form
             }
 
             if (empty($value)) {
-                throw new NotFoundException();
+                throw new NotFoundResourceException();
             }
 
             return $value;
         }
-        throw new NotFoundException();
+        throw new NotFoundResourceException();
     }
 
     /**
