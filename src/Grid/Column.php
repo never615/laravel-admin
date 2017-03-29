@@ -6,6 +6,7 @@ use Closure;
 use Encore\Admin\Grid;
 use Encore\Admin\Grid\Displayers\AbstractDisplayer;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
@@ -170,9 +171,22 @@ class Column
      */
     protected function formatLabel($label)
     {
-        $label = $label ?: ucfirst($this->name);
+        $tempLabel=null;
 
-        return str_replace(['.', '_'], ' ', $label);
+        if (!empty($label)) {
+            $tempLabel =$label;
+        } else {
+            if (Lang::has('validation.attributes.'.$this->name)) {
+                $tempLabel = trans('validation.attributes.'.$this->name);
+            } else {
+                $tempLabel = ucfirst($this->name);
+            }
+        }
+
+        return str_replace(['.', '_'], ' ', $tempLabel);
+
+//        $label = $label ?: ucfirst($this->name);
+//        return str_replace(['.', '_'], ' ', $label);
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace Encore\Admin;
 
-use App\Exceptions\NotFoundException;
 use Closure;
 use Encore\Admin\Exception\Handle;
 use Encore\Admin\Form\Builder;
@@ -368,7 +367,7 @@ class Form
         $request = Request::capture();
 
         // ajax but not pjax
-        if ($request->ajax() && ! $request->pjax()) {
+        if ($request->ajax() && !$request->pjax()) {
             return response()->json([
                 'status'  => true,
                 'message' => $message,
@@ -485,7 +484,7 @@ class Form
             ]);
         }
 
-        /* @var Model $this->model */
+        /* @var Model $this ->model */
         $this->model = $this->model->with($this->getRelations())->findOrFail($id);
 
         $this->setFieldOriginalValue();
@@ -607,7 +606,7 @@ class Form
     protected function updateRelation($relationsData)
     {
         foreach ($relationsData as $name => $values) {
-            if (! method_exists($this->model, $name)) {
+            if (!method_exists($this->model, $name)) {
                 continue;
             }
 
@@ -723,9 +722,9 @@ class Form
      */
     public function invalidColumn($columns, $hasDot = false)
     {
-        foreach ((array)$columns as $column) {
-            if ((! $hasDot && Str::contains($column, '.')) ||
-                ($hasDot && ! Str::contains($column, '.'))
+        foreach ((array) $columns as $column) {
+            if ((!$hasDot && Str::contains($column, '.')) ||
+                ($hasDot && !Str::contains($column, '.'))
             ) {
                 return true;
             }
@@ -778,7 +777,7 @@ class Form
     {
         $first = current($inserts);
 
-        if (! is_array($first)) {
+        if (!is_array($first)) {
             return false;
         }
 
@@ -822,7 +821,7 @@ class Form
      */
     public function ignore($fields)
     {
-        $this->ignored = array_merge($this->ignored, (array)$fields);
+        $this->ignored = array_merge($this->ignored, (array) $fields);
 
         return $this;
     }
@@ -861,7 +860,7 @@ class Form
         if (is_array($columns)) {
             $value = [];
             foreach ($columns as $name => $column) {
-                if (! array_has($data, $column)) {
+                if (!array_has($data, $column)) {
                     continue;
                 }
                 $value[$name] = array_get($data, $column);
@@ -942,11 +941,11 @@ class Form
         $failedValidators = [];
 
         foreach ($this->builder->fields() as $field) {
-            if (! $validator = $field->getValidator($input)) {
+            if (!$validator = $field->getValidator($input)) {
                 continue;
             }
 
-            if (($validator instanceof Validator) && ! $validator->passes()) {
+            if (($validator instanceof Validator) && !$validator->passes()) {
                 $failedValidators[] = $validator;
             }
         }
@@ -1246,7 +1245,7 @@ class Form
      */
     public static function collectFieldAssets()
     {
-        if (! empty(static::$collectedAssets)) {
+        if (!empty(static::$collectedAssets)) {
             return static::$collectedAssets;
         }
 
@@ -1254,7 +1253,7 @@ class Form
         $js = collect();
 
         foreach (static::$availableFields as $field) {
-            if (! method_exists($field, 'getAssets')) {
+            if (!method_exists($field, 'getAssets')) {
                 continue;
             }
 

@@ -7,7 +7,7 @@ use Encore\Admin\Form;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -172,7 +172,7 @@ class Field implements Renderable
     /**
      * Field constructor.
      *
-     * @param $column
+     * @param       $column
      * @param array $arguments
      */
     public function __construct($column, $arguments = [])
@@ -218,7 +218,18 @@ class Field implements Renderable
     {
         $column = is_array($this->column) ? current($this->column) : $this->column;
 
-        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($column);
+        //策略:1.如果有设置label直接使用 2.没有设置去validation查找 3.如果还没有使用ucfirst($column)
+        if (isset($arguments[0])) {
+            $label = $arguments[0];
+        } else {
+            if (Lang::has('validation.attributes.'.$column)) {
+                $label = trans('validation.attributes.'.$column);
+            } else {
+                $label = ucfirst($column);
+            }
+        }
+
+//        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($column);
 
         return str_replace(['.', '_'], ' ', $label);
     }
@@ -770,17 +781,17 @@ class Field implements Renderable
     protected function variables()
     {
         return array_merge($this->variables, [
-            'id'            => $this->id,
-            'name'          => $this->elementName ?: $this->formatName($this->column),
-            'help'          => $this->help,
-            'class'         => $this->getElementClassString(),
-            'value'         => $this->value(),
-            'label'         => $this->label,
-            'width'         => $this->width,
-            'column'        => $this->column,
-            'errorKey'      => $this->getErrorKey(),
-            'attributes'    => $this->formatAttributes(),
-            'placeholder'   => $this->getPlaceholder(),
+            'id'          => $this->id,
+            'name'        => $this->elementName ?: $this->formatName($this->column),
+            'help'        => $this->help,
+            'class'       => $this->getElementClassString(),
+            'value'       => $this->value(),
+            'label'       => $this->label,
+            'width'       => $this->width,
+            'column'      => $this->column,
+            'errorKey'    => $this->getErrorKey(),
+            'attributes'  => $this->formatAttributes(),
+            'placeholder' => $this->getPlaceholder(),
         ]);
     }
 

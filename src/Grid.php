@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Jenssegers\Mongodb\Eloquent\Model as MongodbModel;
 
@@ -266,8 +268,20 @@ class Grid
 
             $relation = $this->model()->eloquent()->$relationName();
 
-            $label = empty($label) ? ucfirst($relationColumn) : $label;
+            $tempLabel=null;
+            if(empty($label)){
+                if (Lang::has('validation.attributes.'.$relationColumn)) {
+                    $tempLabel = trans('validation.attributes.'.$relationColumn);
+                } else {
+                    $tempLabel = ucfirst($relationColumn);
+                }
+            }else{
+                $tempLabel=$label;
+            }
 
+//            $label = empty($label) ? ucfirst($relationColumn) : $label;
+
+            $label=$tempLabel;
             $name = snake_case($relationName).'.'.$relationColumn;
         }
 
@@ -321,6 +335,7 @@ class Grid
      */
     protected function addColumn($column = '', $label = '')
     {
+
         $column = new Column($column, $label);
         $column->setGrid($this);
 
@@ -856,7 +871,18 @@ class Grid
      */
     public function __call($method, $arguments)
     {
-        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
+
+        if (isset($arguments[0])) {
+            $label = $arguments[0];
+        } else {
+            if (Lang::has('validation.attributes.'.$method)) {
+                $label = trans('validation.attributes.'.$method);
+            } else {
+                $label = ucfirst($method);
+            }
+        }
+
+//        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
 
         if ($this->model()->eloquent() instanceof MongodbModel) {
             return $this->addColumn($method, $label);

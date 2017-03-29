@@ -6,6 +6,7 @@ use Encore\Admin\Grid\Filter;
 use Encore\Admin\Grid\Filter\Field\DateTime;
 use Encore\Admin\Grid\Filter\Field\Select;
 use Encore\Admin\Grid\Filter\Field\Text;
+use Illuminate\Support\Facades\Lang;
 
 abstract class AbstractFilter
 {
@@ -87,9 +88,22 @@ abstract class AbstractFilter
      */
     protected function formatLabel($label)
     {
-        $label = $label ?: ucfirst($this->column);
+        $tempLabel=null;
 
-        return str_replace(['.', '_'], ' ', $label);
+        if ($label) {
+            $tempLabel =$label;
+        } else {
+            if (Lang::has('validation.attributes.'.$this->column)) {
+                $tempLabel = trans('validation.attributes.'.$this->column);
+            } else {
+                $tempLabel = ucfirst($this->column);
+            }
+        }
+
+
+//        $label = $label ?: ucfirst($this->column);
+
+        return str_replace(['.', '_'], ' ', $tempLabel);
     }
 
     /**

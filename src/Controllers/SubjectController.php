@@ -59,9 +59,9 @@ class SubjectController extends AdminCommonController
 
     protected function formOption(Form $form)
     {
-        $form->text("name", "名字")->rules('required');
-        $form->image("logo", "图标");
-        $form->select("parent_id", "归属")->options(Subject::dynamicData()->get()->pluck("name", "id"));
+        $form->text("name")->rules('required');
+        $form->image("logo");
+        $form->select("parent_id", "父级主体")->options(Subject::dynamicData()->get()->pluck("name", "id"));
 
         if (Admin::user()->isRole(config("admin.roles.owner"))) {
             $permissions = Permission::where("parent_id", 0)->get();
@@ -73,8 +73,7 @@ class SubjectController extends AdminCommonController
 //        $form->multipleSelect('permissions',
 //            "可用功能")->options($permissions->pluck("name", "id"));
 
-        $form->multipleSelect('permissions',
-            "可用功能")->options(Permission::selectOptions($permissions->toArray(), false, false));
+        $form->multipleSelect('permissions', "可用功能")->options(Permission::selectOptions($permissions->toArray(), false, false));
 
         $form->saving(function (Form $form) {
             if ($form->permissions && $form->model()->permissions != $form->permissions && Admin::user()->subject_id == $form->model()->id) {
