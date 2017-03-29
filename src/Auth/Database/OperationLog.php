@@ -6,17 +6,30 @@ use Illuminate\Database\Eloquent\Model;
 
 class OperationLog extends Model
 {
-    protected $fillable = ['user_id', 'path', 'method', 'ip', 'input'];
+
+
+    protected $fillable = ['user_id', 'path', 'method', 'ip', 'input', 'subject_id'];
+
 
     public static $methodColors = [
-        'GET'       => 'green',
-        'POST'      => 'yellow',
-        'PUT'       => 'blue',
-        'DELETE'    => 'red',
+        'GET'    => 'green',
+        'POST'   => 'yellow',
+        'PUT'    => 'blue',
+        'DELETE' => 'red',
     ];
 
     public static $methods = [
-        'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'LINK', 'UNLINK', 'COPY', 'HEAD', 'PURGE',
+        'GET',
+        'POST',
+        'PUT',
+        'DELETE',
+        'OPTIONS',
+        'PATCH',
+        'LINK',
+        'UNLINK',
+        'COPY',
+        'HEAD',
+        'PURGE',
     ];
 
     /**
@@ -33,6 +46,11 @@ class OperationLog extends Model
         $this->setTable(config('admin.database.operation_log_table'));
 
         parent::__construct($attributes);
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
     }
 
     /**

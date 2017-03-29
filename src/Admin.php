@@ -265,6 +265,7 @@ class Admin
                 $router->resource('auth/permissions', 'PermissionController');
                 $router->resource('auth/menus', 'MenuController', ['except' => ['create']]);
                 $router->resource('auth/logs', 'LogController', ['only' => ['index', 'destroy']]);
+                $router->resource("subjects", "SubjectController");
             });
 
             $router->get('auth/login', 'AuthController@getLogin');
@@ -272,7 +273,6 @@ class Admin
             $router->get('auth/logout', 'AuthController@getLogout');
             $router->get('auth/setting', 'AuthController@getSetting');
             $router->put('auth/setting', 'AuthController@putSetting');
-
 
             //获取七牛upload token
             $router->get('uptoken', 'FileController@getUploadToken');

@@ -1,18 +1,18 @@
 <?php
 
-namespace Encore\Admin\Controllers;
+namespace Encore\Admin\Controllers\Base;
 
-use Encore\Admin\Auth\Database\Permission;
+
+use Encore\Admin\Controllers\ModelForm;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
-use Encore\Admin\Tree;
 use Illuminate\Routing\Controller;
 
-class PermissionController extends Controller
+abstract class AdminCommonController extends Controller
 {
-    use ModelForm;
+    use ModelForm, AdminOption;
 
     /**
      * Index interface.
@@ -22,15 +22,9 @@ class PermissionController extends Controller
     public function index()
     {
         return Admin::content(function (Content $content) {
-            $content->header(trans('admin::lang.permissions'));
+            $content->header($this->getHeaderTitle());
             $content->description(trans('admin::lang.list'));
-//            $content->body($this->grid()->render());
-            $content->body(Permission::tree(function(Tree $tree){
-                $tree->branch(function ($branch) {
-                    $payload = "<strong>{$branch['name']}</strong>";
-                    return $payload;
-                });
-            }));
+            $content->body($this->grid()->render());
         });
     }
 
@@ -44,7 +38,7 @@ class PermissionController extends Controller
     public function edit($id)
     {
         return Admin::content(function (Content $content) use ($id) {
-            $content->header(trans('admin::lang.permissions'));
+            $content->header($this->getHeaderTitle());
             $content->description(trans('admin::lang.edit'));
             $content->body($this->form()->edit($id));
         });
@@ -58,26 +52,31 @@ class PermissionController extends Controller
     public function create()
     {
         return Admin::content(function (Content $content) {
-            $content->header(trans('admin::lang.permissions'));
+            $content->header($this->getHeaderTitle());
             $content->description(trans('admin::lang.create'));
             $content->body($this->form());
         });
     }
 
-    /**
-     * Make a grid builder.
-     *
-     * @return Grid
-     */
+
     protected function grid()
     {
-        return Admin::grid(Permission::class, function (Grid $grid) {
-            $grid->id('ID')->sortable();
-            $grid->slug(trans('admin::lang.slug'));
-            $grid->name(trans('admin::lang.name'));
+        return Admin::grid($this->getModel(), function (Grid $grid) {
 
-            $grid->created_at(trans('admin::lang.created_at'));
+
+            $grid->model()->dynamicData();
+
+            $grid->id('ID')->sortable();
+
+            $this->gridOption($grid);
+
+//            $grid->created_at(trans('admin::lang.created_at'));
             $grid->updated_at(trans('admin::lang.updated_at'));
+
+            $grid->filter(function ($filter) {
+                // 禁用id查询框
+                $filter->disableIdFilter();
+            });
 
             $grid->tools(function (Grid\Tools $tools) {
                 $tools->batch(function (Grid\Tools\BatchActions $actions) {
@@ -87,22 +86,16 @@ class PermissionController extends Controller
         });
     }
 
-    /**
-     * Make a form builder.
-     *
-     * @return Form
-     */
-    public function form()
+
+    protected function form()
     {
-        return Admin::form(Permission::class, function (Form $form) {
+        return Admin::form($this->getModel(), function (Form $form) {
+
             $form->display('id', 'ID');
-
-            $form->select("parent_id","父节点")->options(Permission::selectOptions());
-            $form->text('slug', trans('admin::lang.slug'))->rules('required');
-            $form->text('name', trans('admin::lang.name'))->rules('required');
-
+            $this->formOption($form);
             $form->display('created_at', trans('admin::lang.created_at'));
             $form->display('updated_at', trans('admin::lang.updated_at'));
         });
     }
+
 }

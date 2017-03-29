@@ -24,6 +24,7 @@ class OperationLog
                 'method'     => $request->method(),
                 'ip'         => $request->getClientIp(),
                 'input'      => json_encode($request->input()),
+                'subject_id' => Admin::user()->subject->id,
             ];
 
             \Encore\Admin\Auth\Database\OperationLog::create($log);

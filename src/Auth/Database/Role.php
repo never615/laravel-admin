@@ -2,10 +2,14 @@
 
 namespace Encore\Admin\Auth\Database;
 
+use Encore\Admin\Auth\Database\Traits\DynamicData;
 use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
+    use DynamicData;
+
+
     protected $fillable = ['name', 'slug'];
 
     /**
@@ -22,6 +26,11 @@ class Role extends Model
         $this->setTable(config('admin.database.roles_table'));
 
         parent::__construct($attributes);
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
     }
 
     /**

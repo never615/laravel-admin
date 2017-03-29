@@ -2,12 +2,15 @@
 
 namespace Encore\Admin\Auth\Database;
 
+use Encore\Admin\Traits\AdminBuilder;
+use Encore\Admin\Traits\ModelTree;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class Permission extends Model
 {
+    use ModelTree, AdminBuilder;
+
     protected $fillable = ['name', 'slug'];
 
     /**
@@ -23,7 +26,20 @@ class Permission extends Model
 
         $this->setTable(config('admin.database.permissions_table'));
 
+        $this->setTitleColumn("name");
+
+
         parent::__construct($attributes);
+    }
+
+    /**
+     * 获取拥有该权限的全部主体
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, "subject_permissions", 'permission_id', 'subject_id');
     }
 
     /**

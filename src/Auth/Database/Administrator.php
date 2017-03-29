@@ -2,11 +2,11 @@
 
 namespace Encore\Admin\Auth\Database;
 
+use Encore\Admin\Auth\Database\Traits\DynamicData;
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
-use Mallto\Mall\Module\UserCoupon\UserCoupon;
 
 /**
  * Class Administrator.
@@ -15,7 +15,7 @@ use Mallto\Mall\Module\UserCoupon\UserCoupon;
  */
 class Administrator extends Model implements AuthenticatableContract
 {
-    use Authenticatable, AdminBuilder, AdminPermission;
+    use Authenticatable, AdminBuilder, AdminPermission, DynamicData;
 
     protected $fillable = ['username', 'password', 'name', 'avatar'];
 
@@ -33,5 +33,10 @@ class Administrator extends Model implements AuthenticatableContract
         $this->setTable(config('admin.database.users_table'));
 
         parent::__construct($attributes);
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
     }
 }
