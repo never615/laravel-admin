@@ -2,6 +2,9 @@
 
 namespace Encore\Admin\Auth\Database;
 
+use Encore\Admin\Facades\Admin;
+use Illuminate\Support\Facades\Log;
+
 trait AdminPermission
 {
     /**
@@ -51,27 +54,53 @@ trait AdminPermission
     /**
      * Check if user has permission.
      *
-     * @param $permission
+     * @param $permissionSlug
      *
      * @return bool
      */
-    public function can($permission)
+    public function can($permissionSlug)
     {
-        if ($this->isAdministrator()) {
+        //1.项目拥有者拥有全部权限
+        if ($this->isOwner()) {
             return true;
         }
 
+        //2.用户拥有该权限通过
         if (method_exists($this, 'permissions')) {
-            if ($this->permissions()->where('slug', $permission)->exists()) {
+            if ($this->permissions()->where('slug', $permissionSlug)->exists()) {
                 return true;
             }
+        }
+        //3.用户拥有该权限的父权限,通过
+        //先查询该权限的父权限,因为权限支持多级,所以要查询出该权限的所有长辈权限
+        $permission = Permission::where('slug', $permissionSlug)->first();
+        $elderPermissions = $permission->elderPermissions();
+        //检查用户的权限中有没有$elderPermissions中的权限
+        if ($elderPermissions && $this->permissions()->whereIn("id", $elderPermissions->pluck("id"))->exists()) {
+            return true;
         }
 
+        //4.用户的角色拥有该权限通过
+        //5.用户的角色拥有该权限的父权限,通过
         foreach ($this->roles as $role) {
-            if ($role->can($permission)) {
+            if ($role->can($permissionSlug)) {
                 return true;
             }
+
+            Log::info($elderPermissions);
+            Log::info($role->permissions);
+            Log::info($role->permissions->pluck("id"));
+            Log::info($elderPermissions->toArray());
+            Log::info(array_pluck($elderPermissions->toArray(),"id"));
+            Log::info($elderPermissions->pluck("id"));
+
+
+            if ($elderPermissions && $role->permissions()->whereIn("id", $elderPermissions->pluck("id"))->exists()) {
+                return true;
+            }
+
         }
+
 
         return false;
     }
@@ -98,15 +127,11 @@ trait AdminPermission
         return $this->isRole(config("admin.roles.admin"));
     }
 
-    /**
-     * Check if user is owner
-     *
-     * @return mixed
-     */
     public function isOwner()
     {
         return $this->isRole(config("admin.roles.owner"));
     }
+
 
     /**
      * Check if user is $role.
@@ -117,7 +142,7 @@ trait AdminPermission
      */
     public function isRole($role)
     {
-        return $this->roles()->where('slug', $role)->exists();
+        return $this->roles()->where("subject_id", Admin::user()->subject->id)->where('slug', $role)->exists();
     }
 
     /**
@@ -129,7 +154,8 @@ trait AdminPermission
      */
     public function inRoles($roles = [])
     {
-        return $this->roles()->whereIn('slug', (array) $roles)->exists();
+        return $this->roles()->where("subject_id", Admin::user()->subject->id)->whereIn('slug',
+            (array) $roles)->exists();
     }
 
     /**
@@ -158,13 +184,12 @@ trait AdminPermission
      * 返回用户所有的权限
      * 包括角色包含的和单独权限拥有的
      */
-    public function allPermissionArr()
+    public function allPermissions()
     {
         $roles = $this->roles;
-        $permissions = $this->permissions->toArray();
+        $permissions = $this->permissions;
         foreach ($roles as $role) {
-            $arr = $role->permissions->toArray();
-            $permissions = array_merge($permissions, $arr);
+            $permissions = $permissions->merge($role->permissions);
         }
 
         return $permissions;

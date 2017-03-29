@@ -47,12 +47,10 @@ class AutoPermissionMiddleware
             //pass
             return $next($request);
         } else {
-//            $permission = Permission::where('slug', $currentUrl)->orWhere('slug', $currentRouteName)->first();
-            //拥有父级权限,则通过所有子级权限
-            $permission = Permission::where('slug', "like", "%$routenameArr[0]%")->first();
-
+            //1.检查当前路由在权限列表中有没有对应的权限,如果没有设置该功能对应的权限,则默认通过
+            $permission = Permission::where('slug', $currentRouteName)->first();
             if ($permission) {
-
+                //权限管理有该权限,检查用户是否有该权限
                 if (Auth::guard("admin")->user()->can($permission->slug)) {
                     //pass
                     return $next($request);
