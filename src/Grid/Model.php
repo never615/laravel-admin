@@ -190,6 +190,16 @@ class Model
     }
 
     /**
+     * 获取查询对象
+     *
+     * @return array
+     */
+    public function buildQuery()
+    {
+        return $this->getQuery();
+    }
+
+    /**
      * Add conditions to grid model.
      *
      * @param array $conditions
@@ -244,6 +254,24 @@ class Model
         }
 
         throw new \Exception('Grid query error');
+    }
+
+
+    /**
+     * 获取查询对象
+     *
+     * @return EloquentModel
+     */
+    protected function getQuery()
+    {
+
+        $this->setSort();
+
+        $this->queries->unique()->each(function ($query) {
+            $this->model = call_user_func_array([$this->model, $query['method']], $query['arguments']);
+        });
+
+        return $this->model;
     }
 
     /**
@@ -373,7 +401,8 @@ class Model
 
         if ($this->queries->contains(function ($query) use ($relationName) {
             return $query['method'] == 'with' && in_array($relationName, $query['arguments']);
-        })) {
+        })
+        ) {
             $relation = $this->model->$relationName();
 
             $this->queries->push([

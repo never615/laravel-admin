@@ -56,6 +56,10 @@ abstract class AbstractExporter implements ExporterInterface
     {
         return $this->grid->getFilter()->execute();
     }
+    
+    public function getQuery(){
+        return $this->grid->getFilter()->executeForQuery();
+    }
 
     /**
      * {@inheritdoc}

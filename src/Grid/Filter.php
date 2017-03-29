@@ -169,6 +169,11 @@ class Filter
     {
         return $this->model->addConditions($this->conditions())->buildData();
     }
+    
+    public function executeForQuery(){
+        return $this->model->addConditions($this->conditions())->buildQuery();
+    }
+    
 
     /**
      * Get the string contents of the filter view.

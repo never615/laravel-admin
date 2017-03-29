@@ -78,7 +78,13 @@ class Menu extends Model
 
                 //如果权限是父级权限,那么子级权限也要自动加上
                 foreach ($permissionSlugArr as $item){
-                    $menu=$menu->merge(static::where('uri','like',"%$item%")->get());
+
+
+                    //这个就是根据用户拥有的权限查询出来的菜单
+//                    static::where('uri',$item)->get();
+
+
+                    $menu=$menu->merge(static::where('uri','like',"$item%")->get());
                 }
 
 //                $parent_ids = static::whereIn('uri', $permissionSlugArr)->get()->pluck("parent_id");
