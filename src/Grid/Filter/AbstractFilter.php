@@ -6,7 +6,6 @@ use Encore\Admin\Grid\Filter;
 use Encore\Admin\Grid\Filter\Field\DateTime;
 use Encore\Admin\Grid\Filter\Field\Select;
 use Encore\Admin\Grid\Filter\Field\Text;
-use Illuminate\Support\Facades\Lang;
 
 abstract class AbstractFilter
 {
@@ -56,7 +55,7 @@ abstract class AbstractFilter
     /**
      * AbstractFilter constructor.
      *
-     * @param $column
+     * @param        $column
      * @param string $label
      */
     public function __construct($column, $label = '')
@@ -88,16 +87,12 @@ abstract class AbstractFilter
      */
     protected function formatLabel($label)
     {
-        $tempLabel=null;
+        $tempLabel = null;
 
         if ($label) {
-            $tempLabel =$label;
+            $tempLabel = $label;
         } else {
-            if (Lang::has('validation.attributes.'.$this->column)) {
-                $tempLabel = trans('validation.attributes.'.$this->column);
-            } else {
-                $tempLabel = ucfirst($this->column);
-            }
+            $tempLabel = admin_translate( $this->column);
         }
 
 
@@ -316,9 +311,14 @@ abstract class AbstractFilter
 
         list($relation, $args[0]) = explode('.', $this->column);
 
-        return ['whereHas' => [$relation, function ($relation) use ($args) {
-            call_user_func_array([$relation, $this->query], $args);
-        }]];
+        return [
+            'whereHas' => [
+                $relation,
+                function ($relation) use ($args) {
+                    call_user_func_array([$relation, $this->query], $args);
+                },
+            ],
+        ];
     }
 
     /**

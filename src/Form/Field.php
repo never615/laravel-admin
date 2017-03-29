@@ -222,11 +222,7 @@ class Field implements Renderable
         if (isset($arguments[0])) {
             $label = $arguments[0];
         } else {
-            if (Lang::has('validation.attributes.'.$column)) {
-                $label = trans('validation.attributes.'.$column);
-            } else {
-                $label = ucfirst($column);
-            }
+            $label=admin_translate($column);
         }
 
 //        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($column);

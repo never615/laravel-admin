@@ -21,8 +21,6 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Jenssegers\Mongodb\Eloquent\Model as MongodbModel;
 
@@ -160,13 +158,13 @@ class Grid
      * @var array
      */
     protected $options = [
-        'usePagination'     => true,
-        'useFilter'         => true,
-        'useExporter'       => true,
-        'useActions'        => true,
-        'useRowSelector'    => true,
-        'allowCreate'       => true,
-        'allowBatchDelete'  => true,
+        'usePagination'    => true,
+        'useFilter'        => true,
+        'useExporter'      => true,
+        'useActions'       => true,
+        'useRowSelector'   => true,
+        'allowCreate'      => true,
+        'allowBatchDelete' => true,
     ];
 
     /**
@@ -268,20 +266,16 @@ class Grid
 
             $relation = $this->model()->eloquent()->$relationName();
 
-            $tempLabel=null;
-            if(empty($label)){
-                if (Lang::has('validation.attributes.'.$relationColumn)) {
-                    $tempLabel = trans('validation.attributes.'.$relationColumn);
-                } else {
-                    $tempLabel = ucfirst($relationColumn);
-                }
-            }else{
-                $tempLabel=$label;
+            $tempLabel = null;
+            if (empty($label)) {
+                $tempLabel = admin_translate($relationColumn);
+            } else {
+                $tempLabel = $label;
             }
 
 //            $label = empty($label) ? ucfirst($relationColumn) : $label;
 
-            $label=$tempLabel;
+            $label = $tempLabel;
             $name = snake_case($relationName).'.'.$relationColumn;
         }
 
@@ -875,11 +869,7 @@ class Grid
         if (isset($arguments[0])) {
             $label = $arguments[0];
         } else {
-            if (Lang::has('validation.attributes.'.$method)) {
-                $label = trans('validation.attributes.'.$method);
-            } else {
-                $label = ucfirst($method);
-            }
+            $label = admin_translate($method);
         }
 
 //        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
@@ -911,19 +901,19 @@ class Grid
     public static function registerColumnDisplayer()
     {
         $map = [
-            'editable'      => \Encore\Admin\Grid\Displayers\Editable::class,
-            'switch'        => \Encore\Admin\Grid\Displayers\SwitchDisplay::class,
-            'switchGroup'   => \Encore\Admin\Grid\Displayers\SwitchGroup::class,
-            'select'        => \Encore\Admin\Grid\Displayers\Select::class,
-            'image'         => \Encore\Admin\Grid\Displayers\Image::class,
-            'label'         => \Encore\Admin\Grid\Displayers\Label::class,
-            'button'        => \Encore\Admin\Grid\Displayers\Button::class,
-            'link'          => \Encore\Admin\Grid\Displayers\Link::class,
-            'badge'         => \Encore\Admin\Grid\Displayers\Badge::class,
-            'progressBar'   => \Encore\Admin\Grid\Displayers\ProgressBar::class,
-            'radio'         => \Encore\Admin\Grid\Displayers\Radio::class,
-            'checkbox'      => \Encore\Admin\Grid\Displayers\Checkbox::class,
-            'orderable'     => \Encore\Admin\Grid\Displayers\Orderable::class,
+            'editable'    => \Encore\Admin\Grid\Displayers\Editable::class,
+            'switch'      => \Encore\Admin\Grid\Displayers\SwitchDisplay::class,
+            'switchGroup' => \Encore\Admin\Grid\Displayers\SwitchGroup::class,
+            'select'      => \Encore\Admin\Grid\Displayers\Select::class,
+            'image'       => \Encore\Admin\Grid\Displayers\Image::class,
+            'label'       => \Encore\Admin\Grid\Displayers\Label::class,
+            'button'      => \Encore\Admin\Grid\Displayers\Button::class,
+            'link'        => \Encore\Admin\Grid\Displayers\Link::class,
+            'badge'       => \Encore\Admin\Grid\Displayers\Badge::class,
+            'progressBar' => \Encore\Admin\Grid\Displayers\ProgressBar::class,
+            'radio'       => \Encore\Admin\Grid\Displayers\Radio::class,
+            'checkbox'    => \Encore\Admin\Grid\Displayers\Checkbox::class,
+            'orderable'   => \Encore\Admin\Grid\Displayers\Orderable::class,
         ];
 
         foreach ($map as $abstract => $class) {

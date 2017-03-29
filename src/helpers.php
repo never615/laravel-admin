@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 
 if (!function_exists('admin_path')) {
 
@@ -64,19 +65,24 @@ if (!function_exists('admin_translate')) {
      * If there is no translation at all:
      * if exists the fallback D else the C will be the output.
      *
-     * @param $modelPath
-     * @param $column
+     * @param      $modelPath
+     * @param      $column
      * @param null $fallback
      * @return string
      */
-    function admin_translate($modelPath, $column, $fallback = null)
+    function admin_translate($column, $modelPath = "", $fallback = null)
     {
-        $nameList = explode('\\', $modelPath);
-        /*
-         * CamelCase model name converted to underscore name version.
-         * ExampleString => example_strinig
-         */
-        $modelName = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', end($nameList))), '_');
+        $modelName = "";
+        if ($modelPath) {
+
+            $nameList = explode('\\', $modelPath);
+            /*
+             * CamelCase model name converted to underscore name version.
+             * ExampleString => example_strinig
+             */
+            $modelName = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', end($nameList))), '_');
+        }
+
         /*
          * ExampleString with banana => example_string_with_banana
          */
@@ -86,9 +92,9 @@ if (!function_exists('admin_translate')) {
          * The possible translate keys in priority order.
          */
         $transLateKeys = [
-            'admin.' . $modelName . '.' . $columnLower,
-            'admin.' . $columnLower,
-            'validation.attributes.' . $columnLower,
+            'admin.'.$modelName.'.'.$columnLower,
+            'admin.'.$columnLower,
+            'validation.attributes.'.$columnLower,
         ];
         $label = null;
         foreach ($transLateKeys as $key) {
@@ -100,6 +106,7 @@ if (!function_exists('admin_translate')) {
         if (!$label) {
             $label = str_replace(['.', '_'], ' ', $fallback ? $fallback : ucfirst($column));
         }
-        return (string)$label;
+
+        return (string) $label;
     }
 }
