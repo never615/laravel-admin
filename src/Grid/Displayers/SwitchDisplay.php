@@ -27,6 +27,9 @@ class SwitchDisplay extends AbstractDisplayer
         $class = "grid-switch-{$name}";
 
         $script = <<<EOT
+        
+        
+var isError=false;
 
 $('.$class').bootstrapSwitch({
     size:'mini',
@@ -35,8 +38,14 @@ $('.$class').bootstrapSwitch({
     onColor: '{$this->states['on']['color']}',
     offColor: '{$this->states['off']['color']}',
     onSwitchChange: function(event, state){
+    
+        if(isError){
+            isError=false;
+            return;
+        }
 
         $(this).val(state ? 'on' : 'off');
+        var that=$(this);
 
         var pk = $(this).data('key');
         var value = $(this).val();
@@ -53,6 +62,7 @@ $('.$class').bootstrapSwitch({
                 toastr.success(data.message);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
+                isError=true;
                 var msg=""; 
                 if (XMLHttpRequest.responseJSON && XMLHttpRequest.responseJSON.error) {
                     //后台有专门返回的错误信息的情况
@@ -70,7 +80,10 @@ $('.$class').bootstrapSwitch({
                     }
                 }
                 //拿着msg做出提示
-                notify.alert(3, msg, 4);
+                notify.alert(3, msg, 3);
+                console.log(state);
+                that.bootstrapSwitch('toggleState');
+//                location.reload();
             }
         });
     }

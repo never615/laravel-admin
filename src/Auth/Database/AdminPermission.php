@@ -60,6 +60,7 @@ trait AdminPermission
      */
     public function can($permissionSlug)
     {
+        Log::info($permissionSlug);
         //1.项目拥有者拥有全部权限
         if ($this->isOwner()) {
             return true;
@@ -86,21 +87,10 @@ trait AdminPermission
             if ($role->can($permissionSlug)) {
                 return true;
             }
-
-            Log::info($elderPermissions);
-            Log::info($role->permissions);
-            Log::info($role->permissions->pluck("id"));
-            Log::info($elderPermissions->toArray());
-            Log::info(array_pluck($elderPermissions->toArray(),"id"));
-            Log::info($elderPermissions->pluck("id"));
-
-
             if ($elderPermissions && $role->permissions()->whereIn("id", $elderPermissions->pluck("id"))->exists()) {
                 return true;
             }
-
         }
-
 
         return false;
     }
