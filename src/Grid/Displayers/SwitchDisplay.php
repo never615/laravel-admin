@@ -51,6 +51,26 @@ $('.$class').bootstrapSwitch({
             },
             success: function (data) {
                 toastr.success(data.message);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                var msg=""; 
+                if (XMLHttpRequest.responseJSON && XMLHttpRequest.responseJSON.error) {
+                    //后台有专门返回的错误信息的情况
+                    msg += XMLHttpRequest.responseJSON.error;
+                } else {
+                    //错误不是后台专门返回的 422除外
+                    if (XMLHttpRequest.status == 422) {
+                        var erroMsg = JSON.parse(XMLHttpRequest.responseText);
+                        $.each(erroMsg, function (k, v) {
+                            msg += v[0] + "\\n";
+                        });
+                    } else {
+                        //错误不是后台专门返回的 
+                        msg += XMLHttpRequest.statusText + ":" + XMLHttpRequest.status;
+                    }
+                }
+                //拿着msg做出提示
+                notify.alert(3, msg, 4);
             }
         });
     }
