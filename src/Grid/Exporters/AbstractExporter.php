@@ -3,6 +3,7 @@
 namespace Encore\Admin\Grid\Exporters;
 
 use Encore\Admin\Grid;
+use Illuminate\Support\Facades\Input;
 
 abstract class AbstractExporter implements ExporterInterface
 {
@@ -56,8 +57,9 @@ abstract class AbstractExporter implements ExporterInterface
     {
         return $this->grid->getFilter()->execute();
     }
-    
-    public function getQuery(){
+
+    public function getQuery()
+    {
         return $this->grid->getFilter()->executeForQuery();
     }
 

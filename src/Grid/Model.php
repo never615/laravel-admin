@@ -192,7 +192,6 @@ class Model
     /**
      * 获取查询对象
      *
-     * @return array
      */
     public function buildQuery()
     {
@@ -265,8 +264,7 @@ class Model
     protected function getQuery()
     {
 
-        $this->setSort();
-
+//        $this->setSort();
         $this->queries->unique()->each(function ($query) {
             $this->model = call_user_func_array([$this->model, $query['method']], $query['arguments']);
         });

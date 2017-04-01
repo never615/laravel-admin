@@ -137,6 +137,39 @@ class Filter
     }
 
     /**
+     * Get all conditions of the filters.
+     *
+     * @param $inputs
+     * @return array
+     */
+    public function conditionsByInputs($inputs)
+    {
+        $inputs = array_dot($inputs);
+
+        $inputs = array_filter($inputs, function ($input) {
+            return $input !== '' && !is_null($input);
+        });
+
+        if (empty($inputs)) {
+            return [];
+        }
+
+        $params = [];
+
+        foreach ($inputs as $key => $value) {
+            array_set($params, $key, $value);
+        }
+
+        $conditions = [];
+
+        foreach ($this->filters() as $filter) {
+            $conditions[] = $filter->condition($params);
+        }
+
+        return array_filter($conditions);
+    }
+
+    /**
      * Add a filter to grid.
      *
      * @param AbstractFilter $filter
@@ -169,11 +202,16 @@ class Filter
     {
         return $this->model->addConditions($this->conditions())->buildData();
     }
-    
-    public function executeForQuery(){
-        return $this->model->addConditions($this->conditions())->buildQuery();
+
+    public function executeForQuery($inputs = null)
+    {
+        if (is_null($inputs)) {
+            $inputs = Input::all();
+        }
+
+        return $this->model->addConditions($this->conditionsByInputs($inputs))->buildQuery();
     }
-    
+
 
     /**
      * Get the string contents of the filter view.
@@ -206,8 +244,8 @@ EOT;
         }
 
         return view($this->view)->with([
-            'action'    => $this->action ?: $this->urlWithoutFilters(),
-            'filters'   => $this->filters,
+            'action'  => $this->action ?: $this->urlWithoutFilters(),
+            'filters' => $this->filters,
         ]);
     }
 

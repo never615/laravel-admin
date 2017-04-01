@@ -1,6 +1,8 @@
 <?php
 namespace Encore\Admin\Grid\Exporters;
 
+use Illuminate\Database\Eloquent\Collection;
+
 
 /**
  * 辅助导出功能使用的工具
@@ -29,7 +31,13 @@ class ExportUtils
 
         return $array;
     }
-    
-    
+
+
+    public static  function removeInvalidsByCollection(Collection $datas)
+    {
+        $datas->forget(["images", "image", "icon", "logo"]);
+        return $datas;
+    }
+
 
 }
