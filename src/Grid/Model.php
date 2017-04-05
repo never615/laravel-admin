@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class Model
@@ -193,9 +195,9 @@ class Model
      * 获取查询对象
      *
      */
-    public function buildQuery()
+    public function buildQuery($subject_id, $isDbQuery = false)
     {
-        return $this->getQuery();
+        return $this->getQuery($subject_id, $isDbQuery);
     }
 
     /**
@@ -207,6 +209,12 @@ class Model
      */
     public function addConditions(array $conditions)
     {
+        Log::info("addConditions");
+        Log::info($conditions);
+
+
+        $conditions = array_unique($conditions);
+
         foreach ($conditions as $condition) {
             call_user_func_array([$this, key($condition)], current($condition));
         }
@@ -261,15 +269,44 @@ class Model
      *
      * @return EloquentModel
      */
-    protected function getQuery()
+    protected function getQuery($subject_id, $isDbQuery = false)
     {
+        if ($isDbQuery) {
+            $dbQuery = DB::table($this->getTable());
+        } else {
+            $dbQuery = $this->model;
+        }
 
-//        $this->setSort();
-        $this->queries->unique()->each(function ($query) {
-            $this->model = call_user_func_array([$this->model, $query['method']], $query['arguments']);
+        $this->queries->unique()->each(function ($query) use (&$dbQuery, $subject_id, $isDbQuery) {
+
+            if (($query['method'] == "dynamicData" || $query['method'] == "with")) {
+                if (!$isDbQuery) {
+                    $dbQuery = call_user_func_array([$dbQuery, $query['method']], $query['arguments']);
+                }
+            } else {
+                $dbQuery = call_user_func_array([$dbQuery, $query['method']], $query['arguments']);
+            }
+
+//            if ($query['method'] == "dynamicData") {
+//                if (!$isDbQuery&&Schema::hasColumn($this->model->getTable(), 'subject_id')) {
+//                    //1.获取当前登录账户属于哪一个主体
+//                    $currentSubject = Subject::find($subject_id);
+//                    //2.获取当前主体的所有子主体
+//                    $ids = $currentSubject->getChildrenSubject($currentSubject->id);
+//                    //3.限定查询范围为所有子主体
+////                    $query->whereIn('subject_id', $ids);
+//                    $dbQuery = call_user_func_array([$dbQuery, "whereIn"], ["subject_id", $ids]);
+//                }
+//            } else {
+//                if ($isDbQuery && $query['method'] == "with") {
+//
+//                } else {
+//                    $dbQuery = call_user_func_array([$dbQuery, $query['method']], $query['arguments']);
+//                }
+//            }
         });
 
-        return $this->model;
+        return $dbQuery;
     }
 
     /**

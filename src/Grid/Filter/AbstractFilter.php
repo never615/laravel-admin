@@ -92,7 +92,7 @@ abstract class AbstractFilter
         if ($label) {
             $tempLabel = $label;
         } else {
-            $tempLabel = admin_translate( $this->column);
+            $tempLabel = admin_translate($this->column);
         }
 
 
@@ -293,7 +293,8 @@ abstract class AbstractFilter
     {
         $column = explode('.', $this->column);
 
-        if (count($column) == 1) {
+
+        if (count($column) == 1 || $column[0] == $this->parent->table()) {
             return [$this->query => func_get_args()];
         }
 

@@ -203,13 +203,17 @@ class Filter
         return $this->model->addConditions($this->conditions())->buildData();
     }
 
-    public function executeForQuery($inputs = null)
+    public function executeForQuery($inputs = null, $subject_id,$isDbQuery=false)
     {
         if (is_null($inputs)) {
             $inputs = Input::all();
         }
 
-        return $this->model->addConditions($this->conditionsByInputs($inputs))->buildQuery();
+        return $this->model->addConditions($this->conditionsByInputs($inputs))->buildQuery($subject_id,$isDbQuery);
+    }
+    
+    public function table(){
+        return $this->model->getTable();
     }
 
 
