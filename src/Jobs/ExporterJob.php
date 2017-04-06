@@ -84,7 +84,6 @@ abstract class ExporterJob implements ShouldQueue
             $firstWrite = true;
             $query = $expoter->customQuery($query);
             $query->orderBy($tableName.".id")->chunk(1000, function ($data) use (&$firstWrite, $fp, $expoter) {
-
                 $data = json_decode(json_encode($data), true);
 
                 $data = $expoter->customData($data);
@@ -133,6 +132,7 @@ abstract class ExporterJob implements ShouldQueue
         Log::info($e);
 
         $this->report->update([
+            "finish" => true,
             "status" => Report::ERROR.$e,
         ]);
     }

@@ -7,7 +7,6 @@ use Encore\Admin\Grid\Filter;
 use Encore\Admin\Grid\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -44,7 +43,7 @@ abstract class BigDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExpo
 
         $count = $query->count();
 
-        if ($count < 2) {
+        if ($count < 20000) {
             $response = new StreamedResponse(null, 200, [
                 'Content-Type'        => 'text/csv',
                 'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
@@ -86,27 +85,36 @@ abstract class BigDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExpo
             $response->send();
             exit;
         } else {
-            $className = $this->exporterJob();
-            if (empty($className)) {
+            $tableName=mt_trans($tableName);
+            if (Report::where("finish", false)->where("name", "like", "$tableName%")->exists()) {
                 echo <<<EOT
+<script type="text/javascript">
+alert("该模块有任务正在运行,请稍后再试.");
+window.close()
+</script>
+EOT;
+            } else {
+                $className = $this->exporterJob();
+                if (empty($className)) {
+                    echo <<<EOT
 <script type="text/javascript">
 alert("该模块暂不支持大量数据导出");
 window.close()
 </script>
 EOT;
-            } else {
-                $report = Report::create([
-                    "name"          => $fileName,
-                    "status"        => Report::NOT_START,
-                    "subject_id"    => $subjectId,
-                    "admin_user_id" => Auth::user()->id,
-                ]);
+                } else {
+                    $report = Report::create([
+                        "name"          => $fileName,
+                        "status"        => Report::NOT_START,
+                        "subject_id"    => $subjectId,
+                        "admin_user_id" => Auth::user()->id,
+                    ]);
 
-                $class = new ReflectionClass($className); // 建立 Person这个类的反射类
-                $instance = $class->newInstanceArgs([Input::all(), $subjectId, $report->id]); // 相当于实例化Person 类
-                dispatch($instance->onQueue('exporter'));
+                    $class = new ReflectionClass($className); // 建立 Person这个类的反射类
+                    $instance = $class->newInstanceArgs([Input::all(), $subjectId, $report->id]); // 相当于实例化Person 类
+                    dispatch($instance->onQueue('exporter'));
 
-                echo <<<EOT
+                    echo <<<EOT
 <script type="text/javascript">
 if (confirm("数据量过大,将在后台导出,现在去报表管理查看吗?")) {  
     window.location.href='/admin/reports';
@@ -116,6 +124,7 @@ else {
 } 
 </script>
 EOT;
+                }
             }
         }
     }
