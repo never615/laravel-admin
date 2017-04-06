@@ -31,7 +31,7 @@ class Subject extends Model
 
     protected $fillable = [
         'id',
-        'name',
+        'name'
     ];
 
     /**
@@ -42,6 +42,10 @@ class Subject extends Model
     public function adminUsers()
     {
         return $this->hasMany(Administrator::class);
+    }
+    
+    public function reports(){
+        return $this->hasMany(Report::class);
     }
 
 

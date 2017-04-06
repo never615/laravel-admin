@@ -34,7 +34,7 @@ class MenuController extends Controller
 
                 $row->column(6, function (Column $column) {
                     $form = new \Encore\Admin\Widgets\Form();
-                    $form->action(admin_url('auth/menu'));
+                    $form->action(admin_url('auth/menus'));
 
                     $form->select('parent_id', trans('admin::lang.parent_id'))->options(Menu::selectOptions());
                     $form->text('title', trans('admin::lang.title'))->rules('required');

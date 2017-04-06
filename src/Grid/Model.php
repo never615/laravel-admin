@@ -209,10 +209,6 @@ class Model
      */
     public function addConditions(array $conditions)
     {
-        Log::info("addConditions");
-        Log::info($conditions);
-
-
         $conditions = array_unique($conditions);
 
         foreach ($conditions as $condition) {

@@ -26,6 +26,7 @@ class CreateReportsTable extends Migration
 
             $table->boolean("finish")->default(false)->comment("是否完成");
             $table->string("name")->comment("报表的名字");
+            $table->string("status")->nullable()->comment("报表状态");
             $table->string("path")->nullable()->comment("报表的下载地址");
             $table->text("desc")->nullable()->comment("报表的描述");
             

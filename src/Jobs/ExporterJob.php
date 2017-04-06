@@ -3,7 +3,7 @@
 namespace Encore\Admin\Jobs;
 
 
-use App\Lib\TimeUtils;
+use Encore\Admin\Auth\Database\Report;
 use Encore\Admin\Grid\Exporters\ExportUtils;
 use Encore\Admin\Grid\Filter;
 use Encore\Admin\Grid\Model;
@@ -31,16 +31,22 @@ abstract class ExporterJob implements ShouldQueue
 
     protected $table;
 
+    protected $report;
+
 
     /**
      * Create a new job instance.
      *
      * @param $inputs
+     * @param $subjectId
+     * @param $reportId
      */
-    public function __construct($inputs, $subjectId)
+    public function __construct($inputs, $subjectId, $reportId)
     {
         $this->inputs = $inputs;
         $this->subjectId = $subjectId;
+        $this->report = Report::find($reportId);
+
     }
 
     /**
@@ -52,52 +58,66 @@ abstract class ExporterJob implements ShouldQueue
     {
         Log::info("执行导出任务");
 
-//        Log::info($this->inputs);
+        $report = $this->report;
+        if ($report) {
 
-        $expoter = $this->expoter();
-        $className = $expoter->model();
-        $class = new ReflectionClass($className); // 建立 Person这个类的反射类
-        $instance = $class->newInstance(); // 相当于实例化Person 类
-        $tableName = $instance->getTable();
-        $this->table = $tableName;
-        $model = new Model($instance);
-        $filter = new Filter($model);
-        $expoter->filter($filter);
-        $this->inputs = ExportUtils::formatInput($tableName, $this->inputs);
-        $query = $filter->executeForQuery($this->inputs, $this->subjectId, true);
-        $query = ExportUtils::dynamicData($tableName, $this->subjectId, $query);
-        $now = TimeUtils::getNowTime();
-        $fp = fopen(storage_path('exports')."/".mt_trans($tableName)."_".$now."_".substr(time(), 5).".csv", "a");
-        fwrite($fp, chr(0xEF).chr(0xBB).chr(0xBF)); // 添加 BOM
-        $firstWrite = true;
-        $query = $expoter->customQuery($query);
-        $query->orderBy($tableName.".id")->chunk(1000, function ($data) use (&$firstWrite, $fp, $expoter) {
+            $report->update([
+                "status" => Report::IN_PROGRESS,
+            ]);
 
-            $data = json_decode(json_encode($data), true);
+            $expoter = $this->expoter();
+            $className = $expoter->model();
+            $class = new ReflectionClass($className); // 建立 Person这个类的反射类
+            $instance = $class->newInstance(); // 相当于实例化Person 类
+            $tableName = $instance->getTable();
+            $this->table = $tableName;
+            $model = new Model($instance);
+            $filter = new Filter($model);
+            $expoter->filter($filter);
+            $this->inputs = ExportUtils::formatInput($tableName, $this->inputs);
+            $query = $filter->executeForQuery($this->inputs, $this->subjectId, true);
+            $query = ExportUtils::dynamicData($tableName, $this->subjectId, $query);
+//            $now = TimeUtils::getNowTime();
+//            $fp = fopen(storage_path('exports')."/".mt_trans($tableName)."_".$now."_".substr(time(), 5).".csv", "a");
+            $fp = fopen(storage_path('app/public/exports')."/".$report->name, "a");
+            fwrite($fp, chr(0xEF).chr(0xBB).chr(0xBF)); // 添加 BOM
+            $firstWrite = true;
+            $query = $expoter->customQuery($query);
+            $query->orderBy($tableName.".id")->chunk(1000, function ($data) use (&$firstWrite, $fp, $expoter) {
 
-            $data = $expoter->customData($data);
-            //有一些列总是不导出,如icon,image,images
-            $data = ExportUtils::removeInvalids($data);
-            //写列名
-            if ($firstWrite) {
-                $columnNames = [];
-                //获取列名
-                foreach ($data[0] as $key => $value) {
-                    $columnNames[] = admin_translate($key, "coupon");
+                $data = json_decode(json_encode($data), true);
+
+                $data = $expoter->customData($data);
+                //有一些列总是不导出,如icon,image,images
+                $data = ExportUtils::removeInvalids($data);
+                //写列名
+                if ($firstWrite) {
+                    $columnNames = [];
+                    //获取列名
+                    foreach ($data[0] as $key => $value) {
+                        $columnNames[] = admin_translate($key, "coupon");
+                    }
+                    fputcsv($fp, $columnNames);
+
+                    unset($columnNames);
+                    $firstWrite = false;
                 }
-                fputcsv($fp, $columnNames);
+                foreach ($data as $item) {
+                    fputcsv($fp, $item);
+                }
+            });
 
-                unset($columnNames);
-                $firstWrite = false;
-            }
-            foreach ($data as $item) {
-                fputcsv($fp, $item);
-            }
-        });
+            fclose($fp);
 
-        fclose($fp);
+            $report->update([
+                "finish" => true,
+                "status" => Report::FINISH,
+            ]);
 
-        Log::info("导出完成");
+            Log::info("导出完成");
+        } else {
+            Log::info("导出失败:report not found");
+        }
     }
 
     /**
@@ -111,6 +131,10 @@ abstract class ExporterJob implements ShouldQueue
 
         Log::info("导出失败");
         Log::info($e);
+
+        $this->report->update([
+            "status" => Report::ERROR.$e,
+        ]);
     }
 
     protected abstract function expoter();

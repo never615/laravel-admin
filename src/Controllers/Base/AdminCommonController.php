@@ -23,9 +23,14 @@ abstract class AdminCommonController extends Controller
     {
         return Admin::content(function (Content $content) {
             $content->header($this->getHeaderTitle());
-            $content->description(trans('admin::lang.list'));
+            $content->description($this->getIndexDesc());
             $content->body($this->grid()->render());
         });
+    }
+
+
+    protected function getIndexDesc(){
+        return trans('admin::lang.list');
     }
 
     /**
@@ -62,8 +67,6 @@ abstract class AdminCommonController extends Controller
     protected function grid()
     {
         return Admin::grid($this->getModel(), function (Grid $grid) {
-
-
             $grid->model()->dynamicData();
 
             $grid->id('ID')->sortable();

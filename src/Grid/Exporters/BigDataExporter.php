@@ -2,10 +2,12 @@
 namespace Encore\Admin\Grid\Exporters;
 
 use App\Lib\TimeUtils;
+use Encore\Admin\Auth\Database\Report;
 use Encore\Admin\Grid\Filter;
 use Encore\Admin\Grid\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -26,7 +28,7 @@ abstract class BigDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExpo
 
         $tableName = $this->getTable();
         $now = TimeUtils::getNowTime();
-        $fileName = mt_trans($tableName)."_".$now."_".substr(time(), 5);
+        $fileName = mt_trans($tableName)."_".$now."_".substr(time(), 5).'.csv';
 
         $subjectId = Auth::user()->subject_id;
 
@@ -42,10 +44,10 @@ abstract class BigDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExpo
 
         $count = $query->count();
 
-        if ($count < 20000) {
+        if ($count < 2) {
             $response = new StreamedResponse(null, 200, [
                 'Content-Type'        => 'text/csv',
-                'Content-Disposition' => 'attachment; filename="'.$fileName.'.csv"',
+                'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
             ]);
             $response->setCallback(function () use ($query, $tableName) {
                 $out = fopen('php://output', 'w');
@@ -93,15 +95,25 @@ window.close()
 </script>
 EOT;
             } else {
-                $class = new ReflectionClass($className); // 建立 Person这个类的反射类
-                $instance = $class->newInstanceArgs([Input::all(), $subjectId]); // 相当于实例化Person 类
+                $report = Report::create([
+                    "name"          => $fileName,
+                    "status"        => Report::NOT_START,
+                    "subject_id"    => $subjectId,
+                    "admin_user_id" => Auth::user()->id,
+                ]);
 
+                $class = new ReflectionClass($className); // 建立 Person这个类的反射类
+                $instance = $class->newInstanceArgs([Input::all(), $subjectId, $report->id]); // 相当于实例化Person 类
                 dispatch($instance->onQueue('exporter'));
 
                 echo <<<EOT
 <script type="text/javascript">
-alert("导出数据量过大,将会进行后台导出,导出进度请到报表管理查看");
-window.close()
+if (confirm("数据量过大,将在后台导出,现在去报表管理查看吗?")) {  
+    window.location.href='/admin/reports';
+}  
+else {  
+    window.close();
+} 
 </script>
 EOT;
             }
