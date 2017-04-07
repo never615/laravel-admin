@@ -3,6 +3,7 @@
 namespace Encore\Admin\Commands;
 
 use Encore\Admin\Facades\Admin;
+use Encore\Admin\Seeder\AdminTablesSeeder;
 use Illuminate\Console\Command;
 
 class InstallCommand extends Command
@@ -49,7 +50,7 @@ class InstallCommand extends Command
     {
         $this->call('migrate', ['--path' => str_replace(base_path(), '', __DIR__).'/../../migrations/']);
 
-        $this->call('db:seed', ['--class' => \Encore\Admin\Auth\Database\AdminTablesSeeder::class]);
+        $this->call('db:seed', ['--class' => AdminTablesSeeder::class]);
     }
 
     /**
@@ -70,16 +71,17 @@ class InstallCommand extends Command
         $this->makeDir('/');
         $this->line('<info>Admin directory was created:</info> '.str_replace(base_path(), '', $this->directory));
 
-        $this->makeDir('Controllers');
+//        $this->makeDir('Controllers');
 
-        $this->createHomeController();
-        $this->createExampleController();
+//        $this->createHomeController();
+//        $this->createExampleController();
+        
         //$this->createAuthController();
         //$this->createAdministratorController();
 
         //$this->createMenuFile();
         $this->createBootstrapFile();
-        $this->createRoutesFile();
+//        $this->createRoutesFile();
 
         //$this->copyLanguageFiles();
     }

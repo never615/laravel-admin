@@ -18,6 +18,8 @@ class CreateAdminTables extends Migration
             $table->increments('id');
             $table->unsignedInteger('subject_id');
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('CASCADE');
+            $table->unsignedInteger('adminable_id');
+            $table->string('adminable_type')->comment('账户类型.subject:主体账户;shop:店铺账户');
             $table->string('username', 190);
             $table->string('password', 60);
             $table->string('name');
@@ -25,6 +27,7 @@ class CreateAdminTables extends Migration
             $table->string('remember_token', 100)->nullable();
             $table->timestamps();
             $table->index(['subject_id']);
+            $table->unique(["subject_id", "username"]);
         });
 
         Schema::connection($connection)->create(config('admin.database.roles_table'), function (Blueprint $table) {
@@ -40,6 +43,7 @@ class CreateAdminTables extends Migration
                 $table->string('name', 50)->unique();
                 $table->string('slug', 50)->unique();
                 $table->text("describe")->nullable();
+                $table->boolean("common")->default(false)->comment("是否是所有主体都拥有的权限,必须设置到权限组上");
                 $table->timestamps();
             });
 

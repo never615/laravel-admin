@@ -84,11 +84,14 @@ class Menu extends Model
                 $tempPermissions = $tempPermissions->merge($permissions);
 
                 $menu = new Collection();
+                //任何人都可以看到控制面板菜单
+                $menu = $menu->merge(static::where("uri", "dashboard")->get());
                 //查询权限对应的菜单
                 $menu = $menu->merge(static::whereIn("uri", $tempPermissions->pluck('slug'))->get());
 
                 //查出来的菜单如果有父菜单也要返回
                 $menu = $menu->merge(static::whereIn('id', $menu->pluck("parent_id"))->get());
+
                 $result = $menu->sortBy($orderColumn)->toArray();
 
                 return $result;

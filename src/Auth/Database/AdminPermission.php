@@ -60,11 +60,12 @@ trait AdminPermission
      */
     public function can($permissionSlug)
     {
-        Log::info($permissionSlug);
         //1.项目拥有者拥有全部权限
         if ($this->isOwner()) {
             return true;
         }
+        
+        
 
         //2.用户拥有该权限通过
         if (method_exists($this, 'permissions')) {

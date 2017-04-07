@@ -64,7 +64,7 @@ class SubjectController extends AdminCommonController
         $form->select("parent_id", "父级主体")->options(Subject::dynamicData()->get()->pluck("name", "id"));
 
         if (Admin::user()->isRole(config("admin.roles.owner"))) {
-            $permissions = Permission::where("parent_id", 0)->get();
+            $permissions = Permission::where("parent_id", 0)->where("common",false)->get();
         } else {
             $permissions = Admin::user()->subject->permissions()->where("parent_id", 0)->get();
         }

@@ -2,6 +2,7 @@
 
 namespace Encore\Admin\Controllers;
 
+use App\Exceptions\PermissionDeniedException;
 use Encore\Admin\Auth\Database\Permission;
 use Encore\Admin\Auth\Database\Role;
 use Encore\Admin\Auth\Database\Subject;
@@ -119,13 +120,19 @@ class RoleController extends Controller
                 if ($subjectId == 1) {
                     $permissions = Permission::all();
                 } else {
+                    //主体拥有的权限需要加上那几个公共功能模块的权限
+
                     $permissions = new Collection();
                     $permissionsTemp = Subject::find($subjectId)->permissions;
+
+                    $permissionsTemp = $permissionsTemp->merge(Permission::where("common", true)->get());
+
                     //查找子权限
                     foreach ($permissionsTemp as $permission) {
                         $permissions = $permissions->merge(Permission::where("slug", 'like',
                             "%$permission->slug%")->get());
                     }
+
                 }
 
                 return Permission::selectOptions($permissions->toArray(), false, false);
@@ -136,6 +143,13 @@ class RoleController extends Controller
 
             $form->display('created_at', trans('admin::lang.created_at'));
             $form->display('updated_at', trans('admin::lang.updated_at'));
+
+            $form->saving(function (Form $form) {
+                if ($form->slug == config("admin.roles.owner")) {
+                    throw new PermissionDeniedException("没有权限创建标识为owner的角色");
+                }
+            });
+
         });
     }
 }

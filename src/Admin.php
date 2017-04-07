@@ -287,7 +287,7 @@ class Admin
     {
         $attributes = array_merge([
             'prefix'     => trim(config('admin.prefix'), '/').'/helpers',
-            'middleware' => ['web', 'admin', 'admin.auto_permission'],
+            'middleware' => ['web', 'admin', 'admin.auto_permission','admin.permission:allow,owner'],
         ], $attributes);
 
         Route::group($attributes, function ($router) {
