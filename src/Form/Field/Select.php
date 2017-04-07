@@ -23,7 +23,12 @@ class Select extends Field
     public function render()
     {
         if (empty($this->script)) {
-            $this->script = "$(\"{$this->getElementClassSelector()}\").select2({allowClear: true});";
+            $this->script = <<<EOF
+$("{$this->getElementClassSelector()}").select2({
+    allowClear: true,
+    placeholder: "{$this->label}"
+});
+EOF;
         } else {
             $this->initDefaultValue();
         }
@@ -38,7 +43,7 @@ class Select extends Field
         }
 
         $this->options = array_filter($this->options);
-        
+
         return parent::render()->with(['options' => $this->options]);
     }
 
@@ -54,7 +59,7 @@ $.get("{$this->sourceUrl}?{$this->idField}={$this->value}&father_value="+fatherV
     current.append("<option value='"+data.id+"' selected>"+(data.text?data.text:"")+"</option>");
 });    
 EOT;
-        if (! is_null($this->sourceUrl)) {
+        if (!is_null($this->sourceUrl)) {
             Admin::script($script);
         }
     }
@@ -81,7 +86,7 @@ EOT;
         if (is_callable($options)) {
             $this->options = $options;
         } else {
-            $this->options = (array)$options;
+            $this->options = (array) $options;
         }
 
         return $this;
@@ -244,7 +249,7 @@ EOT;
 
         $this->sourceUrl = $url;
         $this->idField = $idField;
-        
+
         $this->script = <<<EOT
 var current=$("{$this->getElementClassSelector()}");
 
