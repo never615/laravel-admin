@@ -60,7 +60,7 @@ class BaseTablesSeeder extends Seeder
         $mallto = AdminUser::create([
             'username'       => 'mallto',
             'password'       => bcrypt('mallto'),
-            'name'           => '墨兔科技',
+            'name'           => '墨兔科技管理',
             "subject_id"     => 1,
             "adminable_id"   => 1,
             "adminable_type" => "subject",
@@ -69,7 +69,7 @@ class BaseTablesSeeder extends Seeder
         $招商 = AdminUser::create([
             'username'       => 'zhaoshang',
             'password'       => bcrypt('zhaoshang'),
-            'name'           => '招商地产',
+            'name'           => '招商地产管理',
             "subject_id"     => 2,
             "adminable_id"   => 2,
             "adminable_type" => "subject",
@@ -78,7 +78,7 @@ class BaseTablesSeeder extends Seeder
         $seaworld = AdminUser::create([
             'username'       => 'seaworld',
             'password'       => bcrypt('seaworld'),
-            'name'           => '海上世界',
+            'name'           => '海上世界管理',
             "subject_id"     => 3,
             "adminable_id"   => 3,
             "adminable_type" => "subject",

@@ -834,9 +834,9 @@ class Form
      *
      * @return $this
      */
-    public function hiddenInCreate($fields)
+    public function createClose($fields)
     {
-        $this->builder->hiddenInCreate($fields);
+        $this->builder->createClose($fields);
 
         return $this;
     }

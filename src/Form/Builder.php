@@ -492,7 +492,7 @@ EOT;
      *
      * @return $this
      */
-    public function hiddenInCreate($fields)
+    public function createClose($fields)
     {
         $this->ignoredCreateFields = array_merge($this->ignoredCreateFields, (array)$fields);
     }
