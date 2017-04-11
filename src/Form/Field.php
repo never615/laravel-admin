@@ -7,7 +7,6 @@ use Encore\Admin\Form;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -222,7 +221,7 @@ class Field implements Renderable
         if (isset($arguments[0])) {
             $label = $arguments[0];
         } else {
-            $label=admin_translate($column);
+            $label = admin_translate($column);
         }
 
 //        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($column);
@@ -480,7 +479,20 @@ class Field implements Renderable
      */
     public function getDefault()
     {
+
+//        if ($this->options instanceof \Closure) {
+//            if ($this->form) {
+//                $this->options = $this->options->bindTo($this->form->model());
+//            }
+//
+//            $this->options(call_user_func($this->options, $this->value));
+//        }
+
         if ($this->default instanceof \Closure) {
+            if ($this->form) {
+                $this->default = $this->default->bindTo($this->form->model());
+            }
+
             return call_user_func($this->default, $this->form);
         }
 
