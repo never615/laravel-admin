@@ -28,10 +28,7 @@ class Role extends Model
         parent::__construct($attributes);
     }
 
-    public function subject()
-    {
-        return $this->belongsTo(Subject::class);
-    }
+
 
     /**
      * A role belongs to many users.

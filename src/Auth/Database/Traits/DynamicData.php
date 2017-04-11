@@ -9,6 +9,7 @@ namespace Encore\Admin\Auth\Database\Traits;
  * Date: 24/03/2017
  * Time: 7:51 PM
  */
+use Encore\Admin\Auth\Database\Subject;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 
@@ -42,6 +43,13 @@ trait DynamicData
             $query->whereIn('subject_id', $ids);
         }
     }
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
+ 
 
 
 }

@@ -68,6 +68,8 @@ abstract class AdminCommonController extends Controller
     {
         return Admin::grid($this->getModel(), function (Grid $grid) {
             $grid->model()->dynamicData();
+            $grid->model()->orderBy('id');
+
 
             $grid->id('ID')->sortable();
 
