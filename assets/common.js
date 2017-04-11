@@ -80,6 +80,7 @@
                 msg += k + ": " + v + "\n";
             });
         }
+        layer.closeAll();
         notify.alert(3, msg, 5);
     };
 

@@ -29,6 +29,9 @@
     <script src="{{ asset ("/packages/admin/AdminLTE/dist/js/app.min.js") }}"></script>
     <script src="{{ asset ("/packages/admin/jquery-pjax/jquery.pjax.js") }}"></script>
 
+    <script src="{{asset("/packages/admin/layer-v3.0.3/layer/layer.js")}}"></script>
+
+
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>

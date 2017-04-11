@@ -3,6 +3,7 @@ namespace Encore\Admin\Grid\Exporters;
 
 use App\Lib\TimeUtils;
 use Encore\Admin\Auth\Database\Report;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Grid\Filter;
 use Encore\Admin\Grid\Model;
 use Illuminate\Support\Facades\Auth;
@@ -43,7 +44,8 @@ abstract class BigDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExpo
 
         $count = $query->count();
 
-        if ($count < 20000) {
+
+        if ($count < 20001) {
             $response = new StreamedResponse(null, 200, [
                 'Content-Type'        => 'text/csv',
                 'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
@@ -85,23 +87,29 @@ abstract class BigDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExpo
             $response->send();
             exit;
         } else {
-            $tableName=mt_trans($tableName);
+            $tableName = mt_trans($tableName);
             if (Report::where("finish", false)->where("name", "like", "$tableName%")->exists()) {
-                echo <<<EOT
-<script type="text/javascript">
-alert("该模块有任务正在运行,请稍后再试.");
-window.close()
-</script>
+                $script = <<<EOT
+layer.confirm('该模块有任务正在运行,请稍后再试.', {
+  btn: ['确认'] //按钮
+}, function(){
+ window.close();
+});
+
 EOT;
+                Admin::script($script);
+
             } else {
                 $className = $this->exporterJob();
                 if (empty($className)) {
-                    echo <<<EOT
-<script type="text/javascript">
-alert("该模块暂不支持大量数据导出");
-window.close()
-</script>
+                    $script = <<<EOT
+layer.confirm('该模块暂不支持大量数据导出.', {
+  btn: ['确认'] //按钮
+}, function(){
+ window.close();
+});
 EOT;
+                    Admin::script($script);
                 } else {
                     $report = Report::create([
                         "name"          => $fileName,
@@ -114,16 +122,17 @@ EOT;
                     $instance = $class->newInstanceArgs([Input::all(), $subjectId, $report->id]); // 相当于实例化Person 类
                     dispatch($instance->onQueue('exporter'));
 
-                    echo <<<EOT
-<script type="text/javascript">
-if (confirm("数据量过大,将在后台导出,现在去报表管理查看吗?")) {  
-    window.location.href='/admin/reports';
-}  
-else {  
-    window.close();
-} 
-</script>
+                    $script = <<<EOT
+layer.confirm('数据量过大将在后台导出,点击确认进入报表管理查看.', {
+  btn: ['确认','取消'] //按钮
+}, function(){
+  window.location.href='/admin/reports';
+}, function(){
+   window.close();
+});
 EOT;
+
+                    Admin::script($script);
                 }
             }
         }

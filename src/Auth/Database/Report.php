@@ -41,10 +41,10 @@ class Report extends Model
     }
 
 
-    public function getFinishAttribute($finish)
-    {
-        return CastUtils::castBool2YesOrNo($finish);
-    }
+//    public function getFinishAttribute($finish)
+//    {
+//        return CastUtils::castBool2YesOrNo($finish);
+//    }
 
 
 }

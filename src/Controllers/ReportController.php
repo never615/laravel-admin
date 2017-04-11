@@ -3,11 +3,12 @@
 namespace Encore\Admin\Controllers;
 
 
+use App\Lib\CastUtils;
 use Encore\Admin\Auth\Database\Report;
 use Encore\Admin\Controllers\Base\AdminCommonController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -24,7 +25,8 @@ class ReportController extends AdminCommonController
         return "大数据报表";
     }
 
-    protected function getIndexDesc(){
+    protected function getIndexDesc()
+    {
         return "管理";
     }
 
@@ -41,22 +43,34 @@ class ReportController extends AdminCommonController
     protected function gridOption(Grid $grid)
     {
 
-        $grid->disableActions();
         $grid->disableCreation();
         $grid->disableExport();
         $grid->name();
-        $grid->finish();
+        $grid->finish()->display(function($finish){
+            return CastUtils::castBool2YesOrNo($finish);
+        });
         $grid->status();
         $grid->column("download")->display(function () {
-            $url=Storage::disk("public")->url("exports/".$this->name);
-            return <<<EOT
+            if ($this->finish === true) {
+                Log::info("finish true");
+                $url = Storage::disk("public")->url("exports/".$this->name);
+
+                return <<<EOT
                 <a href="$url" target="_blank">点击下载</a>
 EOT;
+            }else{
+                return "";
+            }
+
         });
         $grid->subject()->name("主体");
         $grid->adminUser()->name("创建人");
         $grid->desc();
         $grid->created_at();
+
+        $grid->actions(function(Grid\Displayers\Actions $actions){
+            $actions->disableEdit();
+        });
 
 
     }
@@ -64,6 +78,7 @@ EOT;
 
     protected function formOption(Form $form)
     {
-        // TODO: Implement formOption() method.
     }
+    //todo 删除事件删除对应文件
+
 }

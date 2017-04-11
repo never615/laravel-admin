@@ -982,8 +982,14 @@ class Grid
         try {
             $this->build();
         } catch (\Exception $e) {
-            return Handle::renderException($e);
+            if (Input::get("_export_", null) != null) {
+                Log::info($e);
+                return;
+            } else {
+                return Handle::renderException($e);
+            }
         }
+
 
         return view($this->view, $this->variables())->render();
     }
