@@ -68,13 +68,8 @@ class SubjectController extends AdminCommonController
         } else {
             $permissions = Admin::user()->subject->permissions()->where("parent_id", 0)->get();
         }
-
-
-//        $form->multipleSelect('permissions',
-//            "可用功能")->options($permissions->pluck("name", "id"));
-
         $form->multipleSelect('permissions', "可用功能")->options(Permission::selectOptions($permissions->toArray(), false, false));
-
+        
         $form->saving(function (Form $form) {
             if ($form->permissions && $form->model()->permissions != $form->permissions && Admin::user()->subject_id == $form->model()->id) {
                 throw new AccessDeniedHttpException("无权修改主体拥有的功能,请联系上次管理.");

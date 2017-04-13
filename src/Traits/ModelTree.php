@@ -229,6 +229,9 @@ trait ModelTree
     /**
      * Get options for Select field in form.
      *
+     * @param array $nodes
+     * @param bool  $root         ,是否返回root节点
+     * @param bool  $defaultBlack ,是否使用默认的空格大小
      * @return \Illuminate\Support\Collection
      */
     public static function selectOptions(array $nodes = [], $root = true, $defaultBlack = true)

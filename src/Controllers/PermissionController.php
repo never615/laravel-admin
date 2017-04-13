@@ -24,13 +24,14 @@ class PermissionController extends Controller
         return Admin::content(function (Content $content) {
             $content->header(trans('admin::lang.permissions'));
             $content->description(trans('admin::lang.list'));
-//            $content->body($this->grid()->render());
-            $content->body(Permission::tree(function(Tree $tree){
-                $tree->branch(function ($branch) {
-                    $payload = "<strong>{$branch['name']}</strong>";
-                    return $payload;
-                });
-            }));
+            $content->body(
+                Permission::tree(function (Tree $tree) {
+                    $tree->branch(function ($branch) {
+                        $payload = "<strong>{$branch['name']}</strong>";
+
+                        return $payload;
+                    });
+                }));
         });
     }
 
@@ -64,28 +65,28 @@ class PermissionController extends Controller
         });
     }
 
-    /**
-     * Make a grid builder.
-     *
-     * @return Grid
-     */
-    protected function grid()
-    {
-        return Admin::grid(Permission::class, function (Grid $grid) {
-            $grid->id('ID')->sortable();
-            $grid->slug(trans('admin::lang.slug'));
-            $grid->name(trans('admin::lang.name'));
-
-            $grid->created_at(trans('admin::lang.created_at'));
-            $grid->updated_at(trans('admin::lang.updated_at'));
-
-            $grid->tools(function (Grid\Tools $tools) {
-                $tools->batch(function (Grid\Tools\BatchActions $actions) {
-                    $actions->disableDelete();
-                });
-            });
-        });
-    }
+//    /**
+//     * Make a grid builder.
+//     *
+//     * @return Grid
+//     */
+//    protected function grid()
+//    {
+//        return Admin::grid(Permission::class, function (Grid $grid) {
+//            $grid->id('ID')->sortable();
+//            $grid->slug(trans('admin::lang.slug'));
+//            $grid->name(trans('admin::lang.name'));
+//
+//            $grid->created_at(trans('admin::lang.created_at'));
+//            $grid->updated_at(trans('admin::lang.updated_at'));
+//
+//            $grid->tools(function (Grid\Tools $tools) {
+//                $tools->batch(function (Grid\Tools\BatchActions $actions) {
+//                    $actions->disableDelete();
+//                });
+//            });
+//        });
+//    }
 
     /**
      * Make a form builder.
@@ -97,7 +98,7 @@ class PermissionController extends Controller
         return Admin::form(Permission::class, function (Form $form) {
             $form->display('id', 'ID');
 
-            $form->select("parent_id","父节点")->options(Permission::selectOptions());
+            $form->select("parent_id", "父节点")->options(Permission::selectOptions());
             $form->text('slug', trans('admin::lang.slug'))->rules('required');
             $form->text('name', trans('admin::lang.name'))->rules('required');
 
