@@ -3,6 +3,7 @@
 namespace Encore\Admin\Auth\Database;
 
 
+use Encore\Admin\Auth\Database\Traits\SoftDelete;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,7 +11,8 @@ use Illuminate\Support\Facades\Auth;
 class Subject extends Model
 {
 
-
+    use SoftDelete;
+    
     /**
      * 动态设定查询数据范围
      *
