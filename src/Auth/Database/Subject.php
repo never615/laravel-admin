@@ -3,16 +3,12 @@
 namespace Encore\Admin\Auth\Database;
 
 
-use Encore\Admin\Auth\Database\Traits\SoftDelete;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 
 class Subject extends Model
 {
-
-    use SoftDelete;
-    
     /**
      * 动态设定查询数据范围
      *
@@ -33,7 +29,7 @@ class Subject extends Model
 
     protected $fillable = [
         'id',
-        'name'
+        'name',
     ];
 
     /**
@@ -45,8 +41,9 @@ class Subject extends Model
     {
         return $this->hasMany(Administrator::class);
     }
-    
-    public function reports(){
+
+    public function reports()
+    {
         return $this->hasMany(Report::class);
     }
 
