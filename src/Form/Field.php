@@ -487,15 +487,9 @@ class Field implements Renderable
      */
     public function getDefault()
     {
-
-//        if ($this->options instanceof \Closure) {
-//            if ($this->form) {
-//                $this->options = $this->options->bindTo($this->form->model());
-//            }
-//
-//            $this->options(call_user_func($this->options, $this->value));
-//        }
-
+        if ($this->default instanceof \Closure) {
+            return call_user_func($this->default, $this->form);
+        }
 
         return $this->default;
     }
