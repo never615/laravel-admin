@@ -29,7 +29,8 @@ abstract class AdminCommonController extends Controller
     }
 
 
-    protected function getIndexDesc(){
+    protected function getIndexDesc()
+    {
         return trans('admin::lang.list');
     }
 
@@ -67,26 +68,31 @@ abstract class AdminCommonController extends Controller
     protected function grid()
     {
         return Admin::grid($this->getModel(), function (Grid $grid) {
-            $grid->model()->dynamicData();
-            $grid->model()->orderBy('id');
+            $this->defaultGridOption($grid);
+        });
+    }
+
+    protected function defaultGridOption($grid)
+    {
+        $grid->model()->dynamicData();
+        $grid->model()->orderBy('id');
 
 
-            $grid->id('ID')->sortable();
+        $grid->id('ID')->sortable();
 
-            $this->gridOption($grid);
+        $this->gridOption($grid);
 
 //            $grid->created_at(trans('admin::lang.created_at'));
-            $grid->updated_at(trans('admin::lang.updated_at'));
+        $grid->updated_at(trans('admin::lang.updated_at'));
 
-            $grid->filter(function ($filter) {
-                // 禁用id查询框
-                $filter->disableIdFilter();
-            });
+        $grid->filter(function ($filter) {
+            // 禁用id查询框
+            $filter->disableIdFilter();
+        });
 
-            $grid->tools(function (Grid\Tools $tools) {
-                $tools->batch(function (Grid\Tools\BatchActions $actions) {
-                    $actions->disableDelete();
-                });
+        $grid->tools(function (Grid\Tools $tools) {
+            $tools->batch(function (Grid\Tools\BatchActions $actions) {
+                $actions->disableDelete();
             });
         });
     }
@@ -95,12 +101,16 @@ abstract class AdminCommonController extends Controller
     protected function form()
     {
         return Admin::form($this->getModel(), function (Form $form) {
-
-            $form->display('id', 'ID');
-            $this->formOption($form);
-            $form->display('created_at', trans('admin::lang.created_at'));
-            $form->display('updated_at', trans('admin::lang.updated_at'));
+            $this->defaultFormOption($form);
         });
+    }
+
+    protected function defaultFormOption($form)
+    {
+        $form->display('id', 'ID');
+        $this->formOption($form);
+        $form->display('created_at', trans('admin::lang.created_at'));
+        $form->display('updated_at', trans('admin::lang.updated_at'));
     }
 
 }

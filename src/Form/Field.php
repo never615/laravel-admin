@@ -387,6 +387,14 @@ class Field implements Renderable
             return $this->rules;
         }
 
+        if ($rules instanceof \Closure) {
+            if ($this->form) {
+                $rules = $rules->bindTo($this->form->model());
+            }
+
+            $rules = call_user_func($rules, $this->form);
+        }
+
         $rules = array_filter(explode('|', "{$this->rules}|$rules"));
 
         $this->rules = implode('|', $rules);
@@ -488,13 +496,6 @@ class Field implements Renderable
 //            $this->options(call_user_func($this->options, $this->value));
 //        }
 
-        if ($this->default instanceof \Closure) {
-            if ($this->form) {
-                $this->default = $this->default->bindTo($this->form->model());
-            }
-
-            return call_user_func($this->default, $this->form);
-        }
 
         return $this->default;
     }
