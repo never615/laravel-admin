@@ -1,13 +1,13 @@
 <?php
+
 namespace Encore\Admin\Grid\Exporters;
 
 use Encore\Admin\Auth\Database\Subject;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Schema;
 
-
 /**
- * 辅助导出功能使用的工具
+ * 辅助导出功能使用的工具.
  *
  * Created by PhpStorm.
  * User: never615
@@ -17,27 +17,27 @@ use Illuminate\Support\Facades\Schema;
 class ExportUtils
 {
     /**
-     * 移除一些总是无须导出的列
+     * 移除一些总是无须导出的列.
      *
      * @param array $array
+     *
      * @return array
      */
     public static function removeInvalids(array $array)
     {
         foreach ($array as $key => $value) {
-            unset($array[$key]["images"]);
-            unset($array[$key]["image"]);
-            unset($array[$key]["icon"]);
-            unset($array[$key]["logo"]);
+            unset($array[$key]['images']);
+            unset($array[$key]['image']);
+            unset($array[$key]['icon']);
+            unset($array[$key]['logo']);
         }
 
         return $array;
     }
 
-
     public static function removeInvalidsByCollection(Collection $datas)
     {
-        $datas->forget(["images", "image", "icon", "logo"]);
+        $datas->forget(['images', 'image', 'icon', 'logo']);
 
         return $datas;
     }
@@ -56,16 +56,15 @@ class ExportUtils
         return $query;
     }
 
-    public static  function formatInput($tableName,$inputs)
+    public static function formatInput($tableName, $inputs)
     {
         foreach ($inputs as $key => $input) {
-            if (strpos($key, "_") != 0) {
-                $inputs[$tableName.".".$key] = $input;
+            if (strpos($key, '_') != 0) {
+                $inputs[$tableName.'.'.$key] = $input;
                 unset($inputs[$key]);
             }
         }
+
         return $inputs;
     }
-
-
 }

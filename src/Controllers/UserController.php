@@ -77,11 +77,10 @@ class UserController extends Controller
             $grid->roles(trans('admin::lang.roles'))->pluck('name')->label();
             $grid->created_at(trans('admin::lang.created_at'));
             $grid->updated_at(trans('admin::lang.updated_at'));
-            $grid->subject()->name("所属主体");
-
+            $grid->subject()->name('所属主体');
 
             $grid->actions(function (Grid\Displayers\Actions $actions) {
-//                if ($actions->getKey() == 1) {
+                //                if ($actions->getKey() == 1) {
 //                    $actions->disableDelete();
 //                }
 
@@ -111,9 +110,9 @@ class UserController extends Controller
         return Administrator::form(function (Form $form) {
             $form->display('id', 'ID');
 
-            $form->select("subject_id", "主体")->options(function () {
-                return Subject::dynamicData()->get()->pluck("name", "id");
-            })->rules("required");
+            $form->select('subject_id', '主体')->options(function () {
+                return Subject::dynamicData()->get()->pluck('name', 'id');
+            })->rules('required');
 
             $form->text('username', trans('admin::lang.username'))->rules('required');
             $form->text('name', trans('admin::lang.name'))->rules('required');
@@ -138,7 +137,7 @@ class UserController extends Controller
             $form->saving(function (Form $form) {
                 //自己不能修改自己的角色
                 if ($form->roles && $form->model()->roles != $form->roles && Admin::user()->id == $form->model()->id) {
-                    throw new AccessDeniedHttpException("自己不能修改自己的角色");
+                    throw new AccessDeniedHttpException('自己不能修改自己的角色');
                 }
 
                 if ($form->password && $form->model()->password != $form->password) {

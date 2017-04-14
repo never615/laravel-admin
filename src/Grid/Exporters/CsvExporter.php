@@ -1,6 +1,9 @@
 <?php
+
 namespace Encore\Admin\Grid\Exporters;
+
 use Illuminate\Support\Arr;
+
 class CsvExporter extends AbstractExporter
 {
     /**
@@ -15,8 +18,8 @@ class CsvExporter extends AbstractExporter
             $columns = array_dot($this->sanitize($data[0]));
             $titles = array_keys($columns);
         }
-        $output=chr(0xEF).chr(0xBB).chr(0xBF);
-        $output.= implode(',', $titles)."\n";
+        $output = chr(0xEF).chr(0xBB).chr(0xBF);
+        $output .= implode(',', $titles)."\n";
         foreach ($data as $row) {
             $row = array_only($row, $titles);
             $output .= implode(',', array_dot($row))."\n";
@@ -29,6 +32,7 @@ class CsvExporter extends AbstractExporter
         response(rtrim($output, "\n"), 200, $headers)->send();
         exit;
     }
+
     /**
      * Remove indexed array.
      *

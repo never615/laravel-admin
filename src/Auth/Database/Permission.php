@@ -26,20 +26,19 @@ class Permission extends Model
 
         $this->setTable(config('admin.database.permissions_table'));
 
-        $this->setTitleColumn("name");
-
+        $this->setTitleColumn('name');
 
         parent::__construct($attributes);
     }
 
     /**
-     * 获取拥有该权限的全部主体
+     * 获取拥有该权限的全部主体.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function subjects()
     {
-        return $this->belongsToMany(Subject::class, "subject_permissions", 'permission_id', 'subject_id');
+        return $this->belongsToMany(Subject::class, 'subject_permissions', 'permission_id', 'subject_id');
     }
 
     /**
@@ -57,14 +56,14 @@ class Permission extends Model
     }
 
     /**
-     * 查询对应权限的所有子权限
+     * 查询对应权限的所有子权限.
      *
      * @return Collection|static
      */
     public function subPermissions()
     {
         $tempPermissions = new Collection();
-        $permissions = static::where("parent_id", $this->id)->get();
+        $permissions = static::where('parent_id', $this->id)->get();
         $tempPermissions = $tempPermissions->merge($permissions);
         foreach ($permissions as $permission) {
             $tempPermissions = $tempPermissions->merge($permission->subPermissions());
@@ -74,7 +73,7 @@ class Permission extends Model
     }
 
     /**
-     * 获取该权限的所有长辈权限
+     * 获取该权限的所有长辈权限.
      */
     public function elderPermissions()
     {
@@ -90,8 +89,5 @@ class Permission extends Model
         }
 
         return $tempPermissions;
-
     }
-
-
 }

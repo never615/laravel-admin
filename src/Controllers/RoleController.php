@@ -71,18 +71,16 @@ class RoleController extends Controller
         return Admin::grid(Role::class, function (Grid $grid) {
             $grid->model()->dynamicData();
 
-
             $grid->id('ID')->sortable();
             $grid->slug(trans('admin::lang.slug'));
             $grid->name(trans('admin::lang.name'));
-            $grid->subject()->name("所属主体");
-
+            $grid->subject()->name('所属主体');
 
             $grid->created_at(trans('admin::lang.created_at'));
             $grid->updated_at(trans('admin::lang.updated_at'));
 
             $grid->actions(function (Grid\Displayers\Actions $actions) {
-//                if ($actions->row->slug == 'administrator') {
+                //                if ($actions->row->slug == 'administrator') {
 //                    $actions->disableDelete();
 //                }
                 //不能删除自己的角色
@@ -109,9 +107,9 @@ class RoleController extends Controller
         return Admin::form(Role::class, function (Form $form) {
             $form->display('id', 'ID');
 
-            $form->select("subject_id", "主体")->options(function () {
-                return Subject::dynamicData()->get()->pluck("name", "id");
-            })->rules("required");
+            $form->select('subject_id', '主体')->options(function () {
+                return Subject::dynamicData()->get()->pluck('name', 'id');
+            })->rules('required');
             $form->text('slug', trans('admin::lang.slug'))->rules('required');
             $form->text('name', trans('admin::lang.name'))->rules('required');
 
@@ -125,14 +123,13 @@ class RoleController extends Controller
                     $permissions = new Collection();
                     $permissionsTemp = Subject::find($subjectId)->permissions;
 
-                    $permissionsTemp = $permissionsTemp->merge(Permission::where("common", true)->get());
+                    $permissionsTemp = $permissionsTemp->merge(Permission::where('common', true)->get());
 
                     //查找子权限
                     foreach ($permissionsTemp as $permission) {
-                        $permissions = $permissions->merge(Permission::where("slug", 'like',
+                        $permissions = $permissions->merge(Permission::where('slug', 'like',
                             "%$permission->slug%")->get());
                     }
-
                 }
 
                 return Permission::selectOptions($permissions->toArray(), false, false);
@@ -145,11 +142,10 @@ class RoleController extends Controller
             $form->display('updated_at', trans('admin::lang.updated_at'));
 
             $form->saving(function (Form $form) {
-                if ($form->slug == config("admin.roles.owner")) {
-                    throw new PermissionDeniedException("没有权限创建标识为owner的角色");
+                if ($form->slug == config('admin.roles.owner')) {
+                    throw new PermissionDeniedException('没有权限创建标识为owner的角色');
                 }
             });
-
         });
     }
 }

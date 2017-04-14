@@ -232,11 +232,12 @@ trait ModelTree
      * @param array $nodes
      * @param bool  $root         ,是否返回root节点
      * @param bool  $defaultBlack ,是否使用默认的空格大小
+     *
      * @return \Illuminate\Support\Collection
      */
     public static function selectOptions(array $nodes = [], $root = true, $defaultBlack = true)
     {
-        $options = (new static())->buildSelectOptions($nodes, 0, "", $defaultBlack);
+        $options = (new static())->buildSelectOptions($nodes, 0, '', $defaultBlack);
 
         if ($root) {
             return collect($options)->prepend('Root', 0)->all();
@@ -244,7 +245,6 @@ trait ModelTree
             return collect($options)->all();
         }
     }
-
 
     /**
      * Build options of select field in form.

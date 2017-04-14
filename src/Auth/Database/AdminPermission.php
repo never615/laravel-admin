@@ -3,7 +3,6 @@
 namespace Encore\Admin\Auth\Database;
 
 use Encore\Admin\Facades\Admin;
-use Illuminate\Support\Facades\Log;
 
 trait AdminPermission
 {
@@ -64,8 +63,6 @@ trait AdminPermission
         if ($this->isOwner()) {
             return true;
         }
-        
-        
 
         //2.用户拥有该权限通过
         if (method_exists($this, 'permissions')) {
@@ -78,7 +75,7 @@ trait AdminPermission
         $permission = Permission::where('slug', $permissionSlug)->first();
         $elderPermissions = $permission->elderPermissions();
         //检查用户的权限中有没有$elderPermissions中的权限
-        if ($elderPermissions && $this->permissions()->whereIn("id", $elderPermissions->pluck("id"))->exists()) {
+        if ($elderPermissions && $this->permissions()->whereIn('id', $elderPermissions->pluck('id'))->exists()) {
             return true;
         }
 
@@ -88,7 +85,7 @@ trait AdminPermission
             if ($role->can($permissionSlug)) {
                 return true;
             }
-            if ($elderPermissions && $role->permissions()->whereIn("id", $elderPermissions->pluck("id"))->exists()) {
+            if ($elderPermissions && $role->permissions()->whereIn('id', $elderPermissions->pluck('id'))->exists()) {
                 return true;
             }
         }
@@ -115,14 +112,13 @@ trait AdminPermission
      */
     public function isAdministrator()
     {
-        return $this->isRole(config("admin.roles.admin"));
+        return $this->isRole(config('admin.roles.admin'));
     }
 
     public function isOwner()
     {
-        return $this->isRole(config("admin.roles.owner"));
+        return $this->isRole(config('admin.roles.owner'));
     }
-
 
     /**
      * Check if user is $role.
@@ -133,7 +129,7 @@ trait AdminPermission
      */
     public function isRole($role)
     {
-        return $this->roles()->where("subject_id", Admin::user()->subject->id)->where('slug', $role)->exists();
+        return $this->roles()->where('subject_id', Admin::user()->subject->id)->where('slug', $role)->exists();
     }
 
     /**
@@ -145,7 +141,7 @@ trait AdminPermission
      */
     public function inRoles($roles = [])
     {
-        return $this->roles()->where("subject_id", Admin::user()->subject->id)->whereIn('slug',
+        return $this->roles()->where('subject_id', Admin::user()->subject->id)->whereIn('slug',
             (array) $roles)->exists();
     }
 
@@ -173,7 +169,7 @@ trait AdminPermission
 
     /**
      * 返回用户所有的权限
-     * 包括角色包含的和单独权限拥有的
+     * 包括角色包含的和单独权限拥有的.
      */
     public function allPermissions()
     {

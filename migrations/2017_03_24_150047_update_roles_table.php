@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class UpdateRolesTable extends Migration
@@ -17,12 +16,12 @@ class UpdateRolesTable extends Migration
             $table->unsignedInteger('subject_id');
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('CASCADE');
 
-            $table->text("describe")->nullable();
+            $table->text('describe')->nullable();
 
             //索引
             $table->index(['subject_id']);
-            $table->unique(["subject_id","slug"]);
-            $table->unique(["subject_id","name"]);
+            $table->unique(['subject_id', 'slug']);
+            $table->unique(['subject_id', 'name']);
         });
     }
 
@@ -37,8 +36,8 @@ class UpdateRolesTable extends Migration
             $table->dropColumn('subject_id');
             $table->dropColumn('describe');
             $table->dropIndex(['subject_id']);
-            $table->dropUnique(["subject_id","slug"]);
-            $table->dropUnique(["subject_id","name"]);
+            $table->dropUnique(['subject_id', 'slug']);
+            $table->dropUnique(['subject_id', 'name']);
         });
     }
 }

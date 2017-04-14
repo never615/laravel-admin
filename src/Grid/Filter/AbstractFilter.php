@@ -95,7 +95,6 @@ abstract class AbstractFilter
             $tempLabel = admin_translate($this->column);
         }
 
-
 //        $label = $label ?: ucfirst($this->column);
 
         return str_replace(['.', '_'], ' ', $tempLabel);
@@ -294,7 +293,6 @@ abstract class AbstractFilter
     protected function buildCondition()
     {
         $column = explode('.', $this->column);
-
 
         if (count($column) == 1 || $column[0] == $this->parent->table()) {
             return [$this->query => func_get_args()];

@@ -2,7 +2,6 @@
 
 namespace Encore\Admin\Controllers\Base;
 
-
 use Encore\Admin\Controllers\ModelForm;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
@@ -27,7 +26,6 @@ abstract class AdminCommonController extends Controller
             $content->body($this->grid()->render());
         });
     }
-
 
     protected function getIndexDesc()
     {
@@ -64,7 +62,6 @@ abstract class AdminCommonController extends Controller
         });
     }
 
-
     protected function grid()
     {
         return Admin::grid($this->getModel(), function (Grid $grid) {
@@ -76,7 +73,6 @@ abstract class AdminCommonController extends Controller
     {
         $grid->model()->dynamicData();
         $grid->model()->orderBy('id');
-
 
         $grid->id('ID')->sortable();
 
@@ -97,7 +93,6 @@ abstract class AdminCommonController extends Controller
         });
     }
 
-
     protected function form()
     {
         return Admin::form($this->getModel(), function (Form $form) {
@@ -112,5 +107,4 @@ abstract class AdminCommonController extends Controller
         $form->display('created_at', trans('admin::lang.created_at'));
         $form->display('updated_at', trans('admin::lang.updated_at'));
     }
-
 }

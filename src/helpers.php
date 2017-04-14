@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\Log;
 
 if (!function_exists('admin_path')) {
 
@@ -68,13 +67,13 @@ if (!function_exists('admin_translate')) {
      * @param      $modelPath
      * @param      $column
      * @param null $fallback
+     *
      * @return string
      */
-    function admin_translate($column, $modelPath = "", $fallback = null)
+    function admin_translate($column, $modelPath = '', $fallback = null)
     {
-        $modelName = "";
+        $modelName = '';
         if ($modelPath) {
-
             $nameList = explode('\\', $modelPath);
             /*
              * CamelCase model name converted to underscore name version.

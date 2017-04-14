@@ -33,7 +33,6 @@ EOF;
             $this->initDefaultValue();
         }
 
-
         if ($this->options instanceof \Closure) {
             if ($this->form) {
                 $this->options = $this->options->bindTo($this->form->model());
@@ -63,7 +62,6 @@ EOT;
             Admin::script($script);
         }
     }
-
 
     /**
      * Set options.
@@ -166,7 +164,6 @@ EOT;
         return $this;
     }
 
-
     /**
      * Load options for other select on change.
      *
@@ -246,7 +243,6 @@ EOT;
      */
     public function ajax($url, $idField = 'id', $textField = 'text')
     {
-
         $this->sourceUrl = $url;
         $this->idField = $idField;
 

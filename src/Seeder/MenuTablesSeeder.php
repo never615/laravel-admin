@@ -4,8 +4,6 @@ namespace Encore\Admin\Seeder;
 
 use Encore\Admin\Auth\Database\Menu;
 use Illuminate\Database\Seeder;
-use Mallto\Mall\Data\AdminUser;
-use Mallto\Mall\Data\Subject;
 
 class MenuTablesSeeder extends Seeder
 {
@@ -19,10 +17,10 @@ class MenuTablesSeeder extends Seeder
         $order = 100;
 
         //2000+ 是管理
-        
+
         //10000+ 是辅助功能
-        
-        /**
+
+        /*
          * --------------------------------  Menu create   -----------------------------------
          */
         Menu::insert([
@@ -35,7 +33,7 @@ class MenuTablesSeeder extends Seeder
             ],
             [
                 'parent_id' => 0,
-                'order'     => $order= 2000,
+                'order'     => $order = 2000,
                 'title'     => '管理',
                 'icon'      => 'fa-tasks',
                 'uri'       => '',
@@ -90,16 +88,15 @@ class MenuTablesSeeder extends Seeder
                 'uri'       => 'logs.index',
             ],
         ]);
-        
-        
-        $menu=Menu::create([
+
+        $menu = Menu::create([
             'parent_id' => 0,
             'order'     => $order = 10000,
             'title'     => '辅助功能',
             'icon'      => 'fa-gears',
             'uri'       => '',
         ]);
-        
+
         Menu::insert([
             [
                 'parent_id' => $menu->id,
@@ -123,7 +120,5 @@ class MenuTablesSeeder extends Seeder
                 'uri'       => 'artisan.index',
             ],
         ]);
-        
-        
     }
 }

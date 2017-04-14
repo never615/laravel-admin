@@ -3,8 +3,6 @@
 namespace Encore\Admin\Seeder;
 
 use Illuminate\Database\Seeder;
-use Mallto\Mall\Data\AdminUser;
-use Mallto\Mall\Data\Subject;
 
 class AdminTablesSeeder extends Seeder
 {

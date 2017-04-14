@@ -57,7 +57,6 @@ class Menu extends Model
         return $this->belongsToMany($relatedModel, $pivotTable, 'menu_id', 'role_id');
     }
 
-
     /**
      * @return array
      */
@@ -65,17 +64,17 @@ class Menu extends Model
     {
         $orderColumn = DB::getQueryGrammar()->wrap($this->orderColumn);
         $byOrder = $orderColumn.' = 0,'.$orderColumn;
-        if (config("admin.auto_menu")) {
+        if (config('admin.auto_menu')) {
             //菜单不跟角色挂钩,只有一份菜单
             //每个人能看到的菜单,由其拥有的权限决定
             //如果是管理员,返回所有菜单;如果是其他账号,返回相应菜单
-            if (Auth::guard("admin")->user()->isOwner()) {
+            if (Auth::guard('admin')->user()->isOwner()) {
                 return static::orderByRaw($byOrder)->get()->toArray();
             } else {
                 //用来保存用户拥有的所有权限
                 $tempPermissions = new Collection();
 
-                $permissions = Auth::guard("admin")->user()->allPermissions();
+                $permissions = Auth::guard('admin')->user()->allPermissions();
                 foreach ($permissions as $permission) {
                     //查询权限的所有子权限
                     $tempPermissions = $tempPermissions->merge($permission->subPermissions());
@@ -85,12 +84,12 @@ class Menu extends Model
 
                 $menu = new Collection();
                 //任何人都可以看到控制面板菜单
-                $menu = $menu->merge(static::where("uri", "dashboard")->get());
+                $menu = $menu->merge(static::where('uri', 'dashboard')->get());
                 //查询权限对应的菜单
-                $menu = $menu->merge(static::whereIn("uri", $tempPermissions->pluck('slug'))->get());
+                $menu = $menu->merge(static::whereIn('uri', $tempPermissions->pluck('slug'))->get());
 
                 //查出来的菜单如果有父菜单也要返回
-                $menu = $menu->merge(static::whereIn('id', $menu->pluck("parent_id"))->get());
+                $menu = $menu->merge(static::whereIn('id', $menu->pluck('parent_id'))->get());
 
                 $result = $menu->sortBy($orderColumn)->toArray();
 

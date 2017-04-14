@@ -9,7 +9,6 @@ class Role extends Model
 {
     use DynamicData;
 
-
     protected $fillable = ['name', 'slug'];
 
     /**
@@ -27,8 +26,6 @@ class Role extends Model
 
         parent::__construct($attributes);
     }
-
-
 
     /**
      * A role belongs to many users.

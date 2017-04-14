@@ -17,14 +17,14 @@ class Verify extends Widget implements Renderable
     protected $title = 'title';
 
     /**
-     * 搜索框提示
+     * 搜索框提示.
      *
      * @var string
      */
     protected $placeholder = 'placeholder';
 
     /**
-     * 提交按钮名字
+     * 提交按钮名字.
      *
      * @var string
      */
@@ -54,7 +54,7 @@ class Verify extends Widget implements Renderable
      * @param string $placeholder
      * @param string $submit
      */
-    public function __construct($title = '', $placeholder = "", $submit = "")
+    public function __construct($title = '', $placeholder = '', $submit = '')
     {
         if ($title) {
             $this->title($title);
@@ -68,7 +68,6 @@ class Verify extends Widget implements Renderable
             $this->submit($submit);
         }
     }
-
 
     /**
      * Set box title.
@@ -105,7 +104,6 @@ class Verify extends Widget implements Renderable
         return $this;
     }
 
-
     /**
      * Variables in view.
      *
@@ -121,7 +119,6 @@ class Verify extends Widget implements Renderable
         ];
     }
 
-
     /**
      * Render box.
      *
@@ -131,6 +128,4 @@ class Verify extends Widget implements Renderable
     {
         return view($this->view, $this->variables())->render();
     }
-
-
 }

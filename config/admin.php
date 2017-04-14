@@ -130,8 +130,8 @@ return [
     'auto_menu'     => false,
 
     /*
-     * WangEditor 
-     * 
+     * WangEditor
+     *
      * 菜单按钮全局配置
      */
     'editor_menu'   => [
@@ -171,7 +171,7 @@ return [
     ],
 
     /*
-    * 角色名字 
+    * 角色名字
     */
     'roles'         => [
         'owner' => 'owner',

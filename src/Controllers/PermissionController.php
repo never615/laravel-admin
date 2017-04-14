@@ -98,7 +98,7 @@ class PermissionController extends Controller
         return Admin::form(Permission::class, function (Form $form) {
             $form->display('id', 'ID');
 
-            $form->select("parent_id", "父节点")->options(Permission::selectOptions());
+            $form->select('parent_id', '父节点')->options(Permission::selectOptions());
             $form->text('slug', trans('admin::lang.slug'))->rules('required');
             $form->text('name', trans('admin::lang.name'))->rules('required');
 

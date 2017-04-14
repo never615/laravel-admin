@@ -140,6 +140,7 @@ class Filter
      * Get all conditions of the filters.
      *
      * @param $inputs
+     *
      * @return array
      */
     public function conditionsByInputs($inputs)
@@ -203,19 +204,19 @@ class Filter
         return $this->model->addConditions($this->conditions())->buildData();
     }
 
-    public function executeForQuery($inputs = null, $subject_id,$isDbQuery=false)
+    public function executeForQuery($inputs, $subject_id, $isDbQuery = false)
     {
         if (is_null($inputs)) {
             $inputs = Input::all();
         }
 
-        return $this->model->addConditions($this->conditionsByInputs($inputs))->buildQuery($subject_id,$isDbQuery);
-    }
-    
-    public function table(){
-        return $this->model->getTable();
+        return $this->model->addConditions($this->conditionsByInputs($inputs))->buildQuery($subject_id, $isDbQuery);
     }
 
+    public function table()
+    {
+        return $this->model->getTable();
+    }
 
     /**
      * Get the string contents of the filter view.

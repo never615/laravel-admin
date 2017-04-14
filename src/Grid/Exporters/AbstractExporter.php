@@ -57,9 +57,9 @@ abstract class AbstractExporter implements ExporterInterface
         return $this->grid->getFilter()->execute();
     }
 
-    public function getQuery($subjectId,$isDbQuery=false)
+    public function getQuery($subjectId, $isDbQuery = false)
     {
-        return $this->grid->getFilter()->executeForQuery(null, $subjectId,$isDbQuery);
+        return $this->grid->getFilter()->executeForQuery(null, $subjectId, $isDbQuery);
     }
 
     /**

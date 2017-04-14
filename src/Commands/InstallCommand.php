@@ -75,7 +75,7 @@ class InstallCommand extends Command
 
 //        $this->createHomeController();
 //        $this->createExampleController();
-        
+
         //$this->createAuthController();
         //$this->createAdministratorController();
 

@@ -11,7 +11,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class Model
@@ -193,7 +192,6 @@ class Model
 
     /**
      * 获取查询对象
-     *
      */
     public function buildQuery($subject_id, $isDbQuery = false)
     {
@@ -259,7 +257,6 @@ class Model
         throw new \Exception('Grid query error');
     }
 
-
     /**
      * 获取查询对象
      *
@@ -274,8 +271,7 @@ class Model
         }
 
         $this->queries->unique()->each(function ($query) use (&$dbQuery, $subject_id, $isDbQuery) {
-
-            if (($query['method'] == "dynamicData" || $query['method'] == "with")) {
+            if (($query['method'] == 'dynamicData' || $query['method'] == 'with')) {
                 if (!$isDbQuery) {
                     $dbQuery = call_user_func_array([$dbQuery, $query['method']], $query['arguments']);
                 }

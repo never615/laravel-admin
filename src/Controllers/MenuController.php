@@ -41,7 +41,7 @@ class MenuController extends Controller
                     $form->icon('icon',
                         trans('admin::lang.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
                     $form->text('uri', trans('admin::lang.uri'));
-                    if (!config("admin.auto_menu")) {
+                    if (!config('admin.auto_menu')) {
                         $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name',
                             'id'));
                     }
@@ -77,10 +77,10 @@ class MenuController extends Controller
             $tree->branch(function ($branch) {
                 $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$branch['title']}</strong>";
 
-                if (!isset($branch['children'])&&$branch['uri']) {
-                        $uri = Route::has($branch['uri']) ? route($branch['uri']) : admin_url($branch['uri']);
+                if (!isset($branch['children']) && $branch['uri']) {
+                    $uri = Route::has($branch['uri']) ? route($branch['uri']) : admin_url($branch['uri']);
 
-                        $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
+                    $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
                 }
 
                 return $payload;
@@ -120,7 +120,7 @@ class MenuController extends Controller
             $form->icon('icon',
                 trans('admin::lang.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
             $form->text('uri', trans('admin::lang.uri'));
-            if (!config("admin.auto_menu")) {
+            if (!config('admin.auto_menu')) {
                 $form->multipleSelect('roles', trans('admin::lang.roles'))->options(Role::all()->pluck('name', 'id'));
             }
 

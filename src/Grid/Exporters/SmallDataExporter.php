@@ -1,12 +1,13 @@
 <?php
+
 namespace Encore\Admin\Grid\Exporters;
 
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 /**
- * 小量数居导出
- * 
+ * 小量数居导出.
+ *
  * Created by PhpStorm.
  * User: never615
  * Date: 29/03/2017
@@ -14,7 +15,6 @@ use Maatwebsite\Excel\Facades\Excel;
  */
 abstract class SmallDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
 {
-
     protected $callback;
 
     /**
@@ -22,7 +22,6 @@ abstract class SmallDataExporter extends \Encore\Admin\Grid\Exporters\AbstractEx
      */
     public function export()
     {
-
         $filename = $this->getTable();
 
         $subjectId = Auth::user()->subject_id;
@@ -44,7 +43,7 @@ abstract class SmallDataExporter extends \Encore\Admin\Grid\Exporters\AbstractEx
                             $columnNames = [];
                             //获取列名
                             foreach ($data[0] as $key => $value) {
-                                $columnNames[] = admin_translate($key, "coupons");
+                                $columnNames[] = admin_translate($key, 'coupons');
                             }
                             $sheet->appendRow($columnNames);
                             $sheet->rows($data);
@@ -57,7 +56,7 @@ abstract class SmallDataExporter extends \Encore\Admin\Grid\Exporters\AbstractEx
                 });
             })->export('xls');
         } else {
-            echo <<<EOT
+            echo <<<'EOT'
 <script type="text/javascript">
 alert("该模块暂不支持大量数据导出");
 window.close()
@@ -67,12 +66,11 @@ EOT;
     }
 
     /**
-     * 自定义数据处理
+     * 自定义数据处理.
      *
      * @param $data
+     *
      * @return mixed
      */
-    public abstract function customData($data);
-
-
+    abstract public function customData($data);
 }

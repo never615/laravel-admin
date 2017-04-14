@@ -255,7 +255,7 @@ class Admin
         ];
 
         Route::group($attributes, function ($router) {
-//            $attributes = ['middleware' => ['admin.permission:allow,administrator','admin.auto_permission']];
+            //            $attributes = ['middleware' => ['admin.permission:allow,administrator','admin.auto_permission']];
             $attributes = ['middleware' => ['admin.auto_permission']];
 
             /* @var \Illuminate\Routing\Router $router */
@@ -265,8 +265,8 @@ class Admin
                 $router->resource('auth/permissions', 'PermissionController');
                 $router->resource('auth/menus', 'MenuController', ['except' => ['create']]);
                 $router->resource('auth/logs', 'LogController', ['only' => ['index', 'destroy']]);
-                $router->resource("subjects", "SubjectController");
-                $router->resource("reports", "ReportController");
+                $router->resource('subjects', 'SubjectController');
+                $router->resource('reports', 'ReportController');
             });
 
             $router->get('auth/login', 'AuthController@getLogin');
@@ -279,7 +279,6 @@ class Admin
             $router->get('uptoken', 'FileController@getUploadToken');
             //上传图片(富文本编辑器需要使用)
             $router->post('upload', 'FileController@upload');
-
         });
     }
 
@@ -287,19 +286,19 @@ class Admin
     {
         $attributes = array_merge([
             'prefix'     => trim(config('admin.prefix'), '/').'/helpers',
-            'middleware' => ['web', 'admin', 'admin.auto_permission','admin.permission:allow,owner'],
+            'middleware' => ['web', 'admin', 'admin.auto_permission', 'admin.permission:allow,owner'],
         ], $attributes);
 
         Route::group($attributes, function ($router) {
 
             /* @var \Illuminate\Routing\Router $router */
             $router->get('terminal/database',
-                'Encore\Admin\Controllers\TerminalController@database')->name("database.index");
+                'Encore\Admin\Controllers\TerminalController@database')->name('database.index');
             $router->post('terminal/database', 'Encore\Admin\Controllers\TerminalController@runDatabase');
             $router->get('terminal/artisan',
-                'Encore\Admin\Controllers\TerminalController@artisan')->name("artisan.index");
+                'Encore\Admin\Controllers\TerminalController@artisan')->name('artisan.index');
             $router->post('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@runArtisan');
-            $router->get('scaffold', 'Encore\Admin\Controllers\ScaffoldController@index')->name("scaffold.index");
+            $router->get('scaffold', 'Encore\Admin\Controllers\ScaffoldController@index')->name('scaffold.index');
             $router->post('scaffold', 'Encore\Admin\Controllers\ScaffoldController@store');
         });
     }

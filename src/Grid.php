@@ -330,7 +330,6 @@ class Grid
      */
     protected function addColumn($column = '', $label = '')
     {
-
         $column = new Column($column, $label);
         $column->setGrid($this);
 
@@ -862,7 +861,6 @@ class Grid
      */
     public function __call($method, $arguments)
     {
-
         if (isset($arguments[0])) {
             $label = $arguments[0];
         } else {
@@ -982,14 +980,14 @@ class Grid
         try {
             $this->build();
         } catch (\Exception $e) {
-            if (Input::get("_export_", null) != null) {
+            if (Input::get('_export_', null) != null) {
                 Log::info($e);
+
                 return;
             } else {
                 return Handle::renderException($e);
             }
         }
-
 
         return view($this->view, $this->variables())->render();
     }

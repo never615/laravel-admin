@@ -1,4 +1,5 @@
 <?php
+
 namespace Encore\Admin\Grid\Exporters;
 
 use App\Lib\TimeUtils;
@@ -15,20 +16,18 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  * Created by PhpStorm.
  * User: never615
  * Date: 29/03/2017
- * Time: 8:35 PM
+ * Time: 8:35 PM.
  */
 abstract class BigDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
 {
-
     /**
      * {@inheritdoc}
      */
     public function export()
     {
-
         $tableName = $this->getTable();
         $now = TimeUtils::getNowTime();
-        $fileName = mt_trans($tableName)."_".$now."_".substr(time(), 5).'.csv';
+        $fileName = mt_trans($tableName).'_'.$now.'_'.substr(time(), 5).'.csv';
 
         $subjectId = Auth::user()->subject_id;
 
@@ -44,7 +43,6 @@ abstract class BigDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExpo
 
         $count = $query->count();
 
-
         if ($count < 20001) {
             $response = new StreamedResponse(null, 200, [
                 'Content-Type'        => 'text/csv',
@@ -58,8 +56,7 @@ abstract class BigDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExpo
 
                 $query = $this->customQuery($query);
 
-                $query->orderBy($tableName.".id")->chunk(500, function ($data) use (&$firstWrite, $out) {
-
+                $query->orderBy($tableName.'.id')->chunk(500, function ($data) use (&$firstWrite, $out) {
                     $data = json_decode(json_encode($data), true);
 
                     $data = $this->customData($data);
@@ -70,7 +67,7 @@ abstract class BigDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExpo
                         $columnNames = [];
                         //获取列名
                         foreach ($data[0] as $key => $value) {
-                            $columnNames[] = admin_translate($key, "coupon");
+                            $columnNames[] = admin_translate($key, 'coupon');
                         }
                         fputcsv($out, $columnNames);
 
@@ -88,8 +85,8 @@ abstract class BigDataExporter extends \Encore\Admin\Grid\Exporters\AbstractExpo
             exit;
         } else {
             $tableName = mt_trans($tableName);
-            if (Report::where("finish", false)->where("name", "like", "$tableName%")->exists()) {
-                $script = <<<EOT
+            if (Report::where('finish', false)->where('name', 'like', "$tableName%")->exists()) {
+                $script = <<<'EOT'
 layer.confirm('该模块有任务正在运行,请稍后再试.', {
   btn: ['确认'] //按钮
 }, function(){
@@ -98,11 +95,10 @@ layer.confirm('该模块有任务正在运行,请稍后再试.', {
 
 EOT;
                 Admin::script($script);
-
             } else {
                 $className = $this->exporterJob();
                 if (empty($className)) {
-                    $script = <<<EOT
+                    $script = <<<'EOT'
 layer.confirm('该模块暂不支持大量数据导出.', {
   btn: ['确认'] //按钮
 }, function(){
@@ -112,17 +108,17 @@ EOT;
                     Admin::script($script);
                 } else {
                     $report = Report::create([
-                        "name"          => $fileName,
-                        "status"        => Report::NOT_START,
-                        "subject_id"    => $subjectId,
-                        "admin_user_id" => Auth::user()->id,
+                        'name'          => $fileName,
+                        'status'        => Report::NOT_START,
+                        'subject_id'    => $subjectId,
+                        'admin_user_id' => Auth::user()->id,
                     ]);
 
                     $class = new ReflectionClass($className); // 建立 Person这个类的反射类
                     $instance = $class->newInstanceArgs([Input::all(), $subjectId, $report->id]); // 相当于实例化Person 类
                     dispatch($instance->onQueue('exporter'));
 
-                    $script = <<<EOT
+                    $script = <<<'EOT'
 layer.confirm('数据量过大将在后台导出,点击确认进入报表管理查看.', {
   btn: ['确认','取消'] //按钮
 }, function(){
@@ -139,25 +135,24 @@ EOT;
     }
 
     /**
-     * 自定义数据处理
+     * 自定义数据处理.
      *
      * @param $data
+     *
      * @return mixed
      */
-    public abstract function customData($data);
+    abstract public function customData($data);
 
-    public abstract function customQuery($query);
+    abstract public function customQuery($query);
 
     /**
-     * 需要大数据导出,则返回对应的job,不需要则不用重写此方法
+     * 需要大数据导出,则返回对应的job,不需要则不用重写此方法.
      *
      * @return null
      */
-    public abstract function exporterJob();
+    abstract public function exporterJob();
 
-    public abstract function model();
+    abstract public function model();
 
-    public abstract function filter($filter);
-
-
+    abstract public function filter($filter);
 }

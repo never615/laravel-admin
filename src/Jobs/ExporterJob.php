@@ -2,7 +2,6 @@
 
 namespace Encore\Admin\Jobs;
 
-
 use Encore\Admin\Auth\Database\Report;
 use Encore\Admin\Grid\Exporters\ExportUtils;
 use Encore\Admin\Grid\Filter;
@@ -14,9 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Mallto\Mall\Data\AdminUser;
 use Mallto\Mall\Data\Coupon;
-use Mallto\Mall\SelectConstants;
 use ReflectionClass;
 
 abstract class ExporterJob implements ShouldQueue
@@ -33,7 +30,6 @@ abstract class ExporterJob implements ShouldQueue
 
     protected $report;
 
-
     /**
      * Create a new job instance.
      *
@@ -46,7 +42,6 @@ abstract class ExporterJob implements ShouldQueue
         $this->inputs = $inputs;
         $this->subjectId = $subjectId;
         $this->report = Report::find($reportId);
-
     }
 
     /**
@@ -56,13 +51,12 @@ abstract class ExporterJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::info("执行导出任务");
+        Log::info('执行导出任务');
 
         $report = $this->report;
         if ($report) {
-
             $report->update([
-                "status" => Report::IN_PROGRESS,
+                'status' => Report::IN_PROGRESS,
             ]);
 
             $expoter = $this->expoter();
@@ -79,11 +73,11 @@ abstract class ExporterJob implements ShouldQueue
             $query = ExportUtils::dynamicData($tableName, $this->subjectId, $query);
 //            $now = TimeUtils::getNowTime();
 //            $fp = fopen(storage_path('exports')."/".mt_trans($tableName)."_".$now."_".substr(time(), 5).".csv", "a");
-            $fp = fopen(storage_path('app/public/exports')."/".$report->name, "a");
+            $fp = fopen(storage_path('app/public/exports').'/'.$report->name, 'a');
             fwrite($fp, chr(0xEF).chr(0xBB).chr(0xBF)); // 添加 BOM
             $firstWrite = true;
             $query = $expoter->customQuery($query);
-            $query->orderBy($tableName.".id")->chunk(1000, function ($data) use (&$firstWrite, $fp, $expoter) {
+            $query->orderBy($tableName.'.id')->chunk(1000, function ($data) use (&$firstWrite, $fp, $expoter) {
                 $data = json_decode(json_encode($data), true);
 
                 $data = $expoter->customData($data);
@@ -94,7 +88,7 @@ abstract class ExporterJob implements ShouldQueue
                     $columnNames = [];
                     //获取列名
                     foreach ($data[0] as $key => $value) {
-                        $columnNames[] = admin_translate($key, "coupon");
+                        $columnNames[] = admin_translate($key, 'coupon');
                     }
                     fputcsv($fp, $columnNames);
 
@@ -109,13 +103,13 @@ abstract class ExporterJob implements ShouldQueue
             fclose($fp);
 
             $report->update([
-                "finish" => true,
-                "status" => Report::FINISH,
+                'finish' => true,
+                'status' => Report::FINISH,
             ]);
 
-            Log::info("导出完成");
+            Log::info('导出完成');
         } else {
-            Log::info("导出失败:report not found");
+            Log::info('导出失败:report not found');
         }
     }
 
@@ -128,16 +122,14 @@ abstract class ExporterJob implements ShouldQueue
     {
         // 发送失败通知, etc...
 
-        Log::info("导出失败");
+        Log::info('导出失败');
         Log::info($e);
 
         $this->report->update([
-            "finish" => true,
-            "status" => Report::ERROR.$e,
+            'finish' => true,
+            'status' => Report::ERROR.$e,
         ]);
     }
 
-    protected abstract function expoter();
-
-
+    abstract protected function expoter();
 }

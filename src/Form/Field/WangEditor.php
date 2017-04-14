@@ -2,13 +2,11 @@
 
 namespace Encore\Admin\Form\Field;
 
-
 use Encore\Admin\Form\Field;
 use Illuminate\Support\Facades\Log;
 
 class WangEditor extends Field
 {
-
     protected $view = 'admin::form.editor2';
 
     protected $upTokenUrl;
@@ -16,7 +14,6 @@ class WangEditor extends Field
     protected $domian;
 
     protected $menuOption;
-
 
     protected static $css = [
         '/packages/admin/wangEditor-2.1.23/dist/css/wangEditor.min.css',
@@ -30,20 +27,17 @@ class WangEditor extends Field
 
     /**
      * WangEditor constructor.
-     *
      */
     public function __construct($column, $arguments = [])
     {
-        $this->domian = rtrim(config("filesystems.disks.qiniu.domains.default"), '/').'/';
-        $this->menuOption = config("admin.editor_menu");
+        $this->domian = rtrim(config('filesystems.disks.qiniu.domains.default'), '/').'/';
+        $this->menuOption = config('admin.editor_menu');
 
         parent::__construct($column, $arguments);
     }
 
-
     public function render()
     {
-
         $this->script = <<<EOT
         
     var editor = new wangEditor('{$this->id}');
@@ -60,9 +54,8 @@ EOT;
         return parent::render();
     }
 
-
     /**
-     * 自定义编辑器菜单
+     * 自定义编辑器菜单.
      *
      * 用户可以调用该方法为每次使用编辑器的地方单独进行菜单配置
      *
@@ -73,12 +66,10 @@ EOT;
         $this->menuOption = $menuOption;
     }
 
-
     private function csrf()
     {
         return csrf_token();
     }
-
 
     private function getMenuScript()
     {
@@ -97,20 +88,19 @@ EOT;
 
     private function getUploadScript()
     {
-        if (in_array('img',$this->menuOption)) {
-            if (config("admin.upload.disk") == 'qiniu') {
+        if (in_array('img', $this->menuOption)) {
+            if (config('admin.upload.disk') == 'qiniu') {
                 return $this->qiniuUploadScript();
             } else {
                 return $this->defaultUploadScript();
             }
         } else {
-            return "";
+            return '';
         }
     }
 
-
     /**
-     * 本地上传图片使用
+     * 本地上传图片使用.
      *
      * @return string
      */
@@ -130,9 +120,8 @@ EOT;
 EOT;
     }
 
-
     /**
-     * 七牛上传使用
+     * 七牛上传使用.
      *
      * @return string
      */

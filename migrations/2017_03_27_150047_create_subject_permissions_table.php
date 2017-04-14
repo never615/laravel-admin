@@ -14,13 +14,12 @@ class CreateSubjectPermissionsTable extends Migration
     public function up()
     {
         Schema::create('subject_permissions', function (Blueprint $table) {
-
-            $table->increments("id");
+            $table->increments('id');
 
             $table->integer('subject_id')->comment('主体id');
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('CASCADE');
 
-            $table->unsignedInteger("permission_id");
+            $table->unsignedInteger('permission_id');
             $table->foreign('permission_id')->references('id')->on('admin_permissions')->onDelete('CASCADE');
 
             $table->timestamps();

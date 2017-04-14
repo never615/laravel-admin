@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * 项目主体
- * Class CreateSubjectsTable
+ * Class CreateSubjectsTable.
  */
 class CreateSubjectsTable extends Migration
 {
@@ -20,10 +20,10 @@ class CreateSubjectsTable extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique()->comment('主体名字');
-            $table->unsignedInteger("parent_id")->nullable()->comment("父id");
+            $table->unsignedInteger('parent_id')->nullable()->comment('父id');
             $table->string('logo')->nullable()->comment('logo');
             $table->text('description')->nullable()->comment('描述');
-           
+
             $table->timestamps();
             $table->softDeletes();
         });

@@ -6,10 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OperationLog extends Model
 {
-
-
     protected $fillable = ['user_id', 'path', 'method', 'ip', 'input', 'subject_id'];
-
 
     public static $methodColors = [
         'GET'    => 'green',

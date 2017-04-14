@@ -41,7 +41,7 @@ class LogController extends Controller
                     return '<code>'.json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE).'</code>';
                 });
 
-                $grid->subject()->name("所属主体");
+                $grid->subject()->name('所属主体');
 
                 $grid->created_at(trans('admin::lang.created_at'));
 

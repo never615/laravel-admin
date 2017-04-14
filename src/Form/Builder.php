@@ -359,7 +359,7 @@ class Builder
     {
         $previous = URL::previous();
 
-        if (! $previous || $previous == URL::current()) {
+        if (!$previous || $previous == URL::current()) {
             return;
         }
 
@@ -427,7 +427,7 @@ class Builder
             return '';
         }
 
-        if (! $this->options['enableSubmit']) {
+        if (!$this->options['enableSubmit']) {
             return '';
         }
 
@@ -447,7 +447,7 @@ EOT;
      */
     public function resetButton()
     {
-        if (! $this->options['enableReset']) {
+        if (!$this->options['enableReset']) {
             return '';
         }
 
@@ -467,7 +467,7 @@ EOT;
      */
     protected function removeReservedFields()
     {
-        if (! $this->isMode(static::MODE_CREATE)) {
+        if (!$this->isMode(static::MODE_CREATE)) {
             return;
         }
 
@@ -484,7 +484,6 @@ EOT;
         });
     }
 
-
     /**
      * Hide fields to create.
      *
@@ -494,7 +493,7 @@ EOT;
      */
     public function createClose($fields)
     {
-        $this->ignoredCreateFields = array_merge($this->ignoredCreateFields, (array)$fields);
+        $this->ignoredCreateFields = array_merge($this->ignoredCreateFields, (array) $fields);
     }
 
     /**
@@ -508,7 +507,7 @@ EOT;
 
         $tabObj = $this->form->getTab();
 
-        if (! $tabObj->isEmpty()) {
+        if (!$tabObj->isEmpty()) {
             $script = <<<'SCRIPT'
 
 var hash = document.location.hash;

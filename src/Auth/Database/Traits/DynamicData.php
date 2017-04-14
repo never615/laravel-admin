@@ -2,8 +2,7 @@
 
 namespace Encore\Admin\Auth\Database\Traits;
 
-
-/**
+/*
  * Created by PhpStorm.
  * User: never615
  * Date: 24/03/2017
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * 在这里处理查询作用域
- * 用来实现不同主体查询不同的数据内容.需要实现不同主体加载不同数据的model引入DynamicData即可
+ * 用来实现不同主体查询不同的数据内容.需要实现不同主体加载不同数据的model引入DynamicData即可.
  *
  * Created by PhpStorm.
  * User: never615
@@ -25,7 +24,7 @@ use Illuminate\Support\Facades\Schema;
 trait DynamicData
 {
     /**
-     * 动态设定查询数据范围
+     * 动态设定查询数据范围.
      *
      * 项目拥有者和招商拥有查看全部业务数据的能力
      * 子主体只能查看自己拥有的数据
@@ -36,7 +35,7 @@ trait DynamicData
     {
         if (Schema::hasColumn($this->getTable(), 'subject_id')) {
             //1.获取当前登录账户属于哪一个主体
-            $currentSubject = Auth::guard("admin")->user()->subject;
+            $currentSubject = Auth::guard('admin')->user()->subject;
             //2.获取当前主体的所有子主体
             $ids = $currentSubject->getChildrenSubject($currentSubject->id);
             //3.限定查询范围为所有子主体
@@ -48,8 +47,4 @@ trait DynamicData
     {
         return $this->belongsTo(Subject::class);
     }
-
- 
-
-
 }

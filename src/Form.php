@@ -411,7 +411,6 @@ class Form
         return $input;
     }
 
-
     /**
      * Get inputs for relations.
      *
@@ -675,7 +674,7 @@ class Form
      * Prepare input data for update.
      *
      * @param array $updates
-     * @param bool  $hasDot If column name contains a 'dot', only has-one relation column use this.
+     * @param bool  $hasDot  If column name contains a 'dot', only has-one relation column use this.
      *
      * @return array
      */
@@ -825,7 +824,6 @@ class Form
 
         return $this;
     }
-
 
     /**
      * Hide fields to create.
