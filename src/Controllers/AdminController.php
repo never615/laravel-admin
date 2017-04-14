@@ -82,7 +82,7 @@ class AdminController extends Controller
             });
             
             //非项目拥有者不能查看,拥有者账号
-            if(Auth::guard("admin")->user()->id!=1){
+            if (Auth::guard("admin")->user()->id!=1) {
                 $grid->model()->where('id', '!=', 1);
             }
             

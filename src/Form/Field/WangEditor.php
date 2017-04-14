@@ -6,6 +6,7 @@
  * Time: 6:58 PM
  */
 namespace Encore\Admin\Form\Field;
+
 use Encore\Admin\Form\Field;
 
 class WangEditor extends Field
@@ -35,6 +36,5 @@ var editor = new wangEditor('{$this->id}');
 
 EOT;
         return parent::render();
-
     }
 }
