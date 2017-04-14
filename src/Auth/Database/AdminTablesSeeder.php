@@ -16,18 +16,18 @@ class AdminTablesSeeder extends Seeder
         // create a user.
 //        Administrator::truncate();
         Administrator::create([
-            'username'  => 'mallto',
-            'password'  => bcrypt('owner'),
-            'name'      => '墨兔科技',
-            'adminable_id'=>1,
-            'adminable_type'=>'subject'
+            'username'      => 'mallto',
+            'password'      => bcrypt('owner'),
+            'name'          => '墨兔科技',
+            'adminable_id'  => 1,
+            'adminable_type'=> 'subject',
         ]);
         Administrator::create([
-            'username'  => 'admin',
-            'password'  => bcrypt('admin'),
-            'name'      => '管理员',
-            'adminable_id'=>1,
-            'adminable_type'=>'subject'
+            'username'      => 'admin',
+            'password'      => bcrypt('admin'),
+            'name'          => '管理员',
+            'adminable_id'  => 1,
+            'adminable_type'=> 'subject',
         ]);
 
         // create a role.

@@ -44,7 +44,7 @@ trait UploadField
      * Create a new File instance.
      *
      * @param string $column
-     * @param array $arguments
+     * @param array  $arguments
      */
     public function __construct($column, $arguments = [])
     {
@@ -66,31 +66,30 @@ trait UploadField
     public function setupDefaultOptions()
     {
         $this->options = array_merge([
-            'language' => 'zh_CN',
-            'overwriteInitial' => false,
+            'language'             => 'zh_CN',
+            'overwriteInitial'     => false,
             'initialPreviewAsData' => true,
-            'browseLabel' => trans('admin::lang.browse'),
-            'showClose' => true,
-            'browseOnZoneClick' => true,
-            'showRemove' => false,
-            'showUpload' => false,
-            'initialCaption' => $this->initialCaption($this->value),
+            'browseLabel'          => trans('admin::lang.browse'),
+            'showClose'            => true,
+            'browseOnZoneClick'    => true,
+            'showRemove'           => false,
+            'showUpload'           => false,
+            'initialCaption'       => $this->initialCaption($this->value),
 //            'deleteUrl' => $this->form->resource() . '/' . $this->form->model()->getKey(),
-            'deleteUrl' => admin_url('default/delete'),
+            'deleteUrl'       => admin_url('default/delete'),
             'deleteExtraData' => [
-                $this->column => '',
+                $this->column            => '',
                 static::FILE_DELETE_FLAG => '',
-                '_token' => csrf_token(),
-                '_method' => 'PUT'
+                '_token'                 => csrf_token(),
+                '_method'                => 'PUT',
             ],
             'ajaxDeleteSettings' => [
-                'type' => 'DELETE'
+                'type' => 'DELETE',
             ],
             'slugCallback' => 'function (filename) {
                     return String(filename).replace(/[\-\[\]\/\{}:;#%=\(\)\*\+\?\\\^\$\|<>&"\']/g, \'_\');
-                }'
+                }',
         ], $this->options);
-
 
 //        $this->options([
 //            'language' => 'zh_CN',
@@ -122,7 +121,7 @@ trait UploadField
     public function setupPreviewOptions()
     {
         $this->options([
-            'initialPreview' => $this->preview(),
+            'initialPreview'       => $this->preview(),
             'initialPreviewConfig' => $this->initialPreviewConfig(),
         ]);
     }
@@ -155,7 +154,7 @@ trait UploadField
     {
         if (!array_key_exists($disk, config('filesystems.disks'))) {
             $error = new MessageBag([
-                'title' => 'Config error.',
+                'title'   => 'Config error.',
                 'message' => "Disk [$disk] not configured, please add a disk config in `config/filesystems.php`.",
             ]);
 
@@ -170,7 +169,7 @@ trait UploadField
     /**
      * Specify the directory and name for upload file.
      *
-     * @param string $directory
+     * @param string      $directory
      * @param null|string $name
      *
      * @return $this
@@ -251,7 +250,6 @@ trait UploadField
             return $this->name;
         }
 
-
         return $file->hashName();
 //        return $file->getClientOriginalName();
     }
@@ -281,7 +279,7 @@ trait UploadField
     {
         $this->renameIfExists($file);
 
-        $target = $this->getDirectory() . '/' . $this->name;
+        $target = $this->getDirectory().'/'.$this->name;
 
         $this->storage->put($target, file_get_contents($file->getRealPath()));
 
@@ -292,6 +290,7 @@ trait UploadField
      * If name already exists, rename it.
      *
      * @param $file
+     *
      * @return void
      */
     public function renameIfExists(UploadedFile $file)
@@ -314,7 +313,7 @@ trait UploadField
             return $path;
         }
 
-        return rtrim(config('admin.upload.host'), '/') . '/' . trim($path, '/');
+        return rtrim(config('admin.upload.host'), '/').'/'.trim($path, '/');
     }
 
     /**
@@ -326,7 +325,7 @@ trait UploadField
      */
     protected function generateUniqueName(UploadedFile $file)
     {
-        return md5(uniqid()) . '.' . $file->guessExtension();
+        return md5(uniqid()).'.'.$file->guessExtension();
     }
 
     /**

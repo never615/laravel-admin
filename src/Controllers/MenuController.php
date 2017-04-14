@@ -11,9 +11,7 @@ use Encore\Admin\Layout\Row;
 use Encore\Admin\Tree;
 use Encore\Admin\Widgets\Box;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class MenuController extends Controller
 {
@@ -75,7 +73,7 @@ class MenuController extends Controller
 
                 if (!isset($branch['children'])) {
                     //                    $uri = admin_url($branch['url']);
-                    $uri = Route::has($branch['url'])?route($branch['url']):admin_url($branch['url']);
+                    $uri = Route::has($branch['url']) ? route($branch['url']) : admin_url($branch['url']);
 
                     $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
                 }

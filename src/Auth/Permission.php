@@ -88,6 +88,6 @@ class Permission
     public static function isAdministrator()
     {
         //        return Auth::guard('admin')->user()->isRole('administrator');
-        return Auth::guard('admin')->user()->isRole(config("admin.roles.owner"));
+        return Auth::guard('admin')->user()->isRole(config('admin.roles.owner'));
     }
 }

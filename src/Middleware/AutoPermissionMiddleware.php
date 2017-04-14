@@ -13,8 +13,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  * 自动处理权限
  * 原理:
  *   使用路由名,作为权限名.然后在中间件中判断是否拥有此权限
- * Class AutoPermissionMiddleware
- * @package Encore\Admin\Middleware
+ * Class AutoPermissionMiddleware.
  */
 class AutoPermissionMiddleware
 {
@@ -23,8 +22,10 @@ class AutoPermissionMiddleware
 
     /**
      * Handle an incoming request.
+     *
      * @param $request
      * @param Closure $next
+     *
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -35,22 +36,22 @@ class AutoPermissionMiddleware
 
         $previousUrl = URL::previous();
         $currentUrl = $request->path();
-        $currentUrl=substr($currentUrl, 5);  //admin
+        $currentUrl = substr($currentUrl, 5);  //admin
         $currentRouteName = Route::currentRouteName();
 
-        if (Auth::guard("admin")->user()->inRoles(config('admin.roles.owner'))) {
+        if (Auth::guard('admin')->user()->inRoles(config('admin.roles.owner'))) {
             //pass
             return $next($request);
         } else {
             $permission = Permission::where('slug', $currentUrl)->orWhere('slug', $currentRouteName)->first();
             if ($permission) {
-                if (Auth::guard("admin")->user()->can($permission->slug)) {
+                if (Auth::guard('admin')->user()->can($permission->slug)) {
                     //有这个权限 pass
                     return $next($request);
                 } else {
                     //denied
                     if ($request->expectsJson()) {
-                        throw new AccessDeniedHttpException(trans("errors.forbidden"));
+                        throw new AccessDeniedHttpException(trans('errors.forbidden'));
                     } else {
                         return response()->view('errors.403', compact('previousUrl'));
                     }

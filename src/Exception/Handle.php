@@ -17,7 +17,7 @@ class Handle
      */
     public static function renderException(\Exception $exception)
     {
-        Log::info("laravel admin handler");
+        Log::info('laravel admin handler');
 
         $error = new MessageBag([
             'type'      => get_class($exception),

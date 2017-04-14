@@ -14,7 +14,7 @@ trait AdminPermission
     public function getAvatarAttribute($avatar)
     {
         if ($avatar) {
-            return rtrim(config('admin.upload.host'), '/') . '/' . trim($avatar, '/');
+            return rtrim(config('admin.upload.host'), '/').'/'.trim($avatar, '/');
         }
 
         return asset('/packages/admin/AdminLTE/dist/img/user2-160x160.jpg');
@@ -88,7 +88,6 @@ trait AdminPermission
         return !$this->can($permission);
     }
 
-
     /**
      * Check if user is owner.
      *
@@ -96,7 +95,7 @@ trait AdminPermission
      */
     public function isOwner()
     {
-        return $this->isRole(config("admin.roles.owner"));
+        return $this->isRole(config('admin.roles.owner'));
     }
 
     /**
@@ -106,7 +105,7 @@ trait AdminPermission
      */
     public function isAdministrator()
     {
-        return $this->isRole(config("admin.roles.owner"));
+        return $this->isRole(config('admin.roles.owner'));
 //        return $this->isRole(config("admin.roles.admin"));
     }
 
@@ -131,7 +130,7 @@ trait AdminPermission
      */
     public function inRoles($roles = [])
     {
-        return $this->roles()->whereIn('slug', (array)$roles)->exists();
+        return $this->roles()->whereIn('slug', (array) $roles)->exists();
     }
 
     /**
@@ -158,8 +157,7 @@ trait AdminPermission
 
     /**
      * 返回用户所有的权限,slug是以index结尾的
-     * 包括角色包含的和单独权限拥有的
-     *
+     * 包括角色包含的和单独权限拥有的.
      */
     public function allPermissionArr()
     {

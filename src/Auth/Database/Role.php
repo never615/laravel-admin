@@ -52,7 +52,6 @@ class Role extends Model
         return $this->belongsToMany($relatedModel, $pivotTable, 'role_id', 'permission_id');
     }
 
-
     /**
      * Check user has permission.
      *

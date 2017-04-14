@@ -29,7 +29,7 @@ class File extends Field
     protected static $js = [
         '/packages/admin/bootstrap-fileinput/js/plugins/canvas-to-blob.min.js?v=4.3.7',
         '/packages/admin/bootstrap-fileinput/js/fileinput.min.js?v=4.3.7',
-        '/packages/admin/bootstrap-fileinput/js/fileinput_locale_zh_CN.js'
+        '/packages/admin/bootstrap-fileinput/js/fileinput_locale_zh_CN.js',
     ];
 
     /**
@@ -47,7 +47,7 @@ class File extends Field
      */
     public function getValidator(array $input)
     {
-        /**
+        /*
          * If has original value, means the form is in edit mode,
          * then remove required rule from rules.
          */
@@ -96,7 +96,7 @@ class File extends Field
     {
         $this->renameIfExists($file);
 
-        $target = $this->getDirectory() . '/' . $this->name;
+        $target = $this->getDirectory().'/'.$this->name;
 
         $this->storage->put($target, file_get_contents($file->getRealPath()));
 
@@ -153,7 +153,6 @@ class File extends Field
         $this->options(['overwriteInitial' => true]);
 
         $options = json_encode($this->options);
-
 
         $this->script = <<<EOT
 

@@ -57,7 +57,7 @@ class Select extends Field
         if (is_callable($options)) {
             $this->options = $options;
         } else {
-            $this->options = (array)$options;
+            $this->options = (array) $options;
         }
 
         return $this;
@@ -126,15 +126,15 @@ EOT;
      * Load options from remote.
      *
      * @param string $url
-     * @param array $parameters
-     * @param array $options
+     * @param array  $parameters
+     * @param array  $options
      *
      * @return $this
      */
     protected function loadOptionsFromRemote($url, $parameters = [], $options = [])
     {
         $ajaxOptions = [
-            'url' => $url . '?' . http_build_query($parameters),
+            'url' => $url.'?'.http_build_query($parameters),
         ];
 
         $ajaxOptions = json_encode(array_merge($ajaxOptions, $options));

@@ -7,7 +7,6 @@ use Encore\Admin\Form;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -191,7 +190,7 @@ class Field implements Renderable
     {
         return [
             'css' => static::$css,
-            'js' => static::$js,
+            'js'  => static::$js,
         ];
     }
 
@@ -556,9 +555,9 @@ class Field implements Renderable
                 if (!array_key_exists($column, $input)) {
                     continue;
                 }
-                $input[$column . $key] = array_get($input, $column);
-                $rules[$column . $key] = $fieldRules;
-                $attributes[$column . $key] = $this->label . "[$column]";
+                $input[$column.$key] = array_get($input, $column);
+                $rules[$column.$key] = $fieldRules;
+                $attributes[$column.$key] = $this->label."[$column]";
             }
         }
 
@@ -568,7 +567,7 @@ class Field implements Renderable
     /**
      * Sanitize input data.
      *
-     * @param array $input
+     * @param array  $input
      * @param string $column
      *
      * @return array
@@ -587,7 +586,7 @@ class Field implements Renderable
      * Add html attributes to elements.
      *
      * @param array|string $attribute
-     * @param mixed $value
+     * @param mixed        $value
      *
      * @return $this
      */
@@ -596,7 +595,7 @@ class Field implements Renderable
         if (is_array($attribute)) {
             $this->attributes = array_merge($this->attributes, $attribute);
         } else {
-            $this->attributes[$attribute] = (string)$value;
+            $this->attributes[$attribute] = (string) $value;
         }
 
         return $this;
@@ -633,7 +632,7 @@ class Field implements Renderable
      */
     public function getPlaceholder()
     {
-        return $this->placeholder ?: trans('admin::lang.input') . ' ' . $this->label;
+        return $this->placeholder ?: trans('admin::lang.input').' '.$this->label;
     }
 
     /**
@@ -646,7 +645,7 @@ class Field implements Renderable
         $html = [];
 
         foreach ($this->attributes as $name => $value) {
-            $html[] = $name . '="' . e($value) . '"';
+            $html[] = $name.'="'.e($value).'"';
         }
 
         return implode(' ', $html);
@@ -661,7 +660,7 @@ class Field implements Renderable
      */
     public function setElementClass($class)
     {
-        $this->elementClass = (array)$class;
+        $this->elementClass = (array) $class;
 
         return $this;
     }
@@ -676,14 +675,14 @@ class Field implements Renderable
         if (!$this->elementClass) {
             $name = $this->elementName ?: $this->formatName($this->column);
 
-            $this->elementClass = (array)str_replace(['[', ']'], '_', $name);
+            $this->elementClass = (array) str_replace(['[', ']'], '_', $name);
         }
 
         return $this->elementClass;
     }
 
     /**
-     * Get element class string
+     * Get element class string.
      *
      * @return mixed
      */
@@ -699,7 +698,7 @@ class Field implements Renderable
     }
 
     /**
-     * Get element class selector
+     * Get element class selector.
      *
      * @return string
      */
@@ -711,25 +710,26 @@ class Field implements Renderable
             $classes = [];
 
             foreach ($elementClass as $index => $class) {
-                $classes[$index] = '.' . $class;
+                $classes[$index] = '.'.$class;
             }
 
             return $classes;
         }
 
-        return '.' . implode('.', $elementClass);
+        return '.'.implode('.', $elementClass);
     }
 
     /**
-     * Add the element class
+     * Add the element class.
      *
      * @param $class
+     *
      * @return $this
      */
     public function addElementClass($class)
     {
         if (is_array($class) || is_string($class)) {
-            $this->elementClass = array_merge($this->elementClass, (array)$class);
+            $this->elementClass = array_merge($this->elementClass, (array) $class);
 
             $this->elementClass = array_unique($this->elementClass);
         }
@@ -737,11 +737,11 @@ class Field implements Renderable
         return $this;
     }
 
-
     /**
-     * Remove element class
+     * Remove element class.
      *
      * @param $class
+     *
      * @return $this
      */
     public function removeElementClass($class)
@@ -749,7 +749,7 @@ class Field implements Renderable
         $delClass = [];
 
         if (is_string($class) || is_array($class)) {
-            $delClass = (array)$class;
+            $delClass = (array) $class;
         }
 
         foreach ($delClass as $del) {
@@ -769,16 +769,16 @@ class Field implements Renderable
     protected function variables()
     {
         return array_merge($this->variables, [
-            'id' => $this->id,
-            'name' => $this->elementName ?: $this->formatName($this->column),
-            'help' => $this->help,
-            'class' => $this->getElementClassString(),
-            'value' => $this->value(),
-            'label' => $this->label,
-            'width' => $this->width,
-            'column' => $this->column,
-            'errorKey' => $this->getErrorKey(),
-            'attributes' => $this->formatAttributes(),
+            'id'          => $this->id,
+            'name'        => $this->elementName ?: $this->formatName($this->column),
+            'help'        => $this->help,
+            'class'       => $this->getElementClassString(),
+            'value'       => $this->value(),
+            'label'       => $this->label,
+            'width'       => $this->width,
+            'column'      => $this->column,
+            'errorKey'    => $this->getErrorKey(),
+            'attributes'  => $this->formatAttributes(),
             'placeholder' => $this->getPlaceholder(),
         ]);
     }
@@ -796,7 +796,7 @@ class Field implements Renderable
 
         $class = explode('\\', get_called_class());
 
-        return 'admin::form.' . strtolower(end($class));
+        return 'admin::form.'.strtolower(end($class));
     }
 
     /**
@@ -817,8 +817,6 @@ class Field implements Renderable
     public function render()
     {
         Admin::script($this->script);
-
-
 
         return view($this->getView(), $this->variables());
     }

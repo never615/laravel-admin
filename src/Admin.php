@@ -116,7 +116,7 @@ class Admin
                             str_replace(app()->basePath(), '', $directory)
                         ))
                 ), '\\')
-            . '\\Controllers';
+            .'\\Controllers';
     }
 
     /**
@@ -129,7 +129,7 @@ class Admin
     public static function css($css = null)
     {
         if (!is_null($css)) {
-            self::$css = array_merge(self::$css, (array)$css);
+            self::$css = array_merge(self::$css, (array) $css);
 
             return;
         }
@@ -151,7 +151,7 @@ class Admin
     public static function js($js = null)
     {
         if (!is_null($js)) {
-            self::$js = array_merge(self::$js, (array)$js);
+            self::$js = array_merge(self::$js, (array) $js);
 
             return;
         }
@@ -171,7 +171,7 @@ class Admin
     public static function script($script = '')
     {
         if (!empty($script)) {
-            self::$script = array_merge(self::$script, (array)$script);
+            self::$script = array_merge(self::$script, (array) $script);
 
             return;
         }
@@ -188,13 +188,13 @@ class Admin
      */
     public static function url($url)
     {
-        $prefix = (string)config('admin.prefix');
+        $prefix = (string) config('admin.prefix');
 
         if (empty($prefix) || $prefix == '/') {
-            return '/' . trim($url, '/');
+            return '/'.trim($url, '/');
         }
 
-        return "/$prefix/" . trim($url, '/');
+        return "/$prefix/".trim($url, '/');
     }
 
     /**
@@ -254,15 +254,14 @@ class Admin
     public function registerAuthRoutes()
     {
         $attributes = [
-            'prefix' => config('admin.prefix'),
-            'namespace' => 'Encore\Admin\Controllers',
+            'prefix'     => config('admin.prefix'),
+            'namespace'  => 'Encore\Admin\Controllers',
             'middleware' => ['web', 'admin'],
         ];
 
         Route::group($attributes, function ($router) {
             //            $attributes = ['middleware' => 'admin.permission:allow,administrator'];
             $attributes = ['middleware' => 'admin.auto_permission'];
-
 
             /* @var \Illuminate\Routing\Router $router */
             $router->group($attributes, function ($router) {
@@ -289,18 +288,17 @@ class Admin
     public function registerHelpersRoutes($attributes = [])
     {
         $attributes = array_merge([
-            'prefix' => trim(config('admin.prefix'), '/') . '/helpers',
+            'prefix'     => trim(config('admin.prefix'), '/').'/helpers',
             'middleware' => ['web', 'admin', 'admin.permission:allow,owner'],
         ], $attributes);
 
         Route::group($attributes, function ($router) {
 
-
             /* @var \Illuminate\Routing\Router $router */
-            $router->get('terminal/database', 'Encore\Admin\Controllers\TerminalController@database')->name("database.index");
+            $router->get('terminal/database', 'Encore\Admin\Controllers\TerminalController@database')->name('database.index');
             $router->post('terminal/database', 'Encore\Admin\Controllers\TerminalController@runDatabase');
 
-            $router->get('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@artisan')->name("artisan.index");
+            $router->get('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@artisan')->name('artisan.index');
             $router->post('terminal/artisan', 'Encore\Admin\Controllers\TerminalController@runArtisan');
 
             $router->resource('scaffold', 'Encore\Admin\Controllers\ScaffoldController', ['only' => ['index', 'store']]);

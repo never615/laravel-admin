@@ -5,7 +5,6 @@ namespace Encore\Admin\Traits;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Tree;
-use Illuminate\Support\Facades\Log;
 
 trait AdminBuilder
 {

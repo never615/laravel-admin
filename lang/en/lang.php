@@ -73,8 +73,7 @@ return [
     'parent_id'     => 'Parent',
     'icon'          => 'Icon',
     'uri'           => 'URI',
-    'route_name' => 'Route name',
-
+    'route_name'    => 'Route name',
 
     'operation_log'       => 'Operation log',
     'parent_select_error' => 'Parent select error',

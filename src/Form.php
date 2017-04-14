@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Validator;
@@ -232,7 +231,7 @@ class Form
     /**
      * Use tab to split form.
      *
-     * @param string $title
+     * @param string  $title
      * @param Closure $content
      *
      * @return $this
@@ -368,7 +367,7 @@ class Form
         // ajax but not pjax
         if ($request->ajax() && !$request->pjax()) {
             return response()->json([
-                'status' => true,
+                'status'  => true,
                 'message' => $message,
             ]);
         }
@@ -481,11 +480,10 @@ class Form
 
         if ($this->handleOrderable($id, $data)) {
             return response([
-                'status' => true,
+                'status'  => true,
                 'message' => trans('admin::lang.update_succeeded'),
             ]);
         }
-
 
         /* @var Model $this->model */
         $this->model = $this->model->with($this->getRelations())->findOrFail($id);
@@ -561,6 +559,7 @@ class Form
 
     /**
      * @param array $input
+     *
      * @return array
      */
     protected function handleFileDelete(array $input = [])
@@ -578,7 +577,7 @@ class Form
     /**
      * Handle orderable update.
      *
-     * @param int $id
+     * @param int   $id
      * @param array $input
      *
      * @return bool
@@ -676,7 +675,7 @@ class Form
      * Prepare input data for update.
      *
      * @param array $updates
-     * @param bool $hasDot If column name contains a 'dot', only has-one relation column use this.
+     * @param bool  $hasDot  If column name contains a 'dot', only has-one relation column use this.
      *
      * @return array
      */
@@ -717,13 +716,13 @@ class Form
 
     /**
      * @param string|array $columns
-     * @param bool $hasDot
+     * @param bool         $hasDot
      *
      * @return bool
      */
     public function invalidColumn($columns, $hasDot = false)
     {
-        foreach ((array)$columns as $column) {
+        foreach ((array) $columns as $column) {
             if ((!$hasDot && Str::contains($column, '.')) ||
                 ($hasDot && !Str::contains($column, '.'))
             ) {
@@ -822,13 +821,13 @@ class Form
      */
     public function ignore($fields)
     {
-        $this->ignored = array_merge($this->ignored, (array)$fields);
+        $this->ignored = array_merge($this->ignored, (array) $fields);
 
         return $this;
     }
 
     /**
-     * @param array $data
+     * @param array        $data
      * @param string|array $columns
      *
      * @return array|mixed
@@ -1074,7 +1073,7 @@ class Form
     public function resource($slice = -2)
     {
         $segments = explode('/', trim(app('request')->getUri(), '/'));
-        
+
         if ($slice != 0) {
             $segments = array_slice($segments, 0, $slice);
         }
@@ -1100,7 +1099,7 @@ class Form
      * Get or set input data.
      *
      * @param string $key
-     * @param null $value
+     * @param null   $value
      *
      * @return array|mixed
      */
@@ -1121,52 +1120,52 @@ class Form
     public static function registerBuiltinFields()
     {
         $map = [
-            'button' => \Encore\Admin\Form\Field\Button::class,
-            'checkbox' => \Encore\Admin\Form\Field\Checkbox::class,
-            'color' => \Encore\Admin\Form\Field\Color::class,
-            'currency' => \Encore\Admin\Form\Field\Currency::class,
-            'date' => \Encore\Admin\Form\Field\Date::class,
-            'dateRange' => \Encore\Admin\Form\Field\DateRange::class,
-            'datetime' => \Encore\Admin\Form\Field\Datetime::class,
-            'dateTimeRange' => \Encore\Admin\Form\Field\DatetimeRange::class,
-            'datetimeRange' => \Encore\Admin\Form\Field\DatetimeRange::class,
-            'decimal' => \Encore\Admin\Form\Field\Decimal::class,
-            'display' => \Encore\Admin\Form\Field\Display::class,
-            'divider' => \Encore\Admin\Form\Field\Divide::class,
-            'divide' => \Encore\Admin\Form\Field\Divide::class,
-            'embeds' => \Encore\Admin\Form\Field\Embeds::class,
-            'editor' => \Encore\Admin\Form\Field\Editor::class,
-            'editor2' => \Encore\Admin\Form\Field\WangEditor::class,
-            'email' => \Encore\Admin\Form\Field\Email::class,
-            'file' => \Encore\Admin\Form\Field\File::class,
-            'hasMany' => \Encore\Admin\Form\Field\HasMany::class,
-            'hidden' => \Encore\Admin\Form\Field\Hidden::class,
-            'id' => \Encore\Admin\Form\Field\Id::class,
-            'image' => \Encore\Admin\Form\Field\Image::class,
-            'ip' => \Encore\Admin\Form\Field\Ip::class,
-            'map' => \Encore\Admin\Form\Field\Map::class,
-            'mobile' => \Encore\Admin\Form\Field\Mobile::class,
-            'month' => \Encore\Admin\Form\Field\Month::class,
+            'button'         => \Encore\Admin\Form\Field\Button::class,
+            'checkbox'       => \Encore\Admin\Form\Field\Checkbox::class,
+            'color'          => \Encore\Admin\Form\Field\Color::class,
+            'currency'       => \Encore\Admin\Form\Field\Currency::class,
+            'date'           => \Encore\Admin\Form\Field\Date::class,
+            'dateRange'      => \Encore\Admin\Form\Field\DateRange::class,
+            'datetime'       => \Encore\Admin\Form\Field\Datetime::class,
+            'dateTimeRange'  => \Encore\Admin\Form\Field\DatetimeRange::class,
+            'datetimeRange'  => \Encore\Admin\Form\Field\DatetimeRange::class,
+            'decimal'        => \Encore\Admin\Form\Field\Decimal::class,
+            'display'        => \Encore\Admin\Form\Field\Display::class,
+            'divider'        => \Encore\Admin\Form\Field\Divide::class,
+            'divide'         => \Encore\Admin\Form\Field\Divide::class,
+            'embeds'         => \Encore\Admin\Form\Field\Embeds::class,
+            'editor'         => \Encore\Admin\Form\Field\Editor::class,
+            'editor2'        => \Encore\Admin\Form\Field\WangEditor::class,
+            'email'          => \Encore\Admin\Form\Field\Email::class,
+            'file'           => \Encore\Admin\Form\Field\File::class,
+            'hasMany'        => \Encore\Admin\Form\Field\HasMany::class,
+            'hidden'         => \Encore\Admin\Form\Field\Hidden::class,
+            'id'             => \Encore\Admin\Form\Field\Id::class,
+            'image'          => \Encore\Admin\Form\Field\Image::class,
+            'ip'             => \Encore\Admin\Form\Field\Ip::class,
+            'map'            => \Encore\Admin\Form\Field\Map::class,
+            'mobile'         => \Encore\Admin\Form\Field\Mobile::class,
+            'month'          => \Encore\Admin\Form\Field\Month::class,
             'multipleSelect' => \Encore\Admin\Form\Field\MultipleSelect::class,
-            'number' => \Encore\Admin\Form\Field\Number::class,
-            'password' => \Encore\Admin\Form\Field\Password::class,
-            'radio' => \Encore\Admin\Form\Field\Radio::class,
-            'rate' => \Encore\Admin\Form\Field\Rate::class,
-            'select' => \Encore\Admin\Form\Field\Select::class,
-            'slider' => \Encore\Admin\Form\Field\Slider::class,
-            'switch' => \Encore\Admin\Form\Field\SwitchField::class,
-            'text' => \Encore\Admin\Form\Field\Text::class,
-            'textarea' => \Encore\Admin\Form\Field\Textarea::class,
-            'time' => \Encore\Admin\Form\Field\Time::class,
-            'timeRange' => \Encore\Admin\Form\Field\TimeRange::class,
-            'url' => \Encore\Admin\Form\Field\Url::class,
-            'year' => \Encore\Admin\Form\Field\Year::class,
-            'html' => \Encore\Admin\Form\Field\Html::class,
-            'tags' => \Encore\Admin\Form\Field\Tags::class,
-            'icon' => \Encore\Admin\Form\Field\Icon::class,
-            'multipleFile' => \Encore\Admin\Form\Field\MultipleFile::class,
-            'multipleImage' => \Encore\Admin\Form\Field\MultipleImage::class,
-            'captcha' => \Encore\Admin\Form\Field\Captcha::class,
+            'number'         => \Encore\Admin\Form\Field\Number::class,
+            'password'       => \Encore\Admin\Form\Field\Password::class,
+            'radio'          => \Encore\Admin\Form\Field\Radio::class,
+            'rate'           => \Encore\Admin\Form\Field\Rate::class,
+            'select'         => \Encore\Admin\Form\Field\Select::class,
+            'slider'         => \Encore\Admin\Form\Field\Slider::class,
+            'switch'         => \Encore\Admin\Form\Field\SwitchField::class,
+            'text'           => \Encore\Admin\Form\Field\Text::class,
+            'textarea'       => \Encore\Admin\Form\Field\Textarea::class,
+            'time'           => \Encore\Admin\Form\Field\Time::class,
+            'timeRange'      => \Encore\Admin\Form\Field\TimeRange::class,
+            'url'            => \Encore\Admin\Form\Field\Url::class,
+            'year'           => \Encore\Admin\Form\Field\Year::class,
+            'html'           => \Encore\Admin\Form\Field\Html::class,
+            'tags'           => \Encore\Admin\Form\Field\Tags::class,
+            'icon'           => \Encore\Admin\Form\Field\Icon::class,
+            'multipleFile'   => \Encore\Admin\Form\Field\MultipleFile::class,
+            'multipleImage'  => \Encore\Admin\Form\Field\MultipleImage::class,
+            'captcha'        => \Encore\Admin\Form\Field\Captcha::class,
         ];
 
         foreach ($map as $abstract => $class) {
@@ -1242,7 +1241,7 @@ class Form
 
         return static::$collectedAssets = [
             'css' => $css->flatten()->unique()->filter()->toArray(),
-            'js' => $js->flatten()->unique()->filter()->toArray(),
+            'js'  => $js->flatten()->unique()->filter()->toArray(),
         ];
     }
 
@@ -1273,7 +1272,7 @@ class Form
      * Generate a Field object and add to form builder if Field exists.
      *
      * @param string $method
-     * @param array $arguments
+     * @param array  $arguments
      *
      * @return Field|void
      */

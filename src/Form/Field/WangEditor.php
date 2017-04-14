@@ -3,8 +3,9 @@
  * Created by PhpStorm.
  * User: never615
  * Date: 09/03/2017
- * Time: 6:58 PM
+ * Time: 6:58 PM.
  */
+
 namespace Encore\Admin\Form\Field;
 
 use Encore\Admin\Form\Field;
@@ -35,6 +36,7 @@ var editor = new wangEditor('{$this->id}');
     editor.create();
 
 EOT;
+
         return parent::render();
     }
 }

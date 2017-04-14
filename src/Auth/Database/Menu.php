@@ -7,7 +7,6 @@ use Encore\Admin\Traits\ModelTree;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class Menu.
@@ -63,23 +62,24 @@ class Menu extends Model
     public function allNodes()
     {
         $orderColumn = DB::getQueryGrammar()->wrap($this->orderColumn);
-        $byOrder = $orderColumn . ' = 0,' . $orderColumn;
+        $byOrder = $orderColumn.' = 0,'.$orderColumn;
 
 //        return static::with('roles')->orderByRaw($byOrder)->get()->toArray();
 
         //菜单不跟角色挂钩,只有一份菜单
         //每个人能看到的菜单,由他拥有的权限决定
         //如果是项目拥有者,返回所有菜单;如果是其他账号,返回相应菜单
-        if (Auth::guard("admin")->user()->isOwner()) {
+        if (Auth::guard('admin')->user()->isOwner()) {
             return static::orderByRaw($byOrder)->get()->toArray();
         } else {
-            $permissionSlugArr=array_pluck(Auth::guard("admin")->user()->allPermissionArr(), 'slug');
-            $parent_ids=static::whereIn('url', $permissionSlugArr)->get()->pluck("parent_id");
+            $permissionSlugArr = array_pluck(Auth::guard('admin')->user()->allPermissionArr(), 'slug');
+            $parent_ids = static::whereIn('url', $permissionSlugArr)->get()->pluck('parent_id');
 
             //查出来的菜单如果有父菜单也要返回
-            $result= static::whereIn('url', $permissionSlugArr)
+            $result = static::whereIn('url', $permissionSlugArr)
                 ->orWhereIn('id', $parent_ids)
                 ->orderByRaw($byOrder)->get()->toArray();
+
             return $result;
         }
     }
