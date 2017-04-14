@@ -115,8 +115,7 @@ class Admin
                         explode(DIRECTORY_SEPARATOR,
                             str_replace(app()->basePath(), '', $directory)
                         ))
-                )
-                , '\\')
+                ), '\\')
             . '\\Controllers';
     }
 
@@ -261,13 +260,12 @@ class Admin
         ];
 
         Route::group($attributes, function ($router) {
-//            $attributes = ['middleware' => 'admin.permission:allow,administrator'];
+            //            $attributes = ['middleware' => 'admin.permission:allow,administrator'];
             $attributes = ['middleware' => 'admin.auto_permission'];
 
 
             /* @var \Illuminate\Routing\Router $router */
             $router->group($attributes, function ($router) {
-
                 $router->group(['middleware' => 'admin.permission:allow,owner'], function ($router) {
                     $router->resource('auth/permissions', 'PermissionController');
                     $router->resource('auth/menu', 'MenuController', ['except' => ['create']]);
@@ -285,7 +283,6 @@ class Admin
             $router->get('auth/login', 'AuthController@getLogin');
             $router->post('auth/login', 'AuthController@postLogin');
             $router->get('auth/logout', 'AuthController@getLogout');
-
         });
     }
 

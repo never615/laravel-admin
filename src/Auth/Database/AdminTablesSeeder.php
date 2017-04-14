@@ -45,7 +45,7 @@ class AdminTablesSeeder extends Seeder
         //设置角色项目拥有者给账号mallto
         Administrator::first()->roles()->save(Role::first());
         //设置角色项目管理员设置给账号admin
-        Administrator::where('id',2)->first()->roles()->save(Role::where('id',2)->first());
+        Administrator::where('id', 2)->first()->roles()->save(Role::where('id', 2)->first());
 
         // add default menus.
         Menu::truncate();
@@ -134,7 +134,5 @@ class AdminTablesSeeder extends Seeder
         Menu::find(8)->roles()->save(Role::first());
 
 //        Menu::find(2)->roles()->save(Role::where('id',2)->first());
-
-
     }
 }

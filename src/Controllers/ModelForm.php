@@ -4,7 +4,6 @@ namespace Encore\Admin\Controllers;
 
 trait ModelForm
 {
-    
     public function show($id)
     {
         return $this->edit($id);

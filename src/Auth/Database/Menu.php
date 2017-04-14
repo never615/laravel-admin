@@ -73,12 +73,12 @@ class Menu extends Model
         if (Auth::guard("admin")->user()->isOwner()) {
             return static::orderByRaw($byOrder)->get()->toArray();
         } else {
-            $permissionSlugArr=array_pluck(Auth::guard("admin")->user()->allPermissionArr(),'slug');
+            $permissionSlugArr=array_pluck(Auth::guard("admin")->user()->allPermissionArr(), 'slug');
             $parent_ids=static::whereIn('url', $permissionSlugArr)->get()->pluck("parent_id");
 
             //查出来的菜单如果有父菜单也要返回
             $result= static::whereIn('url', $permissionSlugArr)
-                ->orWhereIn('id',$parent_ids)
+                ->orWhereIn('id', $parent_ids)
                 ->orderByRaw($byOrder)->get()->toArray();
             return $result;
         }

@@ -13,7 +13,6 @@
  */
 namespace Encore\Admin\Middleware;
 
-
 use Closure;
 use Encore\Admin\Auth\Database\Permission;
 use Illuminate\Support\Facades\Auth;
@@ -79,9 +78,7 @@ class Sidebar
                 'title' => $permission->display_name,
                 'routeName' => $permission->name
             ]);
-
         }
         return $menus;
     }
-
 }

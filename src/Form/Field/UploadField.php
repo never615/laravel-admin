@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\MessageBag;
+
 //use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait UploadField
@@ -88,7 +89,7 @@ trait UploadField
             'slugCallback' => 'function (filename) {
                     return String(filename).replace(/[\-\[\]\/\{}:;#%=\(\)\*\+\?\\\^\$\|<>&"\']/g, \'_\');
                 }'
-        ],$this->options);
+        ], $this->options);
 
 
 //        $this->options([

@@ -708,7 +708,6 @@ class Field implements Renderable
         $elementClass = $this->getElementClass();
 
         if (Arr::isAssoc($elementClass)) {
-
             $classes = [];
 
             foreach ($elementClass as $index => $class) {
@@ -730,7 +729,6 @@ class Field implements Renderable
     public function addElementClass($class)
     {
         if (is_array($class) || is_string($class)) {
-
             $this->elementClass = array_merge($this->elementClass, (array)$class);
 
             $this->elementClass = array_unique($this->elementClass);
@@ -761,7 +759,6 @@ class Field implements Renderable
         }
 
         return $this;
-
     }
 
     /**
