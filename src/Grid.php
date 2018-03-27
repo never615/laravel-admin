@@ -271,7 +271,6 @@ class Grid
             $relation = $this->model()->eloquent()->$relationName();
 
             $label = empty($label) ? ucfirst($relationColumn) : $label;
-
             $name = snake_case($relationName).'.'.$relationColumn;
         }
 
@@ -878,7 +877,8 @@ class Grid
      */
     public function __call($method, $arguments)
     {
-        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
+        $label = isset($arguments[0]) ? $arguments[0] : admin_translate($method);
+//        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
 
         if ($this->model()->eloquent() instanceof MongodbModel) {
             return $this->addColumn($method, $label);

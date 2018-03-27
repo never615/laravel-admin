@@ -88,6 +88,15 @@ class Builder
     protected $view = 'admin::form';
 
     /**
+     * Ignored creating fields.
+     *
+     * @var array
+     */
+    protected $hideFieldsByCreate = [];
+
+
+
+    /**
      * Builder constructor.
      *
      * @param Form $form
@@ -100,6 +109,17 @@ class Builder
 
         $this->setupTools();
     }
+
+    /**
+     * Hide fields when created.
+     *
+     * @param string|array $fields
+     */
+    public function hideFieldsByCreate($fields)
+    {
+        $this->hideFieldsByCreate = array_merge($this->hideFieldsByCreate, (array)$fields);
+    }
+
 
     /**
      * Setup grid tools.

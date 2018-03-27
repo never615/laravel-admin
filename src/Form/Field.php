@@ -234,10 +234,11 @@ class Field implements Renderable
     {
         $column = is_array($this->column) ? current($this->column) : $this->column;
 
-        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($column);
+        $label = isset($arguments[0]) ? $arguments[0] : admin_translate($column);
 
         return str_replace(['.', '_'], ' ', $label);
     }
+
 
     /**
      * Format the name of the field.

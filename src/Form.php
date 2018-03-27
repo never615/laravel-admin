@@ -1269,6 +1269,21 @@ class Form
         }
     }
 
+
+    /**
+     * Hide fields to create.
+     *
+     * @param string|array $fields
+     *
+     * @return $this
+     */
+    public function hideFieldsByCreate($fields)
+    {
+        $this->builder->hideFieldsByCreate($fields);
+
+        return $this;
+    }
+
     /**
      * Register custom field.
      *
