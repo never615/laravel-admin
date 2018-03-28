@@ -105,7 +105,8 @@ class Exporter
      */
     public function getDefaultExporter()
     {
-        return new CsvExporter($this->grid);
+        $clazz=config("admin.exporter");
+        return new $clazz($this->grid);
     }
 
     /**

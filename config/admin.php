@@ -45,6 +45,11 @@ return [
     'secure' => false,
 
     /*
+ * set default Exporter
+ */
+    'exporter'=>Encore\Admin\Grid\Exporters\CsvExporter::class,
+
+    /*
      * Laravel-admin auth setting.
      */
     'auth' => [
