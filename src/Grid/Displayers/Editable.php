@@ -23,9 +23,7 @@ class Editable extends AbstractDisplayer
      *
      * @var array
      */
-    protected $options = [
-        'emptytext'=>"空"
-    ];
+    protected $options;
 
     /**
      * Add options for editable.

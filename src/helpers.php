@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Lang;
+
 if (!function_exists('admin_path')) {
 
     /**
@@ -20,8 +22,8 @@ if (!function_exists('admin_url')) {
      * Get admin url.
      *
      * @param string $path
-     * @param  mixed   $parameters
-     * @param  bool    $secure
+     * @param  mixed $parameters
+     * @param  bool  $secure
      *
      * @return string
      */
@@ -133,7 +135,7 @@ if (!function_exists('admin_translate')) {
 
         $label = null;
         foreach ($transLateKeys as $key) {
-            if (Lang::has($key)) {
+            if (Lang::has($key) && is_string(trans($key))) {
                 $label = trans($key);
                 break;
             }
