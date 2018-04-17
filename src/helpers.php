@@ -22,8 +22,8 @@ if (!function_exists('admin_url')) {
      * Get admin url.
      *
      * @param string $path
-     * @param  mixed $parameters
-     * @param  bool  $secure
+     * @param mixed  $parameters
+     * @param bool   $secure
      *
      * @return string
      */
