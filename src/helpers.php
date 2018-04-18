@@ -124,12 +124,18 @@ if (!function_exists('admin_translate')) {
          */
         $columnLower = ltrim(strtolower(preg_replace('/[A-Z ]([A-Z](?![a-z]))*/', '_$0', $column)), '_');
         $columnLower = str_replace(' ', '', $columnLower);
+
+
         /*
          * The possible translate keys in priority order.
          */
         $transLateKeys = [
             'admin.'.$modelName.'.'.$columnLower,
+//            'admin.'.str_plural($modelName).'.'.$columnLower,
             'admin.'.$columnLower,
+            'admin2.'.$modelName.'.'.$columnLower,
+//            'admin2.'.str_plural($modelName).'.'.$columnLower,
+            'admin2.'.$columnLower,
             'validation.attributes.'.$columnLower,
         ];
 
