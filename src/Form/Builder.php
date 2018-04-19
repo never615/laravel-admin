@@ -514,6 +514,8 @@ EOT;
             $this->form->model()->getUpdatedAtColumn(),
         ];
 
+        $reservedColumns = array_merge($reservedColumns, $this->hideFieldsByCreate);
+
         $this->fields = $this->fields()->reject(function (Field $field) use ($reservedColumns) {
             return in_array($field->column(), $reservedColumns);
         });

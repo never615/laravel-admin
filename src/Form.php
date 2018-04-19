@@ -99,7 +99,7 @@ class Form
      *
      * @var Closure
      */
-    protected $saving;
+    protected $saving=[];
 
     /**
      * Saved callback.
@@ -472,9 +472,14 @@ class Form
      */
     protected function callSaving()
     {
-        if ($this->saving instanceof Closure) {
-            return call_user_func($this->saving, $this);
+        $response=null;
+        foreach ($this->saving as $item){
+            if ($item instanceof Closure) {
+                $response=call_user_func($item, $this);
+            }
         }
+
+        return $response;
     }
 
     /**
@@ -861,7 +866,9 @@ class Form
      */
     public function saving(Closure $callback)
     {
-        $this->saving = $callback;
+
+        array_unshift($this->saving,$callback);
+//        $this->saving[] = $callback;
     }
 
     /**

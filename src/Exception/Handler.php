@@ -26,6 +26,8 @@ class Handler
         $errors = new ViewErrorBag();
         $errors->put('exception', $error);
 
+        \Log::error($exception);
+
         return view('admin::partials.exception', compact('errors'))->render();
     }
 
