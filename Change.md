@@ -15,3 +15,5 @@
 * 修改`Encore\Admin\Admin\Editable`中的`$option`
 
 ### 默认导出处理者可以通过config自定义
+
+### 调用Field的addElementClass方式的时候,不会覆盖原Field自动生成的class
