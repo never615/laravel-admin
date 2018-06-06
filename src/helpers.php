@@ -130,13 +130,13 @@ if (!function_exists('admin_translate')) {
          * The possible translate keys in priority order.
          */
         $transLateKeys = [
-            'admin.'.$modelName.'.'.$columnLower,
-//            'admin.'.str_plural($modelName).'.'.$columnLower,
-            'admin.'.$columnLower,
             'admin2.'.$modelName.'.'.$columnLower,
 //            'admin2.'.str_plural($modelName).'.'.$columnLower,
             'admin2.'.$columnLower,
             'validation.attributes.'.$columnLower,
+            'admin.'.$modelName.'.'.$columnLower,
+//            'admin.'.str_plural($modelName).'.'.$columnLower,
+            'admin.'.$columnLower,
         ];
 
         $label = null;
