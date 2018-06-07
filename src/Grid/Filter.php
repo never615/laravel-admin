@@ -300,7 +300,9 @@ EOT;
         if (in_array($method, $this->supports)) {
             $className = '\\Encore\\Admin\\Grid\\Filter\\'.ucfirst($method);
 
-            return $this->addFilter(new $className(...$arguments));
+            $filter=new $className(...$arguments);
+            $filter->setTable($this->model->getTable());
+            return $this->addFilter($filter);
         }
 
         return $this;

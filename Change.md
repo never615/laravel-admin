@@ -3,7 +3,7 @@
 * 修改helpers文件,增加的`admin_translate()`和`admin_translate_arr()`方法
 * 修改`\Encore\Admin\Form\Field`的`formatLabel()`,`setForm()`,`__construct`.
 * 修改`Encore\Admin\Grid`中的`__call()`
-* 修改`Encore\Admin\Grid\Filter\AbstractFilter`中的`formatLabel()`
+* 修改`Encore\Admin\Grid\Filter\AbstractFilter`中的`formatLabel() __construct() setTable`和`Encore\Admin\Grid\Filter`中的`__call()`
 
 ### 表单创建是隐藏字段方法
 使用上通过`$form->hideFieldsByCreate([]);`

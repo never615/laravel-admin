@@ -81,19 +81,22 @@ abstract class AbstractFilter
      */
     protected $view = 'admin::filter.where';
 
+    protected $table;
+
     /**
      * AbstractFilter constructor.
      *
-     * @param $column
+     * @param        $column
      * @param string $label
      */
     public function __construct($column, $label = '')
     {
         $this->column = $column;
-        $this->label = $this->formatLabel($label);
-        $this->id = $this->formatId($column);
+        $this->label = $label;
+//        $this->label = $this->formatLabel($label);
+//        $this->id = $this->formatId($column);
 
-        $this->setupDefaultPresenter();
+//        $this->setupDefaultPresenter();
     }
 
     /**
@@ -116,9 +119,20 @@ abstract class AbstractFilter
     protected function formatLabel($label)
     {
 //        $label = $label ?: ucfirst($this->column);
-        $label = $label ?: admin_translate($this->column);
+        $label = $label ?: admin_translate($this->column, $this->table);
 
         return str_replace(['.', '_'], ' ', $label);
+    }
+
+
+    public function setTable($table)
+    {
+        $this->table = $table;
+        $this->label = $this->formatLabel($this->label);
+
+        $this->id = $this->formatId($this->column);
+
+        $this->setupDefaultPresenter();
     }
 
     /**
@@ -429,9 +443,14 @@ abstract class AbstractFilter
 
         list($relation, $args[0]) = explode('.', $this->column);
 
-        return ['whereHas' => [$relation, function ($relation) use ($args) {
-            call_user_func_array([$relation, $this->query], $args);
-        }]];
+        return [
+            'whereHas' => [
+                $relation,
+                function ($relation) use ($args) {
+                    call_user_func_array([$relation, $this->query], $args);
+                },
+            ],
+        ];
     }
 
     /**
