@@ -198,7 +198,7 @@ class Field implements Renderable
     {
         $this->arguments = $arguments;
         $this->column = $column;
-//        $this->label = $this->formatLabel($arguments);
+        $this->label = $this->formatLabel($arguments);
         $this->id = $this->formatId($column);
     }
 
@@ -237,8 +237,12 @@ class Field implements Renderable
     protected function formatLabel($arguments = [])
     {
         $column = is_array($this->column) ? current($this->column) : $this->column;
+        if ($this->form) {
+            $label = isset($arguments[0]) ? $arguments[0] : admin_translate($column, $this->form->model()->getTable());
+        } else {
+            $label = isset($arguments[0]) ? $arguments[0] : admin_translate($column);
+        }
 
-        $label = isset($arguments[0]) ? $arguments[0] : admin_translate($column);
 
         return str_replace(['.', '_'], ' ', $label);
     }
