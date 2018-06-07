@@ -877,7 +877,7 @@ class Grid
      */
     public function __call($method, $arguments)
     {
-        $label = isset($arguments[0]) ? $arguments[0] : admin_translate($method);
+        $label = isset($arguments[0]) ? $arguments[0] : admin_translate($method,$this->model->getTable());
 //        $label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
 
         if ($this->model()->eloquent() instanceof MongodbModel) {

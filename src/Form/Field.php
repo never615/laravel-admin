@@ -185,6 +185,9 @@ class Field implements Renderable
      */
     protected $horizontal = true;
 
+    protected $arguments = [];
+
+
     /**
      * Field constructor.
      *
@@ -193,8 +196,9 @@ class Field implements Renderable
      */
     public function __construct($column, $arguments = [])
     {
+        $this->arguments = $arguments;
         $this->column = $column;
-        $this->label = $this->formatLabel($arguments);
+//        $this->label = $this->formatLabel($arguments);
         $this->id = $this->formatId($column);
     }
 
@@ -345,6 +349,7 @@ class Field implements Renderable
     public function setForm(Form $form = null)
     {
         $this->form = $form;
+        $this->label = $this->formatLabel($this->arguments);
 
         return $this;
     }
