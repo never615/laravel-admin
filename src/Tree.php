@@ -85,7 +85,7 @@ class Tree implements Renderable
     {
         $this->model = $model;
 
-        $this->path = app('request')->getPathInfo();
+        $this->pathInfo = app('request')->getPathInfo();
         $this->elementId .= uniqid();
 
         $this->setupTools();
@@ -246,7 +246,7 @@ class Tree implements Renderable
             function(){
                 $.ajax({
                     method: 'post',
-                    url: '{$this->path}/' + id,
+                    url: '{$this->pathInfo}/' + id,
                     data: {
                         _method:'delete',
                         _token:LA.token,
@@ -269,7 +269,7 @@ class Tree implements Renderable
         $('.{$this->elementId}-save').click(function () {
             var serialize = $('#{$this->elementId}').nestable('serialize');
 
-            $.post('{$this->path}', {
+            $.post('{$this->pathInfo}', {
                 _token: LA.token,
                 _order: JSON.stringify(serialize)
             },
@@ -358,7 +358,7 @@ SCRIPT;
         Admin::script($this->script());
 
         view()->share([
-            'path'           => $this->path,
+            'pathInfo'       => $this->pathInfo,
             'keyName'        => $this->model->getKeyName(),
             'branchView'     => $this->view['branch'],
             'branchCallback' => $this->branchCallback,

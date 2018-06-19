@@ -29,7 +29,7 @@
 
         @if($useCreate)
         <div class="btn-group pull-right">
-            <a class="btn btn-success btn-sm" href="{{ $path }}/create"><i class="fa fa-save"></i>&nbsp;{{ trans('admin.new') }}</a>
+            <a class="btn btn-success btn-sm" href="{{ $pathInfo }}/create"><i class="fa fa-save"></i>&nbsp;{{ trans('admin.new') }}</a>
         </div>
         @endif
 
