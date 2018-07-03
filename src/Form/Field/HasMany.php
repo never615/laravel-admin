@@ -67,6 +67,7 @@ class HasMany extends Field
         $this->relationName = $relationName;
 
         $this->column = $relationName;
+        $this->arguments = $arguments;
 
         if (count($arguments) == 1) {
             $this->label = $this->formatLabel();
@@ -77,6 +78,33 @@ class HasMany extends Field
             list($this->label, $this->builder) = $arguments;
         }
     }
+
+
+    /**
+     * @param Form $form
+     *
+     * @return $this
+     */
+    public function setForm(Form $form = null)
+    {
+        $this->form = $form;
+
+        $this->label = $this->formatLabel($this->arguments);
+
+        $arguments=$this->arguments;
+
+        if (count($arguments) == 1) {
+            $this->label = $this->formatLabel();
+            $this->builder = $arguments[0];
+        }
+
+        if (count($arguments) == 2) {
+            list($this->label, $this->builder) = $arguments;
+        }
+
+        return $this;
+    }
+
 
     /**
      * Get validator for this field.
