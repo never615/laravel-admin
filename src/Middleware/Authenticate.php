@@ -3,7 +3,6 @@
 namespace Encore\Admin\Middleware;
 
 use Closure;
-use Encore\Admin\Admin;
 use Illuminate\Support\Facades\Auth;
 
 class Authenticate
@@ -18,8 +17,13 @@ class Authenticate
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::guard('admin')->guest() && !$this->shouldPassThrough($request)) {
-            return redirect()->guest(admin_base_path('auth/login'));
+        if ($request->expectsJson()) {
+            return response()
+                ->json(['error' => "未授权"], 401);
+        } else {
+            if (Auth::guard('admin')->guest() && !$this->shouldPassThrough($request)) {
+                return redirect()->guest(admin_base_path('auth/login'));
+            }
         }
 
         return $next($request);
