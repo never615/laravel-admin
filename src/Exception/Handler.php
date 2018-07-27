@@ -28,6 +28,10 @@ class Handler
 
         \Log::warning($exception);
 
+        if(strlen($exception->getMessage())>20){
+            \Log::error("管理端错误");
+        }
+
         return view('admin::partials.exception', compact('errors'))->render();
     }
 
