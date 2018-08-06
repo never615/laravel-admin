@@ -2,6 +2,7 @@
 
 namespace Encore\Admin\Form\Field;
 
+use Encore\Admin\Form;
 use Encore\Admin\Form\Field;
 
 class DateRange extends Field
@@ -26,6 +27,8 @@ class DateRange extends Field
 
     public function __construct($column, $arguments)
     {
+        $this->arguments = $arguments;
+
         $this->column['start'] = $column;
         $this->column['end'] = $arguments[0];
 
@@ -35,6 +38,22 @@ class DateRange extends Field
 
         $this->options(['format' => $this->format]);
     }
+
+
+    /**
+     * @param Form $form
+     *
+     * @return $this
+     */
+    public function setForm(Form $form = null)
+    {
+        $this->form = $form;
+        array_shift( $this->arguments);
+        $this->label = $this->formatLabel($this->arguments);
+
+        return $this;
+    }
+
 
     public function prepare($value)
     {
