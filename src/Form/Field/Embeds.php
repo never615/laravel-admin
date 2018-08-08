@@ -2,6 +2,7 @@
 
 namespace Encore\Admin\Form\Field;
 
+use Encore\Admin\Form;
 use Encore\Admin\Form\EmbeddedForm;
 use Encore\Admin\Form\Field;
 use Illuminate\Support\Facades\Validator;
@@ -32,6 +33,28 @@ class Embeds extends Field
         if (count($arguments) == 2) {
             list($this->label, $this->builder) = $arguments;
         }
+    }
+
+    /**
+     * @param Form $form
+     *
+     * @return $this
+     */
+    public function setForm(Form $form = null)
+    {
+        $this->form = $form;
+        $arguments=$this->arguments;
+
+        if (count($arguments) == 1) {
+            $this->label = $this->formatLabel();
+            $this->builder = $arguments[0];
+        }
+
+        if (count($arguments) == 2) {
+            list($this->label, $this->builder) = $arguments;
+        }
+
+        return $this;
     }
 
     /**
