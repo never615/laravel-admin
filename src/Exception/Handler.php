@@ -28,7 +28,7 @@ class Handler
 
         \Log::warning($exception);
 
-        if(strlen($exception->getMessage())>20){
+        if(strlen($exception->getMessage())>30){
             \Log::error("管理端错误");
         }
 
