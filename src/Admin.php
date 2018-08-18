@@ -18,6 +18,13 @@ use InvalidArgumentException;
 class Admin
 {
     /**
+     * The Laravel admin version.
+     *
+     * @var string
+     */
+    const VERSION = '1.5.19';
+
+    /**
      * @var Navbar
      */
     protected $navbar;
@@ -41,6 +48,16 @@ class Admin
      * @var array
      */
     public static $extensions = [];
+
+    /**
+     * Returns the long version of Laravel-admin.
+     *
+     * @return string The long application version
+     */
+    public static function getLongVersion()
+    {
+        return sprintf('Laravel-admin <comment>version</comment> <info>%s</info>', Admin::VERSION);
+    }
 
     /**
      * @param $model
@@ -74,6 +91,19 @@ class Admin
     public function tree($model, Closure $callable = null)
     {
         return new Tree($this->getModel($model), $callable);
+    }
+
+    /**
+     * Build show page.
+     *
+     * @param $model
+     * @param mixed $callable
+     *
+     * @return Show
+     */
+    public function show($model, $callable = null)
+    {
+        return new Show($this->getModel($model), $callable);
     }
 
     /**

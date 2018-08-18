@@ -8,12 +8,15 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Traits\Macroable;
 
 /**
  * Class Field.
  */
 class Field implements Renderable
 {
+    use Macroable;
+
     const FILE_DELETE_FLAG = '_file_del_';
 
     /**
@@ -187,6 +190,16 @@ class Field implements Renderable
 
     protected $arguments = [];
 
+
+    /**
+     * @var bool
+     */
+    protected $display = true;
+
+    /**
+     * @var array
+     */
+    protected $labelClass = [];
 
     /**
      * Field constructor.
@@ -411,7 +424,7 @@ class Field implements Renderable
         if (is_array($rules)) {
             $thisRuleArr = array_filter(explode('|', $this->rules));
 
-            $this->rules = array_merge($thisRuleArr, explode('|', $this->rules));
+            $this->rules = array_merge($thisRuleArr, $rules);
         } elseif (is_string($rules)) {
             $rules = array_filter(explode('|', "{$this->rules}|$rules"));
 
@@ -438,7 +451,7 @@ class Field implements Renderable
     }
 
     /**
-     * Remove a specific rule.
+     * Remove a specific rule by keyword.
      *
      * @param string $rule
      *
@@ -446,7 +459,8 @@ class Field implements Renderable
      */
     protected function removeRule($rule)
     {
-        $this->rules = str_replace($rule, '', $this->rules);
+        $pattern = "/{$rule}[^\|]?(\||$)/";
+        $this->rules = preg_replace($pattern, '', $this->rules, -1);
     }
 
     /**
@@ -738,13 +752,13 @@ class Field implements Renderable
     {
         if ($this->horizontal) {
             return [
-                'label'      => "col-sm-{$this->width['label']}",
+                'label'      => "col-sm-{$this->width['label']} {$this->getLabelClass()}",
                 'field'      => "col-sm-{$this->width['field']}",
                 'form-group' => 'form-group ',
             ];
         }
 
-        return ['label' => '', 'field' => '', 'form-group' => ''];
+        return ['label' => "{$this->getLabelClass()}", 'field' => '', 'form-group' => ''];
     }
 
     /**
@@ -896,11 +910,47 @@ class Field implements Renderable
     }
 
     /**
+     * Add variables to field view.
+     *
+     * @param array $variables
+     *
+     * @return $this
+     */
+    protected function addVariables(array $variables = [])
+    {
+        $this->variables = array_merge($this->variables, $variables);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabelClass()
+    : string
+    {
+        return implode(' ', $this->labelClass);
+    }
+
+    /**
+     * @param array $labelClass
+     *
+     * @return self
+     */
+    public function setLabelClass(array $labelClass)
+    : self
+    {
+        $this->labelClass = $labelClass;
+
+        return $this;
+    }
+
+    /**
      * Get the view variables of this field.
      *
      * @return array
      */
-    protected function variables()
+    public function variables()
     {
         return array_merge($this->variables, [
             'id'          => $this->id,
@@ -950,6 +1000,10 @@ class Field implements Renderable
      */
     public function render()
     {
+        if (!$this->display) {
+            return '';
+        }
+
         Admin::script($this->script);
 
         return view($this->getView(), $this->variables());
