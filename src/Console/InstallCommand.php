@@ -52,7 +52,7 @@ class InstallCommand extends Command
 
 
         if (Administrator::count() == 0) {
-            $this->call('db:seed', ['--class' => \Encore\Admin\Auth\Database\AdminTablesSeeder::class]);
+//            $this->call('db:seed', ['--class' => \Encore\Admin\Auth\Database\AdminTablesSeeder::class]);
         }
     }
 
