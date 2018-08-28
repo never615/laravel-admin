@@ -47,7 +47,9 @@ class InstallCommand extends Command
      */
     public function initDatabase()
     {
-        $this->call('migrate');
+//        $this->call('migrate');
+        $this->call('migrate', ['--path' => str_replace(base_path(), '', __DIR__).'/../../database/migrations/']);
+
 
         if (Administrator::count() == 0) {
             $this->call('db:seed', ['--class' => \Encore\Admin\Auth\Database\AdminTablesSeeder::class]);
