@@ -10,6 +10,7 @@ use Encore\Admin\Grid\Filter\Presenter\Presenter;
 use Encore\Admin\Grid\Filter\Presenter\Radio;
 use Encore\Admin\Grid\Filter\Presenter\Select;
 use Encore\Admin\Grid\Filter\Presenter\Text;
+use Illuminate\Support\Collection;
 
 /**
  * Class AbstractFilter.
@@ -82,6 +83,11 @@ abstract class AbstractFilter
     protected $view = 'admin::filter.where';
 
     protected $table;
+
+    /**
+     * @var Collection
+     */
+    public $group;
 
     /**
      * AbstractFilter constructor.

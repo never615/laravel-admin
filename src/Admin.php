@@ -9,6 +9,7 @@ use Encore\Admin\Widgets\Navbar;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 use InvalidArgumentException;
 
@@ -56,7 +57,7 @@ class Admin
      */
     public static function getLongVersion()
     {
-        return sprintf('Laravel-admin <comment>version</comment> <info>%s</info>', Admin::VERSION);
+        return sprintf('Laravel-admin <comment>version</comment> <info>%s</info>', self::VERSION);
     }
 
     /**
@@ -299,5 +300,19 @@ class Admin
     public static function extend($name, $class)
     {
         static::$extensions[$name] = $class;
+    }
+
+    /*
+     * Disable Pjax for current Request
+     *
+     * @return void
+     */
+    public function disablePjax()
+    {
+        $request = Request::instance();
+
+        if ($request->pjax()) {
+            $request->headers->set('X-PJAX', false);
+        }
     }
 }
