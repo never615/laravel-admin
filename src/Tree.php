@@ -363,7 +363,7 @@ SCRIPT;
         Admin::script($this->script());
 
         view()->share([
-            'path'       => $this->path,
+            'resource_path'       => $this->path,
             'keyName'        => $this->model->getKeyName(),
             'branchView'     => $this->view['branch'],
             'branchCallback' => $this->branchCallback,

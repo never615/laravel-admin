@@ -22,3 +22,4 @@
 
 ### form->hasMany 自动翻译处理
 ### form->hasMany 的view进行了一次div包裹,以便于使用js代码控制整体隐藏和显示
+### 库(tree)里面用到关键字path了,model如果也有path命名的列就会有问题.修改path为resource_path
