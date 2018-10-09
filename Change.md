@@ -21,3 +21,4 @@
 ### 授权中间件,根据请求的Accept做不同响应
 
 ### form->hasMany 自动翻译处理
+### form->hasMany 的view进行了一次div包裹,以便于使用js代码控制整体隐藏和显示
