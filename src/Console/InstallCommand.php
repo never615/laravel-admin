@@ -2,7 +2,6 @@
 
 namespace Encore\Admin\Console;
 
-use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Console\Command;
 
 class InstallCommand extends Command
@@ -12,7 +11,7 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $name = 'admin:install';
+    protected $signature = 'admin:install';
 
     /**
      * The console command description.
@@ -51,8 +50,10 @@ class InstallCommand extends Command
         $this->call('migrate', ['--path' => str_replace(base_path(), '', __DIR__).'/../../database/migrations/']);
 
 
-        if (Administrator::count() == 0) {
-//            $this->call('db:seed', ['--class' => \Encore\Admin\Auth\Database\AdminTablesSeeder::class]);
+        $userModel = config('admin.database.users_model');
+
+        if ($userModel::count() == 0) {
+            $this->call('db:seed', ['--class' => \Encore\Admin\Auth\Database\AdminTablesSeeder::class]);
         }
     }
 
@@ -114,7 +115,8 @@ class InstallCommand extends Command
             $exampleController,
             str_replace('DummyNamespace', config('admin.route.namespace'), $contents)
         );
-        $this->line('<info>ExampleController file was created:</info> '.str_replace(base_path(), '', $exampleController));
+        $this->line('<info>ExampleController file was created:</info> '.str_replace(base_path(), '',
+                $exampleController));
     }
 
     /**

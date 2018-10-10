@@ -34,7 +34,7 @@ if (!function_exists('admin_url')) {
             return $path;
         }
 
-        $secure = $secure ?: config('admin.secure');
+        $secure = $secure ?: (config('admin.https') || config('admin.secure'));
 
         return url(admin_base_path($path), $parameters, $secure);
     }
@@ -143,7 +143,7 @@ if (!function_exists('admin_asset')) {
      */
     function admin_asset($path)
     {
-        return asset($path, config('admin.secure'));
+        return (config('admin.https') || config('admin.secure')) ? secure_asset($path) : asset($path);
     }
 }
 

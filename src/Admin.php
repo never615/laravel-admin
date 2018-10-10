@@ -3,14 +3,12 @@
 namespace Encore\Admin;
 
 use Closure;
-use Encore\Admin\Auth\Database\Menu;
 use Encore\Admin\Layout\Content;
+use Encore\Admin\Traits\HasAssets;
 use Encore\Admin\Widgets\Navbar;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Route;
 use InvalidArgumentException;
 
 /**
@@ -18,12 +16,14 @@ use InvalidArgumentException;
  */
 class Admin
 {
+    use HasAssets;
+
     /**
      * The Laravel admin version.
      *
      * @var string
      */
-    const VERSION = '1.5.19';
+    const VERSION = '1.6.3';
 
     /**
      * @var Navbar
@@ -33,22 +33,17 @@ class Admin
     /**
      * @var array
      */
-    public static $script = [];
-
-    /**
-     * @var array
-     */
-    public static $css = [];
-
-    /**
-     * @var array
-     */
-    public static $js = [];
-
-    /**
-     * @var array
-     */
     public static $extensions = [];
+
+    /**
+     * @var []Closure
+     */
+    public static $booting;
+
+    /**
+     * @var []Closure
+     */
+    public static $booted;
 
     /**
      * Returns the long version of Laravel-admin.
@@ -65,6 +60,8 @@ class Admin
      * @param Closure $callable
      *
      * @return \Encore\Admin\Grid
+     *
+     * @deprecated since v1.6.1
      */
     public function grid($model, Closure $callable)
     {
@@ -76,6 +73,8 @@ class Admin
      * @param Closure $callable
      *
      * @return \Encore\Admin\Form
+     *
+     *  @deprecated since v1.6.1
      */
     public function form($model, Closure $callable)
     {
@@ -101,6 +100,8 @@ class Admin
      * @param mixed $callable
      *
      * @return Show
+     *
+     * @deprecated since v1.6.1
      */
     public function show($model, $callable = null)
     {
@@ -111,6 +112,8 @@ class Admin
      * @param Closure $callable
      *
      * @return \Encore\Admin\Layout\Content
+     *
+     * @deprecated since v1.6.1
      */
     public function content(Closure $callable = null)
     {
@@ -124,7 +127,7 @@ class Admin
      */
     public function getModel($model)
     {
-        if ($model instanceof EloquentModel) {
+        if ($model instanceof Model) {
             return $model;
         }
 
@@ -136,73 +139,15 @@ class Admin
     }
 
     /**
-     * Add css or get all css.
-     *
-     * @param null $css
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
-     */
-    public static function css($css = null)
-    {
-        if (!is_null($css)) {
-            self::$css = array_merge(self::$css, (array) $css);
-
-            return;
-        }
-
-        $css = array_get(Form::collectFieldAssets(), 'css', []);
-
-        static::$css = array_merge(static::$css, $css);
-
-        return view('admin::partials.css', ['css' => array_unique(static::$css)]);
-    }
-
-    /**
-     * Add js or get all js.
-     *
-     * @param null $js
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
-     */
-    public static function js($js = null)
-    {
-        if (!is_null($js)) {
-            self::$js = array_merge(self::$js, (array) $js);
-
-            return;
-        }
-
-        $js = array_get(Form::collectFieldAssets(), 'js', []);
-
-        static::$js = array_merge(static::$js, $js);
-
-        return view('admin::partials.js', ['js' => array_unique(static::$js)]);
-    }
-
-    /**
-     * @param string $script
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
-     */
-    public static function script($script = '')
-    {
-        if (!empty($script)) {
-            self::$script = array_merge(self::$script, (array) $script);
-
-            return;
-        }
-
-        return view('admin::partials.script', ['script' => array_unique(self::$script)]);
-    }
-
-    /**
      * Left sider-bar menu.
      *
      * @return array
      */
     public function menu()
     {
-        return (new Menu())->toTree();
+        $menuModel = config('admin.database.menu_model');
+
+        return (new $menuModel())->toTree();
     }
 
     /**
@@ -268,7 +213,7 @@ class Admin
             'middleware' => config('admin.route.middleware'),
         ];
 
-        Route::group($attributes, function ($router) {
+        app('router')->group($attributes, function ($router) {
 
             /* @var \Illuminate\Routing\Router $router */
             $router->group([], function ($router) {
@@ -302,6 +247,22 @@ class Admin
         static::$extensions[$name] = $class;
     }
 
+    /**
+     * @param callable $callback
+     */
+    public static function booting(callable $callback)
+    {
+        static::$booting[] = $callback;
+    }
+
+    /**
+     * @param callable $callback
+     */
+    public static function booted(callable $callback)
+    {
+        static::$booted[] = $callback;
+    }
+
     /*
      * Disable Pjax for current Request
      *
@@ -309,10 +270,8 @@ class Admin
      */
     public function disablePjax()
     {
-        $request = Request::instance();
-
-        if ($request->pjax()) {
-            $request->headers->set('X-PJAX', false);
+        if (request()->pjax()) {
+            request()->headers->set('X-PJAX', false);
         }
     }
 }
