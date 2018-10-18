@@ -474,13 +474,24 @@ class Field implements Renderable
             $thisRuleArr = array_filter(explode('|', $this->rules));
 
             $this->rules = array_merge($thisRuleArr, $rules);
+
+            //根据rules自动添加*
+            if (in_array("required", $this->rules)) {
+                $this->required();
+            }
         } elseif (is_string($rules)) {
             $rules = array_filter(explode('|', "{$this->rules}|$rules"));
 
             $this->rules = implode('|', $rules);
+
+            //根据rules自动添加*
+            if (str_contains($this->rules, "required")) {
+                $this->required();
+            }
         }
 
         $this->validationMessages = $messages;
+
 
         return $this;
     }
@@ -1027,8 +1038,7 @@ class Field implements Renderable
     /**
      * @return string
      */
-    public function getLabelClass()
-    : string
+    public function getLabelClass(): string
     {
         return implode(' ', $this->labelClass);
     }
@@ -1038,8 +1048,7 @@ class Field implements Renderable
      *
      * @return self
      */
-    public function setLabelClass(array $labelClass)
-    : self
+    public function setLabelClass(array $labelClass): self
     {
         $this->labelClass = $labelClass;
 
@@ -1118,6 +1127,7 @@ class Field implements Renderable
         if (!$this->shouldRender()) {
             return '';
         }
+
 
         Admin::script($this->script);
 

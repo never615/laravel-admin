@@ -1,25 +1,26 @@
-### 自动翻译
+#### 自动翻译
 使用时表格/表单/过滤器上的字段名,不设置label的情况下,会自动从翻译(详见admin_translate()).
 * 修改helpers文件,增加的`admin_translate()`和`admin_translate_arr()`方法
 * 修改`\Encore\Admin\Form\Field`的`formatLabel()`,`setForm()`,`__construct`.
 * 修改`Encore\Admin\Grid`中的`__call()`
 * 修改`Encore\Admin\Grid\Filter\AbstractFilter`中的`formatLabel() __construct() setTable`和`Encore\Admin\Grid\Filter`中的`__call()`
 
-### 表单创建是隐藏字段方法
+#### 表单创建是隐藏字段方法
 使用上通过`$form->hideFieldsByCreate([]);`
 用于创建时排除一些字段在表单创建是不出现
 * 修改`\Encore\Admin\Form\Builder`,增加`hideFieldsByCreate()`.
 * 修改`Encore\Admin\Form`,增加`hideFieldsByCreate()`方法.
  
-### editable默认的emptytext
+#### editable默认的emptytext
 * 修改`Encore\Admin\Admin\Editable`中的`$option`
 
-### 默认导出处理者可以通过config自定义
+#### 默认导出处理者可以通过config自定义
 
-### 调用Field的addElementClass方式的时候,不会覆盖原Field自动生成的class
+#### 调用Field的addElementClass方式的时候,不会覆盖原Field自动生成的class
 
-### 授权中间件,根据请求的Accept做不同响应
+#### 授权中间件,根据请求的Accept做不同响应
 
-### form->hasMany 自动翻译处理
-### form->hasMany 的view进行了一次div包裹,以便于使用js代码控制整体隐藏和显示
-### 库(tree)里面用到关键字path了,model如果也有path命名的列就会有问题.修改path为resource_path
+#### form->hasMany 自动翻译处理
+#### form->hasMany 的view进行了一次div包裹,以便于使用js代码控制整体隐藏和显示
+#### 库(tree)里面用到关键字path了,model如果也有path命名的列就会有问题.修改path为resource_path
+#### 修改`Encore\Admin\Form\Field`,当rules包含required时,自动调用required方法
