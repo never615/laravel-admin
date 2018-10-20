@@ -485,7 +485,7 @@ class Field implements Renderable
             $this->rules = implode('|', $rules);
 
             //根据rules自动添加*
-            if (str_contains($this->rules, "required")) {
+            if (str_contains($this->rules, "required") && !str_contains($this->rules, "required_")) {
                 $this->required();
             }
         }
