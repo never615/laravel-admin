@@ -216,6 +216,11 @@ class Field implements Renderable
     protected $labelClass = [];
 
     /**
+     * @var array
+     */
+    protected $addClass = [];
+
+    /**
      * Field constructor.
      *
      * @param       $column
@@ -225,7 +230,7 @@ class Field implements Renderable
     {
         $this->arguments = $arguments;
         $this->column = $column;
-        $this->label = $this->formatLabel($arguments);
+//        $this->label = $this->formatLabel($arguments);
         $this->id = $this->formatId($column);
     }
 
@@ -397,6 +402,8 @@ class Field implements Renderable
     public function setForm(Form $form = null)
     {
         $this->form = $form;
+
+        //因为构造函数执行的时候form还不存在,我需要根据form获取当前表,然后去查询翻译
         $this->label = $this->formatLabel($this->arguments);
 
         return $this;
@@ -894,46 +901,78 @@ class Field implements Renderable
      */
     protected function getElementClass()
     {
-        $name = $this->elementName ?: $this->formatName($this->column);
-
-        $defaultElementClass = (array) str_replace(['[', ']'], '_', $name);
-
         if (!$this->elementClass) {
-            $this->elementClass = $defaultElementClass;
-        } else {
-            //如果elementClass没有默认class,则添加
+            $name = $this->elementName ?: $this->formatName($this->column);
+            $defaultElementClass = (array) str_replace(['[', ']'], '_', $name);
+
             if (Arr::isAssoc($defaultElementClass)) {
                 $classes = [];
-
+                //把addClass中的内容,添加到$defaultElementClass中
+                //如果$defaultElementClass是数组,则分别添加
+                //如果是字符串,只添加一次
                 foreach ($defaultElementClass as $index => $class) {
                     $class = is_array($class) ? $class : explode(" ", $class);
 
-                    if (Arr::isAssoc($this->elementClass)) {
-                        $temp = is_array($this->elementClass[$index]) ?
-                            $this->elementClass[$index] :
-                            explode(" ", $this->elementClass[$index]);
-                        if (!in_array($class, $temp)) {
-                            $class = array_unique(array_merge($class, $temp));
-                            $classes[$index] = $class;
-                        }
-                    } else {
-                        if (!in_array($class, $this->elementClass)) {
-                            $class = array_unique(array_merge($class, $this->elementClass));
-                            $classes[$index] = $class;
-                        }
-                    }
+                        $class = array_unique(array_merge($class, $this->addClass));
+                        $classes[$index] = $class;
                 }
                 $this->elementClass = $classes;
             } else {
-                if (!in_array($defaultElementClass, $this->elementClass)) {
-                    $this->elementClass = array_unique(array_merge($this->elementClass, $defaultElementClass));
-                }
+                $this->elementClass = array_unique(array_merge($this->addClass, $defaultElementClass));
             }
 
         }
 
         return $this->elementClass;
     }
+
+//    /**
+//     * Get element class.
+//     *
+//     * @return array
+//     */
+//    protected function getElementClass()
+//    {
+//        $name = $this->elementName ?: $this->formatName($this->column);
+//
+//        $defaultElementClass = (array) str_replace(['[', ']'], '_', $name);
+//
+//        if (!$this->elementClass) {
+//            $this->elementClass = $defaultElementClass;
+//        } else {
+//            //如果elementClass没有默认class,则添加
+//            if (Arr::isAssoc($defaultElementClass)) {
+//                $classes = [];
+//
+//                foreach ($defaultElementClass as $index => $class) {
+//                    $class = is_array($class) ? $class : explode(" ", $class);
+//
+//                    if (Arr::isAssoc($this->elementClass)) {
+//                        $temp = is_array($this->elementClass[$index]) ?
+//                            $this->elementClass[$index] :
+//                            explode(" ", $this->elementClass[$index]);
+//                        if (!in_array($class, $temp)) {
+//                            $class = array_unique(array_merge($class, $temp));
+//                            $classes[$index] = $class;
+//                        }
+//                    } else {
+//                        if (!in_array($class, $this->elementClass)) {
+//                            $class = array_unique(array_merge($class, $this->elementClass));
+//                            $classes[$index] = $class;
+//                        }
+//                    }
+//                }
+//                $this->elementClass = $classes;
+//            } else {
+//                if (!in_array($defaultElementClass, $this->elementClass)) {
+//                    $this->elementClass = array_unique(array_merge($this->elementClass, $defaultElementClass));
+//                }
+//            }
+//
+//        }
+//
+//        return $this->elementClass;
+//    }
 
     /**
      * Get element class string.
@@ -989,9 +1028,9 @@ class Field implements Renderable
     public function addElementClass($class)
     {
         if (is_array($class) || is_string($class)) {
-            $this->elementClass = array_merge($this->elementClass, (array) $class);
+            $this->addClass = array_merge($this->addClass, (array) $class);
 
-            $this->elementClass = array_unique($this->elementClass);
+            $this->addClass = array_unique($this->addClass);
         }
 
         return $this;
