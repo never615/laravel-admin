@@ -905,6 +905,8 @@ class Field implements Renderable
             $name = $this->elementName ?: $this->formatName($this->column);
             $defaultElementClass = (array) str_replace(['[', ']'], '_', $name);
 
+            $this->elementClass=$defaultElementClass;
+
             if (Arr::isAssoc($defaultElementClass)) {
                 $classes = [];
                 //把addClass中的内容,添加到$defaultElementClass中
@@ -920,6 +922,7 @@ class Field implements Renderable
             } else {
                 $this->elementClass = array_unique(array_merge($this->addClass, $defaultElementClass));
             }
+
 
         }
 
@@ -1018,6 +1021,7 @@ class Field implements Renderable
         return '.'.implode('.', $elementClass);
     }
 
+
     /**
      * Add the element class.
      *
@@ -1026,6 +1030,22 @@ class Field implements Renderable
      * @return $this
      */
     public function addElementClass($class)
+    {
+        if (is_array($class) || is_string($class)) {
+            $this->elementClass = array_merge($this->elementClass, (array) $class);
+            $this->elementClass = array_unique($this->elementClass);
+        }
+        return $this;
+    }
+
+    /**
+     * Add the element class.
+     *
+     * @param $class
+     *
+     * @return $this
+     */
+    public function addElementClass2($class)
     {
         if (is_array($class) || is_string($class)) {
             $this->addClass = array_merge($this->addClass, (array) $class);
