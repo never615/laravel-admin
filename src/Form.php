@@ -355,7 +355,7 @@ class Form implements Renderable
         if (($response = $this->prepare($data)) instanceof Response) {
             return $response;
         }
-
+        
         DB::transaction(function () {
             $inserts = $this->prepareInsert($this->updates);
 
@@ -588,7 +588,7 @@ class Form implements Renderable
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function redirectAfterStore()
+    public function redirectAfterStore()
     {
         $resourcesPath = $this->resource(0);
 
