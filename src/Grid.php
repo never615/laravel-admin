@@ -149,6 +149,7 @@ class Grid
      */
     protected $options = [
         'usePagination'  => true,
+        'useTools'       => true,
         'useFilter'      => true,
         'useExporter'    => true,
         'useActions'     => true,
@@ -535,6 +536,17 @@ class Grid
     }
 
     /**
+     * Disable header tools.
+     *
+     * @return $this
+     */
+    public function disableTools()
+    {
+        $this->option('useTools', false);
+        return $this;
+    }
+
+    /**
      * Disable grid filter.
      *
      * @return $this
@@ -716,6 +728,16 @@ class Grid
             $this->resource(),
             $queryString ? ('?'.$queryString) : ''
         );
+    }
+
+    /**
+     * If grid allows to use header tools
+     *
+     * @return bool
+     */
+    public function allowTools()
+    {
+        return $this->option('useTools');
     }
 
     /**
