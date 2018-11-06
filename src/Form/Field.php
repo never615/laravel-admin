@@ -230,7 +230,8 @@ class Field implements Renderable
     {
         $this->arguments = $arguments;
         $this->column = $column;
-//        $this->label = $this->formatLabel($arguments);
+        //虽然setForm也调用了一遍,但是这个需要留着,因为Widget下的form不会调用到setform
+        $this->label = $this->formatLabel($arguments);
         $this->id = $this->formatId($column);
     }
 
