@@ -26,11 +26,10 @@ class Handler
         $errors = new ViewErrorBag();
         $errors->put('exception', $error);
 
-        \Log::warning($exception);
-
-        if(strlen($exception->getMessage())>30){
+        if (strlen($exception->getMessage()) > 50) {
             \Log::error("管理端错误");
         }
+        \Log::warning($exception);
 
         return view('admin::partials.exception', compact('errors'))->render();
     }
