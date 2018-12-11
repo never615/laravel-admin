@@ -930,53 +930,6 @@ class Field implements Renderable
         return $this->elementClass;
     }
 
-//    /**
-//     * Get element class.
-//     *
-//     * @return array
-//     */
-//    protected function getElementClass()
-//    {
-//        $name = $this->elementName ?: $this->formatName($this->column);
-//
-//        $defaultElementClass = (array) str_replace(['[', ']'], '_', $name);
-//
-//        if (!$this->elementClass) {
-//            $this->elementClass = $defaultElementClass;
-//        } else {
-//            //如果elementClass没有默认class,则添加
-//            if (Arr::isAssoc($defaultElementClass)) {
-//                $classes = [];
-//
-//                foreach ($defaultElementClass as $index => $class) {
-//                    $class = is_array($class) ? $class : explode(" ", $class);
-//
-//                    if (Arr::isAssoc($this->elementClass)) {
-//                        $temp = is_array($this->elementClass[$index]) ?
-//                            $this->elementClass[$index] :
-//                            explode(" ", $this->elementClass[$index]);
-//                        if (!in_array($class, $temp)) {
-//                            $class = array_unique(array_merge($class, $temp));
-//                            $classes[$index] = $class;
-//                        }
-//                    } else {
-//                        if (!in_array($class, $this->elementClass)) {
-//                            $class = array_unique(array_merge($class, $this->elementClass));
-//                            $classes[$index] = $class;
-//                        }
-//                    }
-//                }
-//                $this->elementClass = $classes;
-//            } else {
-//                if (!in_array($defaultElementClass, $this->elementClass)) {
-//                    $this->elementClass = array_unique(array_merge($this->elementClass, $defaultElementClass));
-//                }
-//            }
-//
-//        }
-//
-//        return $this->elementClass;
-//    }
 
     /**
      * Get element class string.
