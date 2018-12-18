@@ -203,17 +203,35 @@ $('.{$this->grid->getGridRowName()}-delete').unbind('click').click(function() {
                         $.pjax.reload('#pjax-container');
 
                         resolve(data);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        var msg = '';
+                        if (XMLHttpRequest && XMLHttpRequest.responseText) { //ajax error, errors = xhr object
+                            if (XMLHttpRequest.responseJSON && XMLHttpRequest.responseJSON.error) {
+                                msg += XMLHttpRequest.responseJSON.error;
+                            } else {
+                                msg += XMLHttpRequest.status + ":" + XMLHttpRequest.statusText + ":" + XMLHttpRequest.responseText;
+                            }
+                        } else { 
+                                msg += XMLHttpRequest.status;
+                        }
+                        
+                        resolve({error:msg});
                     }
                 });
             });
         }
     }).then(function(result) {
         var data = result.value;
-        if (typeof data === 'object') {
-            if (data.status) {
-                swal(data.message, '', 'success');
-            } else {
-                swal(data.message, '', 'error');
+        if(data.error){
+            swal(data.error, '', 'error');
+        }else{
+            if (typeof data === 'object') {
+                if (data.status) {
+                    swal(data.message, '', 'success');
+                } else {
+                    swal(data.message, '', 'error');
+                }
             }
         }
     });
