@@ -253,6 +253,10 @@ class Field implements Renderable
                 }
             }
 
+            if (!$url) {
+                return '';
+            }
+
             return <<<HTML
 <ul class="mailbox-attachments clearfix">
     <li style="margin-bottom: 0;">

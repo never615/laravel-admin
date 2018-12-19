@@ -751,7 +751,9 @@ class Form implements Renderable
                     // if related is empty
                     if (is_null($related)) {
                         $related = $relation->getRelated();
-                        $related->{$relation->getForeignKeyName()} = $this->model->{$this->model->getKeyName()};
+                        $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
+                        $localKey = array_last(explode('.', $qualifiedParentKeyName));
+                        $related->{$relation->getForeignKeyName()} = $this->model->{$localKey};
                     }
 
                     foreach ($prepared[$name] as $column => $value) {
@@ -1068,7 +1070,7 @@ class Form implements Renderable
     {
         $relations = $this->getRelations();
 
-        $builder = $this->model()->newQuery();
+        $builder = $this->model();
 
         if ($this->isSoftDeletes) {
             $builder->withTrashed();
@@ -1320,6 +1322,18 @@ class Form implements Renderable
     }
 
     /**
+     * Disable Creating Checkbox on footer.
+     *
+     * @return $this
+     */
+    public function disableCreatingCheck()
+    {
+        $this->builder()->getFooter()->disableCreatingCheck();
+
+        return $this;
+    }
+
+    /**
      * Footer setting for form.
      *
      * @param Closure $callback
@@ -1564,7 +1578,7 @@ class Form implements Renderable
      */
     public function __set($name, $value)
     {
-        $this->input($name, $value);
+        return array_set($this->inputs, $name, $value);
     }
 
     /**

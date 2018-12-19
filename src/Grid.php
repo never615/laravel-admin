@@ -543,6 +543,7 @@ class Grid
     public function disableTools()
     {
         $this->option('useTools', false);
+
         return $this;
     }
 
@@ -731,7 +732,7 @@ class Grid
     }
 
     /**
-     * If grid allows to use header tools
+     * If grid allows to use header tools.
      *
      * @return bool
      */
@@ -903,7 +904,10 @@ class Grid
             return false;
         }
 
-        if ($relation instanceof Relations\HasOne || $relation instanceof Relations\BelongsTo) {
+        if ($relation instanceof Relations\HasOne ||
+            $relation instanceof Relations\BelongsTo ||
+            $relation instanceof Relations\MorphOne
+        ) {
             $this->model()->with($method);
 
             return $this->addColumn($method, $label)->setRelation(snake_case($method));
