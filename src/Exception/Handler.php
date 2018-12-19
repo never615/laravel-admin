@@ -4,6 +4,7 @@ namespace Encore\Admin\Exception;
 
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
+use Mallto\Tool\Exception\ResourceException;
 
 class Handler
 {
@@ -26,10 +27,13 @@ class Handler
         $errors = new ViewErrorBag();
         $errors->put('exception', $error);
 
-        if (strlen($exception->getMessage()) > 50) {
-            \Log::error("管理端错误");
+        if (!($exception instanceof ResourceException)) {
+            if (strlen($exception->getMessage()) > 20) {
+                \Log::error("管理端错误");
+            }
+            \Log::warning($exception);
         }
-        \Log::warning($exception);
+
 
         return view('admin::partials.exception', compact('errors'))->render();
     }
