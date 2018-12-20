@@ -604,7 +604,7 @@ class Form implements Renderable
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function redirectAfterUpdate($key)
+    public function redirectAfterUpdate($key)
     {
         $resourcesPath = $this->resource(-1);
 
