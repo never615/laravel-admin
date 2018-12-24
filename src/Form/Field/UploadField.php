@@ -79,6 +79,7 @@ trait UploadField
             'browseLabel'          => trans('admin.browse'),
             'showRemove'           => false,
             'showUpload'           => false,
+            'showCancel'           => false,
             'dropZoneEnabled'      => false,        //dropzone disabled by default for backward compatibility
 //            'initialCaption'       => $this->initialCaption($this->value),
             'deleteExtraData'      => [
