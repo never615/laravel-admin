@@ -34,7 +34,7 @@ if (!function_exists('admin_url')) {
             return $path;
         }
 
-        $secure = $secure ?: (config('admin.https') || config('admin.secure'));
+        $secure = $secure ?: (request()->isSecure() ?: (config('admin.https') || config('admin.secure')));
 
         return url(admin_base_path($path), $parameters, $secure);
     }
