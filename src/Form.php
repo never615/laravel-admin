@@ -54,7 +54,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @method Field\Number         number($column, $label = '')
  * @method Field\Currency       currency($column, $label = '')
  * @method Field\HasMany        hasMany($relationName, $callback)
- * @method Field\SwitchField    switch($column, $label = '')
+ * @method Field\SwitchField    switch ($column, $label = '')
  * @method Field\Display        display($column, $label = '')
  * @method Field\Rate           rate($column, $label = '')
  * @method Field\Divide         divider()
@@ -190,7 +190,7 @@ class Form implements Renderable
     /**
      * Create a new form instance.
      *
-     * @param $model
+     * @param          $model
      * @param \Closure $callback
      */
     public function __construct($model, Closure $callback = null)
@@ -355,7 +355,7 @@ class Form implements Renderable
         if (($response = $this->prepare($data)) instanceof Response) {
             return $response;
         }
-        
+
         DB::transaction(function () {
             $inserts = $this->prepareInsert($this->updates);
 
@@ -541,7 +541,7 @@ class Form implements Renderable
             ]);
         }
 
-        /* @var Model $this->model */
+        /* @var Model $this ->model */
         $this->model = $this->model->with($this->getRelations())->findOrFail($id);
 
         $this->setFieldOriginalValue();
@@ -563,7 +563,7 @@ class Form implements Renderable
             $updates = $this->prepareUpdate($this->updates);
 
             foreach ($updates as $column => $value) {
-                /* @var Model $this->model */
+                /* @var Model $this ->model */
                 $this->model->setAttribute($column, $value);
             }
 
@@ -786,13 +786,34 @@ class Form implements Renderable
 
                     break;
                 case Relations\MorphOne::class:
-                    $related = $this->model->$name;
-                    if (is_null($related)) {
-                        $related = $relation->make();
+                    //一对一关联数据,如果设置的关联表的column是主键,则查找相关对象,然后设置对应的关联key
+                    $relationPrimaryKeyName = $relation->getModel()->getKeyName();
+                    if (array_key_exists($relationPrimaryKeyName, $prepared[$name])) {
+                        //要把其他关联关系移除
+                        $relation ->update([
+                            $relation->getForeignKeyName()=>null,
+                            $relation->getMorphType()=>null,
+                        ]);
+
+                        $related = $relation->getModel()::findOrFail(array_get($prepared[$name],
+                            $relationPrimaryKeyName));
+
+                        $morphType = $relation->getMorphType();
+                        $related->$morphType = $relation->getMorphClass();
+                        $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
+                        $localKey = array_last(explode('.', $qualifiedParentKeyName));
+                        $related->{$relation->getForeignKeyName()} = $this->model->{$localKey};
+                    } else {
+                        $related = $this->model->$name;
+                        if (is_null($related)) {
+                            $related = $relation->make();
+                        }
+
+                        foreach ($prepared[$name] as $column => $value) {
+                            $related->setAttribute($column, $value);
+                        }
                     }
-                    foreach ($prepared[$name] as $column => $value) {
-                        $related->setAttribute($column, $value);
-                    }
+
                     $related->save();
                     break;
                 case Relations\HasMany::class:
@@ -1208,7 +1229,7 @@ class Form implements Renderable
     public function setWidth($fieldWidth = 8, $labelWidth = 2)
     {
         $this->builder()->fields()->each(function ($field) use ($fieldWidth, $labelWidth) {
-            /* @var Field $field  */
+            /* @var Field $field */
             $field->setWidth($fieldWidth, $labelWidth);
         });
 
@@ -1574,7 +1595,7 @@ class Form implements Renderable
      * Setter.
      *
      * @param string $name
-     * @param $value
+     * @param        $value
      */
     public function __set($name, $value)
     {
