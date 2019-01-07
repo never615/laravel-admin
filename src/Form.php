@@ -789,20 +789,25 @@ class Form implements Renderable
                     //一对一关联数据,如果设置的关联表的column是主键,则查找相关对象,然后设置对应的关联key
                     $relationPrimaryKeyName = $relation->getModel()->getKeyName();
                     if (array_key_exists($relationPrimaryKeyName, $prepared[$name])) {
-                        //要把其他关联关系移除
-                        $relation ->update([
-                            $relation->getForeignKeyName()=>null,
-                            $relation->getMorphType()=>null,
-                        ]);
+                        if ($prepared[$name][$relationPrimaryKeyName]) {
+                            //使用这种模式其他设置关联对象的其他设置将会无法保存
+                            //todo 优化
+                            //要把其他关联关系移除
+                            $relation->update([
+                                $relation->getForeignKeyName() => null,
+                                $relation->getMorphType()      => null,
+                            ]);
 
-                        $related = $relation->getModel()::findOrFail(array_get($prepared[$name],
-                            $relationPrimaryKeyName));
+                            $related = $relation->getModel()::findOrFail(array_get($prepared[$name],
+                                $relationPrimaryKeyName));
 
-                        $morphType = $relation->getMorphType();
-                        $related->$morphType = $relation->getMorphClass();
-                        $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
-                        $localKey = array_last(explode('.', $qualifiedParentKeyName));
-                        $related->{$relation->getForeignKeyName()} = $this->model->{$localKey};
+                            $morphType = $relation->getMorphType();
+                            $related->$morphType = $relation->getMorphClass();
+                            $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
+                            $localKey = array_last(explode('.', $qualifiedParentKeyName));
+                            $related->{$relation->getForeignKeyName()} = $this->model->{$localKey};
+                            $related->save();
+                        }
                     } else {
                         $related = $this->model->$name;
                         if (is_null($related)) {
@@ -812,9 +817,9 @@ class Form implements Renderable
                         foreach ($prepared[$name] as $column => $value) {
                             $related->setAttribute($column, $value);
                         }
+                        $related->save();
                     }
 
-                    $related->save();
                     break;
                 case Relations\HasMany::class:
                 case Relations\MorphMany::class:
