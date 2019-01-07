@@ -377,9 +377,19 @@ trait UploadField
      */
     public function destroy()
     {
-        if ($this->storage->exists($this->original)) {
-            $this->storage->delete($this->original);
+        if (is_array($this->original)) {
+            foreach ($this->original as $item) {
+                if ($this->storage->exists($item)) {
+                    $this->storage->delete($item);
+                }
+            }
+        } else {
+            if ($this->storage->exists($this->original)) {
+                $this->storage->delete($this->original);
+            }
         }
+
+
     }
 
     public function storage_permission($permission)
