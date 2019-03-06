@@ -28,7 +28,7 @@ class Handler
         $errors->put('exception', $error);
 
         if (!($exception instanceof ResourceException)) {
-            if (strlen($exception->getMessage()) > 20) {
+            if (strlen($exception->getMessage()) > 25) {
                 \Log::error("管理端错误");
             }
             \Log::warning($exception);
