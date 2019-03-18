@@ -49,12 +49,8 @@ class InstallCommand extends Command
 //        $this->call('migrate');
         $this->call('migrate', ['--path' => str_replace(base_path(), '', __DIR__).'/../../database/migrations/']);
 
-
-        $userModel = config('admin.database.users_model');
-
-        if ($userModel::count() == 0) {
-            $this->call('db:seed', ['--class' => \Encore\Admin\Auth\Database\AdminTablesSeeder::class]);
-        }
+//        $userModel = config('admin.database.users_model');
+//        $this->call('db:seed', ['--class' => \Encore\Admin\Auth\Database\AdminTablesSeeder::class]);
     }
 
     /**
