@@ -425,9 +425,9 @@ abstract class AbstractFilter
      */
     public function getColumn()
     {
-        $parenName = $this->parent->getName();
+        $parentName = $this->parent->getName();
 
-        return $parenName ? "{$parenName}_{$this->column}" : $this->column;
+        return $parentName ? "{$parentName}_{$this->column}" : $this->column;
     }
 
     /**
