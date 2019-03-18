@@ -102,7 +102,7 @@ abstract class AbstractFilter
 //        $this->label = $this->formatLabel($label);
 //        $this->id = $this->formatId($column);
 
-//        $this->setupDefaultPresenter();
+        $this->setupDefaultPresenter();
     }
 
     /**
