@@ -17,12 +17,14 @@ class Authenticate
      */
     public function handle($request, Closure $next)
     {
+        $redirectTo = admin_base_path(config('admin.auth.redirect_to', 'auth/login'));
+
         if (Auth::guard('admin')->guest() && !$this->shouldPassThrough($request)) {
             if ($request->expectsJson()) {
                 return response()
                     ->json(['error' => "未授权,请登录"], 401);
             } else {
-                return redirect()->guest(admin_base_path('auth/login'));
+                return redirect()->guest($redirectTo);
             }
         }
 
@@ -38,21 +40,19 @@ class Authenticate
      */
     protected function shouldPassThrough($request)
     {
-        $excepts = [
-            admin_base_path('auth/login'),
-            admin_base_path('auth/logout'),
-        ];
+        $excepts = config('admin.auth.excepts', [
+            'auth/login',
+            'auth/logout',
+        ]);
 
-        foreach ($excepts as $except) {
-            if ($except !== '/') {
-                $except = trim($except, '/');
-            }
+        return collect($excepts)
+            ->map('admin_base_path')
+            ->contains(function ($except) use ($request) {
+                if ($except !== '/') {
+                    $except = trim($except, '/');
+                }
 
-            if ($request->is($except)) {
-                return true;
-            }
-        }
-
-        return false;
+                return $request->is($except);
+            });
     }
 }

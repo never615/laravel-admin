@@ -45,9 +45,14 @@ trait UploadField
     protected $useSequenceName = false;
 
     /**
-     * @var bool
+     * Configuration for setting up file actions for newly selected file thumbnails in the preview window.
+     *
+     * @var array
      */
-    protected $removable = false;
+    protected $fileActionSettings = [
+        'showRemove' => false,
+        'showDrag'   => false,
+    ];
 
     /**
      * Controls the storage permission. Could be 'private' or 'public'.
@@ -73,15 +78,15 @@ trait UploadField
      */
     protected function setupDefaultOptions()
     {
-        $defaultOptions = [
+        $defaults = [
             'overwriteInitial'     => false,
             'initialPreviewAsData' => true,
             'browseLabel'          => trans('admin.browse'),
+            'cancelLabel'          => trans('admin.cancel'),
             'showRemove'           => false,
             'showUpload'           => false,
             'showCancel'           => false,
-            'dropZoneEnabled'      => false,        //dropzone disabled by default for backward compatibility
-//            'initialCaption'       => $this->initialCaption($this->value),
+            'dropZoneEnabled'      => false,
             'deleteExtraData'      => [
                 $this->formatName($this->column) => static::FILE_DELETE_FLAG,
                 static::FILE_DELETE_FLAG         => '',
@@ -91,10 +96,12 @@ trait UploadField
         ];
 
         if ($this->form instanceof Form) {
-            $defaultOptions['deleteUrl'] = $this->form->resource().'/'.$this->form->model()->getKey();
+            $defaults['deleteUrl'] = $this->form->resource().'/'.$this->form->model()->getKey();
         }
 
-        $this->options($defaultOptions);
+        $defaults = array_merge($defaults, ['fileActionSettings' => $this->fileActionSettings]);
+
+        $this->options($defaults);
     }
 
     /**
@@ -104,14 +111,9 @@ trait UploadField
      */
     protected function setupPreviewOptions()
     {
-        if (!$this->removable) {
-            return;
-        }
+        $initialPreviewConfig = $this->initialPreviewConfig();
 
-        $this->options([
-            //'initialPreview'        => $this->preview(),
-            'initialPreviewConfig' => $this->initialPreviewConfig(),
-        ]);
+        $this->options(compact('initialPreviewConfig'));
     }
 
     /**
@@ -121,7 +123,7 @@ trait UploadField
      */
     public function removable()
     {
-        $this->removable = true;
+        $this->fileActionSettings['showRemove'] = true;
 
         return $this;
     }

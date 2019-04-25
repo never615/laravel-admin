@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Str;
 use Jenssegers\Mongodb\Eloquent\Model as MongodbModel;
 
 class Grid
@@ -155,13 +156,14 @@ class Grid
      * @var array
      */
     protected $options = [
-        'show_pagination'   => true,
-        'show_tools'        => true,
-        'show_filter'       => true,
-        'show_exporter'     => true,
-        'show_actions'      => true,
-        'show_row_selector' => true,
-        'show_create_btn'   => true,
+        'show_pagination'        => true,
+        'show_tools'             => true,
+        'show_filter'            => true,
+        'show_exporter'          => true,
+        'show_actions'           => true,
+        'show_row_selector'      => true,
+        'show_create_btn'        => true,
+        'show_column_selector'   => true,
     ];
 
     /**
@@ -333,7 +335,7 @@ class Grid
             $relation = $this->model()->eloquent()->$relationName();
 
             $label = empty($label) ? ucfirst($relationColumn) : $label;
-            $name = snake_case($relationName).'.'.$relationColumn;
+            $name = Str::snake($relationName).'.'.$relationColumn;
         }
 
         $column = $this->addColumn($name, $label);
@@ -896,6 +898,26 @@ class Grid
     }
 
     /**
+     * Remove column selector on grid.
+     *
+     * @param bool $disable
+     *
+     * @return Grid|mixed
+     */
+    public function disableColumnSelector(bool $disable = true)
+    {
+        return $this->option('show_column_selector', !$disable);
+    }
+
+    /**
+     * @return bool
+     */
+    public function showColumnSelector()
+    {
+        return $this->option('show_column_selector');
+    }
+
+    /**
      * @return string
      */
     public function renderColumnSelector()
@@ -1032,7 +1054,7 @@ class Grid
         ) {
             $this->model()->with($method);
 
-            return $this->addColumn($method, $label)->setRelation(snake_case($method));
+            return $this->addColumn($method, $label)->setRelation(Str::snake($method));
         }
 
         if ($relation instanceof Relations\HasMany
@@ -1041,7 +1063,7 @@ class Grid
         ) {
             $this->model()->with($method);
 
-            return $this->addColumn(snake_case($method), $label);
+            return $this->addColumn(Str::snake($method), $label);
         }
 
         return false;

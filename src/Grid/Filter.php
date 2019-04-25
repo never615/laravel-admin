@@ -6,6 +6,7 @@ use Encore\Admin\Grid\Filter\AbstractFilter;
 use Encore\Admin\Grid\Filter\Between;
 use Encore\Admin\Grid\Filter\Date;
 use Encore\Admin\Grid\Filter\Day;
+use Encore\Admin\Grid\Filter\EndsWith;
 use Encore\Admin\Grid\Filter\Equal;
 use Encore\Admin\Grid\Filter\Group;
 use Encore\Admin\Grid\Filter\Gt;
@@ -19,19 +20,26 @@ use Encore\Admin\Grid\Filter\Month;
 use Encore\Admin\Grid\Filter\NotEqual;
 use Encore\Admin\Grid\Filter\NotIn;
 use Encore\Admin\Grid\Filter\Scope;
+use Encore\Admin\Grid\Filter\StartsWith;
 use Encore\Admin\Grid\Filter\Where;
 use Encore\Admin\Grid\Filter\Year;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Str;
 
 /**
  * Class Filter.
  *
  * @method AbstractFilter     equal($column, $label = '')
  * @method AbstractFilter     notEqual($column, $label = '')
+ * @method AbstractFilter     leftLike($column, $label = '')
  * @method AbstractFilter     like($column, $label = '')
+ * @method AbstractFilter     contains($column, $label = '')
+ * @method AbstractFilter     startsWith($column, $label = '')
+ * @method AbstractFilter     endsWith($column, $label = '')
  * @method AbstractFilter     ilike($column, $label = '')
  * @method AbstractFilter     gt($column, $label = '')
  * @method AbstractFilter     lt($column, $label = '')
@@ -283,7 +291,7 @@ class Filter implements Renderable
      */
     public function conditions()
     {
-        $inputs = array_dot(Input::all());
+        $inputs = Arr::dot(Input::all());
 
         $inputs = array_filter($inputs, function ($input) {
             return $input !== '' && !is_null($input);
@@ -298,7 +306,7 @@ class Filter implements Renderable
         $params = [];
 
         foreach ($inputs as $key => $value) {
-            array_set($params, $key, $value);
+            Arr::set($params, $key, $value);
         }
 
         $conditions = [];
@@ -307,7 +315,7 @@ class Filter implements Renderable
 
         foreach ($this->filters() as $filter) {
             if (in_array($column = $filter->getColumn(), $this->layoutOnlyFilterColumns)) {
-                $filter->default(array_get($params, $column));
+                $filter->default(Arr::get($params, $column));
             } else {
                 $conditions[] = $filter->condition($params);
             }
@@ -332,7 +340,7 @@ class Filter implements Renderable
         }
 
         $inputs = collect($inputs)->filter(function ($input, $key) {
-            return starts_with($key, "{$this->name}_");
+            return Str::startsWith($key, "{$this->name}_");
         })->mapWithKeys(function ($val, $key) {
             $key = str_replace("{$this->name}_", '', $key);
 
@@ -366,7 +374,7 @@ class Filter implements Renderable
         $filter->setParent($this);
 
         if ($this->thisFilterLayoutOnly) {
-            $this->thisFilterLayoutOnly      = false;
+            $this->thisFilterLayoutOnly = false;
             $this->layoutOnlyFilterColumns[] = $filter->getColumn();
         }
 
@@ -449,7 +457,7 @@ class Filter implements Renderable
     /**
      * Add a new layout column.
      *
-     * @param int $width
+     * @param int      $width
      * @param \Closure $closure
      *
      * @return $this
@@ -494,7 +502,7 @@ class Filter implements Renderable
 
     /**
      * @param callable $callback
-     * @param int $count
+     * @param int      $count
      *
      * @return bool
      */
@@ -581,17 +589,17 @@ class Filter implements Renderable
             $keys = $keys->toArray();
         }
 
-        $keys = (array)$keys;
+        $keys = (array) $keys;
 
         $request = request();
 
         $query = $request->query();
-        array_forget($query, $keys);
+        Arr::forget($query, $keys);
 
-        $question = $request->getBaseUrl() . $request->getPathInfo() == '/' ? '/?' : '?';
+        $question = $request->getBaseUrl().$request->getPathInfo() == '/' ? '/?' : '?';
 
         return count($request->query()) > 0
-            ? $request->url() . $question . http_build_query($query)
+            ? $request->url().$question.http_build_query($query)
             : $request->fullUrl();
     }
 
@@ -602,7 +610,7 @@ class Filter implements Renderable
     public static function extend($name, $filterClass)
     {
         if (!is_subclass_of($filterClass, AbstractFilter::class)) {
-            throw new \InvalidArgumentException("The class [$filterClass] must be a type of " . AbstractFilter::class . '.');
+            throw new \InvalidArgumentException("The class [$filterClass] must be a type of ".AbstractFilter::class.'.');
         }
 
         static::$supports[$name] = $filterClass;
@@ -610,7 +618,7 @@ class Filter implements Renderable
 
     /**
      * @param string $abstract
-     * @param array $arguments
+     * @param array  $arguments
      *
      * @return AbstractFilter
      */
@@ -627,22 +635,25 @@ class Filter implements Renderable
     public static function registerFilters()
     {
         $filters = [
-            'equal'    => Equal::class,
-            'notEqual' => NotEqual::class,
-            'ilike'    => Ilike::class,
-            'like'     => Like::class,
-            'gt'       => Gt::class,
-            'lt'       => Lt::class,
-            'between'  => Between::class,
-            'group'    => Group::class,
-            'where'    => Where::class,
-            'in'       => In::class,
-            'notIn'    => NotIn::class,
-            'date'     => Date::class,
-            'day'      => Day::class,
-            'month'    => Month::class,
-            'year'     => Year::class,
-            'hidden'   => Hidden::class,
+            'equal'      => Equal::class,
+            'notEqual'   => NotEqual::class,
+            'ilike'      => Ilike::class,
+            'like'       => Like::class,
+            'gt'         => Gt::class,
+            'lt'         => Lt::class,
+            'between'    => Between::class,
+            'group'      => Group::class,
+            'where'      => Where::class,
+            'in'         => In::class,
+            'notIn'      => NotIn::class,
+            'date'       => Date::class,
+            'day'        => Day::class,
+            'month'      => Month::class,
+            'year'       => Year::class,
+            'hidden'     => Hidden::class,
+            'contains'   => Like::class,
+            'startsWith' => StartsWith::class,
+            'endsWith'   => EndsWith::class,
         ];
 
         foreach ($filters as $name => $filterClass) {
@@ -654,7 +665,7 @@ class Filter implements Renderable
      * Generate a filter object and add to grid.
      *
      * @param string $method
-     * @param array $arguments
+     * @param array  $arguments
      *
      * @return AbstractFilter|$this
      */

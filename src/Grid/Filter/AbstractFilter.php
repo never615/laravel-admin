@@ -10,6 +10,7 @@ use Encore\Admin\Grid\Filter\Presenter\Presenter;
 use Encore\Admin\Grid\Filter\Presenter\Radio;
 use Encore\Admin\Grid\Filter\Presenter\Select;
 use Encore\Admin\Grid\Filter\Presenter\Text;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 /**
@@ -196,7 +197,7 @@ abstract class AbstractFilter
     public function siblings($index = null)
     {
         if (!is_null($index)) {
-            return array_get($this->parent->filters(), $index);
+            return Arr::get($this->parent->filters(), $index);
         }
 
         return $this->parent->filters();
@@ -239,7 +240,7 @@ abstract class AbstractFilter
      */
     public function condition($inputs)
     {
-        $value = array_get($inputs, $this->column);
+        $value = Arr::get($inputs, $this->column);
 
         if (!isset($value)) {
             return;
@@ -253,7 +254,7 @@ abstract class AbstractFilter
     /**
      * Select filter.
      *
-     * @param array $options
+     * @param array|\Illuminate\Support\Collection $options
      *
      * @return Select
      */
@@ -263,7 +264,7 @@ abstract class AbstractFilter
     }
 
     /**
-     * @param array $options
+     * @param array|\Illuminate\Support\Collection $options
      *
      * @return MultipleSelect
      */
@@ -273,7 +274,7 @@ abstract class AbstractFilter
     }
 
     /**
-     * @param array $options
+     * @param array|\Illuminate\Support\Collection $options
      *
      * @return Radio
      */
@@ -283,7 +284,7 @@ abstract class AbstractFilter
     }
 
     /**
-     * @param array $options
+     * @param array|\Illuminate\Support\Collection $options
      *
      * @return Checkbox
      */
@@ -295,7 +296,7 @@ abstract class AbstractFilter
     /**
      * Datetime filter.
      *
-     * @param array $options
+     * @param array|\Illuminate\Support\Collection $options
      *
      * @return DateTime
      */
