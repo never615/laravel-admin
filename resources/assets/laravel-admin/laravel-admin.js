@@ -86,7 +86,7 @@ $(function () {
     // Sidebar form autocomplete
     $('.sidebar-form .autocomplete').on('keyup focus', function () {
         var $menu = $('.sidebar-form .dropdown-menu');
-        var text = $(this).val();
+        var text = $(this).val().trim();
 
         if (text === '') {
             $menu.hide();
@@ -113,7 +113,7 @@ $(function () {
     });
 
     $('.sidebar-form .dropdown-menu li a').click(function (){
-        $('.sidebar-form .autocomplete').val($(this).text());
+        $('.sidebar-form .autocomplete').val($(this).text().trim());
     });
 });
 
