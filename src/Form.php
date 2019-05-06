@@ -6,6 +6,7 @@ use Closure;
 use Encore\Admin\Exception\Handler;
 use Encore\Admin\Form\Builder;
 use Encore\Admin\Form\Field;
+use Encore\Admin\Form\HasHooks;
 use Encore\Admin\Form\Row;
 use Encore\Admin\Form\Tab;
 use Illuminate\Contracts\Support\Renderable;
@@ -15,7 +16,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Validator;
@@ -53,8 +53,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @method Field\TimeRange      timeRange($start, $end, $label = '')
  * @method Field\Number         number($column, $label = '')
  * @method Field\Currency       currency($column, $label = '')
- * @method Field\HasMany        hasMany($relationName, $callback)
- * @method Field\SwitchField    switch ($column, $label = '')
+ * @method Field\HasMany        hasMany($relationName, $label = '', $callback)
+ * @method Field\SwitchField    switch($column, $label = '')
  * @method Field\Display        display($column, $label = '')
  * @method Field\Rate           rate($column, $label = '')
  * @method Field\Divide         divider()
@@ -68,9 +68,17 @@ use Symfony\Component\HttpFoundation\Response;
  * @method Field\MultipleFile   multipleFile($column, $label = '')
  * @method Field\Captcha        captcha($column, $label = '')
  * @method Field\Listbox        listbox($column, $label = '')
+ * @method Field\Table          table($column, $label, $builder)
  */
 class Form implements Renderable
 {
+    use HasHooks;
+
+    /**
+     * Remove flag in `has many` form.
+     */
+    const REMOVE_FLAG_NAME = '_remove_';
+
     /**
      * Eloquent model of the form.
      *
@@ -87,34 +95,6 @@ class Form implements Renderable
      * @var Builder
      */
     protected $builder;
-
-    /**
-     * Submitted callback.
-     *
-     * @var Closure[]
-     */
-    protected $submitted = [];
-
-    /**
-     * Saving callback.
-     *
-     * @var Closure[]
-     */
-    protected $saving = [];
-
-    /**
-     * Saved callback.
-     *
-     * @var Closure[]
-     */
-    protected $saved = [];
-
-    /**
-     * Callbacks after getting editing model.
-     *
-     * @var Closure[]
-     */
-    protected $editing = [];
 
     /**
      * Data for save to current model from input.
@@ -169,11 +149,6 @@ class Form implements Renderable
      * @var Form\Tab
      */
     protected $tab = null;
-
-    /**
-     * Remove flag in `has many` form.
-     */
-    const REMOVE_FLAG_NAME = '_remove_';
 
     /**
      * Field rows in form.
@@ -324,27 +299,47 @@ class Form implements Renderable
      */
     public function destroy($id)
     {
-        collect(explode(',', $id))->filter()->each(function ($id) {
-            $builder = $this->model()->newQuery();
-
-            if ($this->isSoftDeletes) {
-                $builder = $builder->withTrashed();
+        try {
+            if (($ret = $this->callDeleting()) instanceof Response) {
+                return $ret;
             }
 
-            $model = $builder->with($this->getRelations())->findOrFail($id);
+            collect(explode(',', $id))->filter()->each(function ($id) {
+                $builder = $this->model()->newQuery();
 
-            if ($this->isSoftDeletes && $model->trashed()) {
-                $this->deleteFiles($model, true);
-                $model->forceDelete();
+                if ($this->isSoftDeletes) {
+                    $builder = $builder->withTrashed();
+                }
 
-                return;
+                $model = $builder->with($this->getRelations())->findOrFail($id);
+
+                if ($this->isSoftDeletes && $model->trashed()) {
+                    $this->deleteFiles($model, true);
+                    $model->forceDelete();
+
+                    return;
+                }
+
+                $this->deleteFiles($model);
+                $model->delete();
+            });
+
+            if (($ret = $this->callDeleted()) instanceof Response) {
+                return $ret;
             }
 
-            $this->deleteFiles($model);
-            $model->delete();
-        });
+            $response = [
+                'status'  => true,
+                'message' => trans('admin.delete_succeeded'),
+            ];
+        } catch (\Exception $exception) {
+            $response = [
+                'status'  => false,
+                'message' => $exception->getMessage() ?: trans('admin.delete_failed'),
+            ];
+        }
 
-        return true;
+        return response()->json($response);
     }
 
     /**
@@ -378,7 +373,7 @@ class Form implements Renderable
      */
     public function store()
     {
-        $data = Input::all();
+        $data = \request()->all();
 
         // Handle validation errors.
         if ($validationMessages = $this->validationMessages($data)) {
@@ -484,71 +479,18 @@ class Form implements Renderable
         $relations = [];
 
         foreach ($inputs as $column => $value) {
-            if (method_exists($this->model, $column)) {
-                $relation = call_user_func([$this->model, $column]);
+            if (!method_exists($this->model, $column)) {
+                continue;
+            }
 
-                if ($relation instanceof Relations\Relation) {
-                    $relations[$column] = $value;
-                }
+            $relation = call_user_func([$this->model, $column]);
+
+            if ($relation instanceof Relations\Relation) {
+                $relations[$column] = $value;
             }
         }
 
         return $relations;
-    }
-
-    /**
-     * Call editing callbacks.
-     *
-     * @return void
-     */
-    protected function callEditing()
-    {
-        foreach ($this->editing as $func) {
-            call_user_func($func, $this);
-        }
-    }
-
-    /**
-     * Call submitted callback.
-     *
-     * @return mixed
-     */
-    protected function callSubmitted()
-    {
-        foreach ($this->submitted as $func) {
-            if ($func instanceof Closure && ($ret = call_user_func($func, $this)) instanceof Response) {
-                return $ret;
-            }
-        }
-    }
-
-    /**
-     * Call saving callback.
-     *
-     * @return mixed
-     */
-    protected function callSaving()
-    {
-        foreach ($this->saving as $func) {
-            if ($func instanceof Closure && ($ret = call_user_func($func, $this)) instanceof Response) {
-                return $ret;
-            }
-        }
-    }
-
-    /**
-     * Callback after saving a Model.
-     *
-     * @return mixed|null
-     */
-    protected function callSaved()
-    {
-        foreach ($this->saved as $func) {
-            if ($func instanceof Closure &&
-                ($ret = call_user_func($func, $this)) instanceof Response) {
-                return $ret;
-            }
-        }
     }
 
     /**
@@ -561,12 +503,12 @@ class Form implements Renderable
      */
     public function update($id, $data = null)
     {
-        $data = ($data) ?: Input::all();
+        $data = ($data) ?: request()->all();
 
         $isEditable = $this->isEditable($data);
 
-        if (($data = $this->handleColumnUpdates($id, $data)) instanceof Response) {
-            return $data;
+        if (($response = $this->handleColumnUpdates($id, $data)) instanceof Response) {
+            return $response;
         }
 
 
@@ -744,7 +686,7 @@ class Form implements Renderable
             unset($input['key']);
         }
 
-        Input::replace($input);
+        request()->replace($input);
 
         return $input;
     }
@@ -770,7 +712,7 @@ class Form implements Renderable
             $input[$column] = $order;
         }
 
-        Input::replace($input);
+        request()->replace($input);
 
         return $input;
     }
@@ -1049,54 +991,6 @@ class Form implements Renderable
         }
 
         return Arr::isAssoc($first);
-    }
-
-    /**
-     * Set after getting editing model callback.
-     *
-     * @param Closure $callback
-     *
-     * @return void
-     */
-    public function editing(Closure $callback)
-    {
-        $this->editing[] = $callback;
-    }
-
-    /**
-     * Set submitted callback.
-     *
-     * @param Closure $callback
-     *
-     * @return void
-     */
-    public function submitted(Closure $callback)
-    {
-        $this->submitted[] = $callback;
-    }
-
-    /**
-     * Set saving callback.
-     *
-     * @param Closure $callback
-     *
-     * @return void
-     */
-    public function saving(Closure $callback)
-    {
-        $this->saving[] = $callback;
-    }
-
-    /**
-     * Set saved callback.
-     *
-     * @param Closure $callback
-     *
-     * @return void
-     */
-    public function saved(Closure $callback)
-    {
-        $this->saved[] = $callback;
     }
 
     /**
@@ -1387,6 +1281,8 @@ class Form implements Renderable
     /**
      * Disable form submit.
      *
+     * @param bool $disable
+     *
      * @return $this
      *
      * @deprecated
@@ -1400,6 +1296,8 @@ class Form implements Renderable
 
     /**
      * Disable form reset.
+     *
+     * @param bool $disable
      *
      * @return $this
      *
@@ -1415,6 +1313,8 @@ class Form implements Renderable
     /**
      * Disable View Checkbox on footer.
      *
+     * @param bool $disable
+     *
      * @return $this
      */
     public function disableViewCheck(bool $disable = true)
@@ -1427,6 +1327,8 @@ class Form implements Renderable
     /**
      * Disable Editing Checkbox on footer.
      *
+     * @param bool $disable
+     *
      * @return $this
      */
     public function disableEditingCheck(bool $disable = true)
@@ -1438,6 +1340,8 @@ class Form implements Renderable
 
     /**
      * Disable Creating Checkbox on footer.
+     *
+     * @param bool $disable
      *
      * @return $this
      */
@@ -1561,6 +1465,7 @@ class Form implements Renderable
             'multipleImage'  => Field\MultipleImage::class,
             'captcha'        => Field\Captcha::class,
             'listbox'        => Field\Listbox::class,
+            'table'          => Field\Table::class,
         ];
 
         foreach ($map as $abstract => $class) {
@@ -1689,7 +1594,9 @@ class Form implements Renderable
      * Setter.
      *
      * @param string $name
-     * @param        $value
+     * @param mixed  $value
+     *
+     * @return array
      */
     public function __set($name, $value)
     {

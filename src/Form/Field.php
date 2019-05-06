@@ -492,8 +492,7 @@ class Field implements Renderable
         }
 
         if ($this instanceof Form\Field\MultipleFile
-            || $this instanceof Form\Field\File)
-        {
+            || $this instanceof Form\Field\File) {
             return;
         }
 

@@ -2,8 +2,6 @@
 
 namespace Encore\Admin\Traits;
 
-use Encore\Admin\Admin;
-
 trait HasAssets
 {
     /**
@@ -86,23 +84,19 @@ trait HasAssets
      *
      * @param null $css
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
+     * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public static function css($css = null)
     {
         if (!is_null($css)) {
-            self::$css = array_merge(self::$css, (array) $css);
-
-            return;
+            return self::$css = array_merge(self::$css, (array) $css);
         }
 
-        if ($css = static::getMinifiedCss()) {
-            static::$css = [$css];
-        } else {
-            static::$css = array_merge(static::$css, static::baseCss(), (array)$css);
+        if (!$css = static::getMinifiedCss()) {
+            $css = array_merge(static::$css, static::baseCss());
         }
 
-        $css = array_filter(array_unique(static::$css));
+        $css = array_filter(array_unique($css));
 
         return view('admin::partials.css', compact('css'));
     }
@@ -110,14 +104,12 @@ trait HasAssets
     /**
      * @param null $css
      *
-     * @return array|void
+     * @return array|null
      */
     public static function baseCss($css = null)
     {
         if (!is_null($css)) {
-            static::$baseCss = $css;
-
-            return;
+            return static::$baseCss = $css;
         }
 
         $skin = config('admin.skin', 'skin-blue-light');
@@ -132,23 +124,19 @@ trait HasAssets
      *
      * @param null $js
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
+     * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public static function js($js = null)
     {
         if (!is_null($js)) {
-            self::$js = array_merge(self::$js, (array) $js);
-
-            return;
+            return self::$js = array_merge(self::$js, (array) $js);
         }
 
-        if ($js = static::getMinifiedJs()) {
-            static::$js = [$js];
-        } else {
-            static::$js = array_merge(static::baseJs(), static::$js, (array) $js);
+        if (!$js = static::getMinifiedJs()) {
+            $js = array_merge(static::baseJs(), static::$js);
         }
 
-        $js = array_filter(array_unique(static::$js));
+        $js = array_filter(array_unique($js));
 
         return view('admin::partials.js', compact('js'));
     }
@@ -158,17 +146,13 @@ trait HasAssets
      *
      * @param null $js
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
+     * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public static function headerJs($js = null)
     {
         if (!is_null($js)) {
-            self::$headerJs = array_merge(self::$headerJs, (array) $js);
-
-            return;
+            return self::$headerJs = array_merge(self::$headerJs, (array) $js);
         }
-
-        static::$headerJs = array_merge(static::$headerJs, (array) $js);
 
         return view('admin::partials.js', ['js' => array_unique(static::$headerJs)]);
     }
@@ -176,14 +160,12 @@ trait HasAssets
     /**
      * @param null $js
      *
-     * @return array|void
+     * @return array|null
      */
     public static function baseJs($js = null)
     {
         if (!is_null($js)) {
-            static::$baseJs = $js;
-
-            return;
+            return static::$baseJs = $js;
         }
 
         return static::$baseJs;
@@ -192,14 +174,12 @@ trait HasAssets
     /**
      * @param string $script
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
+     * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public static function script($script = '')
     {
         if (!empty($script)) {
-            self::$script = array_merge(self::$script, (array) $script);
-
-            return;
+            return self::$script = array_merge(self::$script, (array) $script);
         }
 
         return view('admin::partials.script', ['script' => array_unique(self::$script)]);
@@ -207,6 +187,7 @@ trait HasAssets
 
     /**
      * @param string $key
+     *
      * @return mixed
      */
     protected static function getManifestData($key)
@@ -215,7 +196,9 @@ trait HasAssets
             return static::$manifestData[$key];
         }
 
-        static::$manifestData = json_decode(file_get_contents(public_path(static::$manifest)), true);
+        static::$manifestData = json_decode(
+            file_get_contents(public_path(static::$manifest)), true
+        );
 
         return static::$manifestData[$key];
     }
@@ -229,7 +212,7 @@ trait HasAssets
             return false;
         }
 
-        return static::getManifestData(Admin::$min['css']);
+        return static::getManifestData('css');
     }
 
     /**
@@ -241,7 +224,7 @@ trait HasAssets
             return false;
         }
 
-        return static::getManifestData(Admin::$min['js']);
+        return static::getManifestData('js');
     }
 
     /**
