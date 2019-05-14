@@ -36,7 +36,9 @@ class CsvExporter extends AbstractExporter
                 }
 
                 foreach ($records as $record) {
-                    fputcsv($handle, $this->getFormattedRecord($record));
+                    if ($record) {
+                        fputcsv($handle, $this->getFormattedRecord($record));
+                    }
                 }
             });
 
