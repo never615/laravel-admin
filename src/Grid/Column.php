@@ -2,6 +2,7 @@
 
 namespace Encore\Admin\Grid;
 
+use Carbon\Carbon;
 use Closure;
 use Encore\Admin\Admin;
 use Encore\Admin\Grid;
@@ -31,10 +32,8 @@ use Illuminate\Support\Str;
  * @method Displayers\Table         table($titles = [])
  * @method Displayers\Expand        expand($callback = null)
  * @method Displayers\Modal         modal($callback = null)
- * @method Displayers\Gravatar      gravatar($size = 30)
  * @method Displayers\Carousel      carousel(int $width = 300, int $height = 200, $server = '')
- * @method Displayers\Loading       loading($values = [], $others = [])
- * @method Displayers\FileSize      filesize()
+ * @method Displayers\Download      download($server = '')
  */
 class Column
 {
@@ -251,7 +250,7 @@ class Column
      *
      * @param string $style
      *
-     * @return Column
+     * @return $this
      */
     public function style($style)
     {
@@ -263,11 +262,23 @@ class Column
      *
      * @param int $width
      *
-     * @return Column
+     * @return $this
      */
     public function width(int $width)
     {
         return $this->style("width: {$width}px;");
+    }
+
+    /**
+     * Set the color of column.
+     *
+     * @param string $color
+     *
+     * @return $this
+     */
+    public function color($color)
+    {
+        return $this->style("color:$color;");
     }
 
     /**
@@ -339,7 +350,7 @@ class Column
      *
      * @param bool $sort
      *
-     * @return Column
+     * @return $this
      */
     public function sort($sort)
     {
@@ -351,7 +362,7 @@ class Column
     /**
      * Mark this column as sortable.
      *
-     * @return Column
+     * @return $this
      */
     public function sortable()
     {
@@ -361,7 +372,7 @@ class Column
     /**
      * Set cast name for sortable.
      *
-     * @return Column
+     * @return $this
      */
     public function cast($cast)
     {
@@ -390,7 +401,7 @@ class Column
      * @param string $abstract
      * @param array  $arguments
      *
-     * @return Column
+     * @return $this
      */
     public function displayUsing($abstract, $arguments = [])
     {
@@ -465,6 +476,102 @@ class Column
         $this->grid->addTotalRow($this->name, $display);
 
         return $this;
+    }
+
+    /**
+     * Convert file size to a human readable format like `100mb`.
+     *
+     * @return $this
+     */
+    public function filesize()
+    {
+        return $this->display(function ($value) {
+            return file_size($value);
+        });
+    }
+
+    /**
+     * Display the fields in the email format as gavatar.
+     *
+     * @param int $size
+     *
+     * @return $this
+     */
+    public function gravatar($size = 30)
+    {
+        return $this->display(function ($value) use ($size) {
+            $src = sprintf(
+                'https://www.gravatar.com/avatar/%s?s=%d',
+                md5(strtolower($value)),
+                $size
+            );
+
+            return "<img src='$src' class='img img-circle'/>";
+        });
+    }
+
+    /**
+     * Display field as a loading icon.
+     *
+     * @param array $values
+     * @param array $others
+     *
+     * @return $this
+     */
+    public function loading($values = [], $others = [])
+    {
+        return $this->display(function ($value) use ($values, $others) {
+
+            $values = (array) $values;
+
+            if (in_array($value, $values)) {
+                return '<i class="fa fa-refresh fa-spin text-primary"></i>';
+            }
+
+            return Arr::get($others, $value, $value);
+        });
+    }
+
+    /**
+     * Display column as an font-awesome icon based on it's value.
+     *
+     * @param array $setting
+     * @param string $default
+     *
+     * @return $this
+     */
+    public function icon(array $setting, $default = '')
+    {
+        return $this->display(function ($value) use ($setting, $default) {
+
+            $fa = '';
+
+            if (isset($setting[$value])) {
+                $fa = $setting[$value];
+            } elseif ($default) {
+                $fa = $default;
+            }
+
+            return "<i class=\"fa fa-{$fa}\"></i>";
+        });
+    }
+
+    /**
+     * Return a human readable format time.
+     *
+     * @param null $locale
+     *
+     * @return $this
+     */
+    public function diffForHumans($locale = null)
+    {
+        if ($locale) {
+            Carbon::setLocale($locale);
+        }
+
+        return $this->display(function ($value) {
+            return Carbon::parse($value)->diffForHumans();
+        });
     }
 
     /**
@@ -681,8 +788,20 @@ class Column
 
         Admin::script("$('.column-help').popover();");
 
+        $data = [
+            'container' => 'body',
+            'toggle'    => 'popover',
+            'trigger'   => 'hover',
+            'placement' => 'bottom',
+            'content'   => $this->help,
+        ];
+
+        $data = collect($data)->map(function ($val, $key) {
+            return "data-{$key}=\"{$val}\"";
+        })->implode(' ');
+
         return <<<HELP
-<a href="javascript:void(0);" class="column-help" data-container="body" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="{$this->help}">
+<a href="javascript:void(0);" class="column-help" {$data}>
     <i class="fa fa-question-circle"></i>
 </a>
 HELP;
@@ -694,7 +813,7 @@ HELP;
      * @param string $abstract
      * @param array  $arguments
      *
-     * @return Column
+     * @return $this
      */
     protected function resolveDisplayer($abstract, $arguments)
     {
@@ -711,7 +830,7 @@ HELP;
      * @param string $abstract
      * @param array  $arguments
      *
-     * @return Column
+     * @return $this
      */
     protected function callSupportDisplayer($abstract, $arguments)
     {
@@ -734,7 +853,7 @@ HELP;
      * @param string $abstract
      * @param array  $arguments
      *
-     * @return Column
+     * @return $this
      */
     protected function callBuiltinDisplayer($abstract, $arguments)
     {
