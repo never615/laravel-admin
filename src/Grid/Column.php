@@ -292,8 +292,7 @@ class Column
         if ($label) {
             return $label;
         }
-
-        $label=admin_translate($this->name,$this->grid->model()->getTable());
+        $label = $label ?? admin_translate($this->name, self::$model->getTable());
 //        $label = ucfirst($this->name);
 
         return __(str_replace(['.', '_'], ' ', $label));
