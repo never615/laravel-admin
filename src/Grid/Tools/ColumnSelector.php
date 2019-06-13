@@ -35,13 +35,10 @@ class ColumnSelector extends AbstractTool
         if (!$this->grid->showColumnSelector()) {
             return '';
         }
-        $show = array_filter(explode(',', request(static::SELECT_COLUMN_NAME)));
 
-        $columns = $this->getGridColumns();
+        $show = $this->grid->visibleColumnNames();
 
-        $this->setupScript();
-
-        $lists = $columns->map(function ($val, $key) use ($show) {
+        $lists = $this->getGridColumns()->map(function ($label, $key) use ($show) {
             if (empty($show)) {
                 $checked = 'checked';
             } else {
@@ -51,7 +48,7 @@ class ColumnSelector extends AbstractTool
             return <<<HTML
 <li class="checkbox icheck" style="margin: 0;">
     <label style="width: 100%;padding: 3px;">
-        <input type="checkbox" class="column-select-item" value="{$key}" {$checked}/>&nbsp;&nbsp;&nbsp;{$val}
+        <input type="checkbox" class="column-select-item" value="{$key}" {$checked}/>&nbsp;&nbsp;&nbsp;{$label}
     </label>
 </li>
 HTML;
@@ -61,6 +58,8 @@ HTML;
             'all'    => __('admin.all'),
             'submit' => __('admin.submit'),
         ];
+
+        $this->setupScript();
 
         return <<<EOT
 
@@ -78,7 +77,7 @@ HTML;
         </li>
         <li class="divider"></li>
         <li class="text-right">
-            <button class="btn btn-sm btn-defalut column-select-all">{$btns['all']}</button>&nbsp;&nbsp;
+            <button class="btn btn-sm btn-default column-select-all">{$btns['all']}</button>&nbsp;&nbsp;
             <button class="btn btn-sm btn-primary column-select-submit">{$btns['submit']}</button>
         </li>
     </ul>
@@ -94,7 +93,7 @@ EOT;
         return $this->grid->columns()->map(function (Grid\Column $column) {
             $name = $column->getName();
 
-            if (in_array($name, ['__row_selector__', '__actions__'])) {
+            if (in_array($name, [Grid\Column::SELECT_COLUMN_NAME, Grid\Column::ACTION_COLUMN_NAME])) {
                 return;
             }
 
@@ -102,12 +101,18 @@ EOT;
         })->filter()->collapse();
     }
 
+    /**
+     * Setup script.
+     */
     protected function setupScript()
     {
-        $script = <<<'SCRIPT'
+        $defaults = json_encode($this->grid->getDefaultVisibleColumnNames());
+
+        $script = <<<SCRIPT
 
 $('.column-select-submit').on('click', function () {
     
+    var defaults = $defaults;
     var selected = [];
     
     $('.column-select-item:checked').each(function () {
@@ -120,8 +125,7 @@ $('.column-select-submit').on('click', function () {
 
     var url = new URL(location);
     
-    // select all
-    if ($('.column-select-item').length == selected.length) {
+    if (selected.sort().toString() == defaults.sort().toString()) {
         url.searchParams.delete('_columns_');
     } else {
         url.searchParams.set('_columns_', selected.join());

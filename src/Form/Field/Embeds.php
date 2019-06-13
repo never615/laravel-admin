@@ -6,7 +6,6 @@ use Encore\Admin\Form;
 use Encore\Admin\Form\EmbeddedForm;
 use Encore\Admin\Form\Field;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class Embeds extends Field
@@ -152,7 +151,7 @@ class Embeds extends Field
             return false;
         }
 
-        return Validator::make($input, $rules, $this->validationMessages, $attributes);
+        return \validator($input, $rules, $this->getValidationMessages(), $attributes);
     }
 
     /**

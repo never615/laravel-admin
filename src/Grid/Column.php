@@ -12,8 +12,36 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
+/**
+ * Class Column.
+ *
+ * @method Displayers\Editable      editable()
+ * @method Displayers\SwitchDisplay switch ($states = [])
+ * @method Displayers\SwitchGroup   switchGroup($columns = [], $states = [])
+ * @method Displayers\Select        select($options = [])
+ * @method Displayers\Image         image($server = '', $width = 200, $height = 200)
+ * @method Displayers\Label         label($style = 'success')
+ * @method Displayers\Button        button($style = null)
+ * @method Displayers\Link          link($href = '', $target = '_blank')
+ * @method Displayers\Badge         badge($style = 'red')
+ * @method Displayers\ProgressBar   progressBar($style = 'primary', $size = 'sm', $max = 100)
+ * @method Displayers\Radio         radio($options = [])
+ * @method Displayers\Checkbox      checkbox($options = [])
+ * @method Displayers\Orderable     orderable($column, $label = '')
+ * @method Displayers\Table         table($titles = [])
+ * @method Displayers\Expand        expand($callback = null)
+ * @method Displayers\Modal         modal($callback = null)
+ * @method Displayers\Gravatar      gravatar($size = 30)
+ * @method Displayers\Carousel      carousel(int $width = 300, int $height = 200, $server = '')
+ * @method Displayers\Loading       loading($values = [], $others = [])
+ * @method Displayers\FileSize      filesize()
+ */
 class Column
 {
+    const SELECT_COLUMN_NAME = '__row_selector__';
+
+    const ACTION_COLUMN_NAME = '__actions__';
+
     /**
      * @var Grid
      */
@@ -125,8 +153,6 @@ class Column
      */
     protected static $model;
 
-    const SELECT_COLUMN_NAME = '__row_selector__';
-
     /**
      * @param string $name
      * @param string $label
@@ -233,6 +259,18 @@ class Column
     }
 
     /**
+     * Set the width of column.
+     *
+     * @param int $width
+     *
+     * @return Column
+     */
+    public function width(int $width)
+    {
+        return $this->style("width: {$width}px;");
+    }
+
+    /**
      * Get name of this column.
      *
      * @return mixed
@@ -251,9 +289,14 @@ class Column
      */
     protected function formatLabel($label)
     {
-        $label = $label ?: ucfirst($this->name);
+        if ($label) {
+            return $label;
+        }
 
-        return str_replace(['.', '_'], ' ', $label);
+        $label=admin_translate($this->name,$this->grid->model()->getTable());
+//        $label = ucfirst($this->name);
+
+        return __(str_replace(['.', '_'], ' ', $label));
     }
 
     /**
@@ -397,6 +440,18 @@ class Column
 
             return view($view, compact('model', 'value'))->render();
         });
+    }
+
+    /**
+     * Hide this column by default.
+     *
+     * @return $this
+     */
+    public function hide()
+    {
+        $this->grid->hideColumns($this->getName());
+
+        return $this;
     }
 
     /**
@@ -719,7 +774,7 @@ HELP;
     {
         if ($this->isRelation() && !$this->relationColumn) {
             $this->name = "{$this->relation}.$method";
-            $this->label = isset($arguments[0]) ? $arguments[0] : ucfirst($method);
+            $this->label = $this->formatLabel($arguments[0] ?? null);
 
             $this->relationColumn = $method;
 

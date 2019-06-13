@@ -45,6 +45,13 @@ trait UploadField
     protected $useSequenceName = false;
 
     /**
+     * Retain file when delete record from DB.
+     *
+     * @var bool
+     */
+    protected $retainable = false;
+
+    /**
      * Configuration for setting up file actions for newly selected file thumbnails in the preview window.
      *
      * @var array
@@ -59,7 +66,7 @@ trait UploadField
      *
      * @var string
      */
-    protected $storage_permission;
+    protected $storagePermission;
 
     /**
      * Initialize the storage instance.
@@ -124,6 +131,18 @@ trait UploadField
     public function removable()
     {
         $this->fileActionSettings['showRemove'] = true;
+
+        return $this;
+    }
+
+    /**
+     * Indicates if the underlying field is retainable.
+     *
+     * @return $this
+     */
+    public function retainable($retainable = true)
+    {
+        $this->retainable = $retainable;
 
         return $this;
     }
@@ -297,8 +316,8 @@ trait UploadField
     {
         $this->renameIfExists($file);
 
-        if (!is_null($this->storage_permission)) {
-            return $this->storage->putFileAs($this->getDirectory(), $file, $this->name, $this->storage_permission);
+        if (!is_null($this->storagePermission)) {
+            return $this->storage->putFileAs($this->getDirectory(), $file, $this->name, $this->storagePermission);
         }
 
         return $this->storage->putFileAs($this->getDirectory(), $file, $this->name);
@@ -361,15 +380,15 @@ trait UploadField
     {
         $index = 1;
         $extension = $file->getClientOriginalExtension();
-        $originalName = $file->getClientOriginalName();
-        $newName = $originalName.'_'.$index.'.'.$extension;
+        $original = $file->getClientOriginalName();
+        $new = sprintf('%s_%s.%s', $original, $index, $extension);
 
-        while ($this->storage->exists("{$this->getDirectory()}/$newName")) {
+        while ($this->storage->exists("{$this->getDirectory()}/$new")) {
             $index++;
-            $newName = $originalName.'_'.$index.'.'.$extension;
+            $new = sprintf('%s_%s.%s', $original, $index, $extension);
         }
 
-        return $newName;
+        return $new;
     }
 
     /**
@@ -381,22 +400,27 @@ trait UploadField
     {
         if (is_array($this->original)) {
             foreach ($this->original as $item) {
-                if ($this->storage->exists($item)) {
+                if (!$this->retainable && $this->storage->exists($item)) {
                     $this->storage->delete($item);
                 }
             }
         } else {
-            if ($this->storage->exists($this->original)) {
+            if (!$this->retainable && $this->storage->exists($this->original)) {
                 $this->storage->delete($this->original);
             }
         }
-
-
     }
 
-    public function storage_permission($permission)
+    /**
+     * Set file permission when stored into storage.
+     *
+     * @param string $permission
+     *
+     * @return $this
+     */
+    public function storagePermission($permission)
     {
-        $this->storage_permission = $permission;
+        $this->storagePermission = $permission;
 
         return $this;
     }

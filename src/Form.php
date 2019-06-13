@@ -55,18 +55,21 @@ use Symfony\Component\HttpFoundation\Response;
  * @method Field\SwitchField    switch($column, $label = '')
  * @method Field\Display        display($column, $label = '')
  * @method Field\Rate           rate($column, $label = '')
- * @method Field\Divide         divider()
+ * @method Field\Divider        divider($title = '')
  * @method Field\Password       password($column, $label = '')
  * @method Field\Decimal        decimal($column, $label = '')
  * @method Field\Html           html($html, $label = '')
  * @method Field\Tags           tags($column, $label = '')
  * @method Field\Icon           icon($column, $label = '')
- * @method Field\Embeds         embeds($column, $label = '')
+ * @method Field\Embeds         embeds($column, $label = '', $callback)
  * @method Field\MultipleImage  multipleImage($column, $label = '')
  * @method Field\MultipleFile   multipleFile($column, $label = '')
  * @method Field\Captcha        captcha($column, $label = '')
  * @method Field\Listbox        listbox($column, $label = '')
  * @method Field\Table          table($column, $label, $builder)
+ * @method Field\Timezone       timezone($column, $label = '')
+ * @method Field\KeyValue       keyValue($column, $label = '')
+ * @method Field\ListField      list($column, $label = '')
  */
 class Form implements Renderable
 {
@@ -298,7 +301,7 @@ class Form implements Renderable
     public function destroy($id)
     {
         try {
-            if (($ret = $this->callDeleting()) instanceof Response) {
+            if (($ret = $this->callDeleting($id)) instanceof Response) {
                 return $ret;
             }
 
@@ -900,7 +903,7 @@ class Form implements Renderable
                 continue;
             }
 
-            if ($this->invalidColumn($columns, $oneToOneRelation)) {
+            if ($this->isInvalidColumn($columns, $oneToOneRelation || $field->isJsonType)) {
                 continue;
             }
 
@@ -922,15 +925,15 @@ class Form implements Renderable
 
     /**
      * @param string|array $columns
-     * @param bool         $oneToOneRelation
+     * @param bool         $containsDot
      *
      * @return bool
      */
-    protected function invalidColumn($columns, $oneToOneRelation = false)
+    protected function isInvalidColumn($columns, $containsDot = false)
     {
         foreach ((array) $columns as $column) {
-            if ((!$oneToOneRelation && Str::contains($column, '.')) ||
-                ($oneToOneRelation && !Str::contains($column, '.'))) {
+            if ((!$containsDot && Str::contains($column, '.')) ||
+                ($containsDot && !Str::contains($column, '.'))) {
                 return true;
             }
         }
@@ -1096,6 +1099,27 @@ class Form implements Renderable
                 $field->fill($data);
             }
         });
+    }
+
+    /**
+     * Add a fieldset to form.
+     *
+     * @param string  $title
+     * @param Closure $setCallback
+     *
+     * @return Field\Fieldset
+     */
+    public function fieldset(string $title, Closure $setCallback)
+    {
+        $fieldset = new Field\Fieldset();
+
+        $this->html($fieldset->start($title))->plain();
+
+        $setCallback($this);
+
+        $this->html($fieldset->end())->plain();
+
+        return $fieldset;
     }
 
     /**
@@ -1277,6 +1301,20 @@ class Form implements Renderable
     }
 
     /**
+     * @param Closure|null $callback
+     *
+     * @return Form\Tools
+     */
+    public function header(Closure $callback = null)
+    {
+        if (func_num_args() == 0) {
+            return $this->builder->getTools();
+        }
+
+        $callback->call($this, $this->builder->getTools());
+    }
+
+    /**
      * Disable form submit.
      *
      * @param bool $disable
@@ -1355,8 +1393,12 @@ class Form implements Renderable
      *
      * @param Closure $callback
      */
-    public function footer(Closure $callback)
+    public function footer(Closure $callback = null)
     {
+        if (func_num_args() == 0) {
+            return $this->builder()->getFooter();
+        }
+
         call_user_func($callback, $this->builder()->getFooter());
     }
 
@@ -1428,8 +1470,7 @@ class Form implements Renderable
             'datetimeRange'  => Field\DatetimeRange::class,
             'decimal'        => Field\Decimal::class,
             'display'        => Field\Display::class,
-            'divider'        => Field\Divide::class,
-            'divide'         => Field\Divide::class,
+            'divider'        => Field\Divider::class,
             'embeds'         => Field\Embeds::class,
             'email'          => Field\Email::class,
             'file'           => Field\File::class,
@@ -1462,6 +1503,9 @@ class Form implements Renderable
             'captcha'        => Field\Captcha::class,
             'listbox'        => Field\Listbox::class,
             'table'          => Field\Table::class,
+            'timezone'       => Field\Timezone::class,
+            'keyValue'       => Field\KeyValue::class,
+            'list'           => Field\ListField::class,
         ];
 
         foreach ($map as $abstract => $class) {

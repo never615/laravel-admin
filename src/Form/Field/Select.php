@@ -119,7 +119,7 @@ class Select extends Field
 $(document).off('change', "{$this->getElementClassSelector()}");
 $(document).on('change', "{$this->getElementClassSelector()}", function () {
     var target = $(this).closest('.fields-group').find(".$class");
-    $.get("$sourceUrl?q="+this.value, function (data) {
+    $.get("$sourceUrl",{q : this.value}, function (data) {
         target.find("option").remove();
         $(target).select2({
             data: $.map(data, function (d) {
@@ -176,10 +176,6 @@ $(document).on('change', "{$this->getElementClassSelector()}", function () {
     fields.forEach(function(field, index){
         var target = $(_this).closest('.fields-group').find('.' + fields[index]);
         promises.push(refreshOptions(urls[index] + "?q="+ _this.value, target));
-    });
-
-    $.when(promises).then(function() {
-        console.log('开始更新其它select的选择options');
     });
 });
 EOT;

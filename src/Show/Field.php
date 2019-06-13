@@ -3,6 +3,7 @@
 namespace Encore\Admin\Show;
 
 use Encore\Admin\Show;
+use Encore\Admin\Widgets\Carousel;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Database\Eloquent\Model;
@@ -236,6 +237,46 @@ class Field implements Renderable
     }
 
     /**
+     * Show field as a carousel.
+     *
+     * @param int    $width
+     * @param int    $height
+     * @param string $server
+     *
+     * @return Field
+     */
+    public function carousel($width = 300, $height = 200, $server = '')
+    {
+        return $this->unescape()->as(function ($images) use ($server, $width, $height) {
+            $items = collect($images)->map(function ($path) use ($server, $width, $height) {
+                if (empty($path)) {
+                    return '';
+                }
+
+                if (url()->isValidUrl($path)) {
+                    $image = $path;
+                } elseif ($server) {
+                    $image = $server.$path;
+                } else {
+                    $disk = config('admin.upload.disk');
+
+                    if (config("filesystems.disks.{$disk}")) {
+                        $image = Storage::disk($disk)->url($path);
+                    } else {
+                        $image = '';
+                    }
+                }
+
+                $caption = '';
+
+                return compact('image', 'caption');
+            });
+
+            return (new Carousel($items))->width($width)->height($height);
+        });
+    }
+
+    /**
      * Show field as a file.
      *
      * @param string $server
@@ -365,6 +406,18 @@ HTML;
             }
 
             return $value;
+        });
+    }
+
+    /**
+     * Show readable filesize for giving integer size.
+     *
+     * @return Field
+     */
+    public function filesize()
+    {
+        return $this->as(function ($value) {
+            return file_size($value);
         });
     }
 

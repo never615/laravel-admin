@@ -4,7 +4,6 @@ namespace Encore\Admin\Form\Field;
 
 use Encore\Admin\Form\Field;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class File extends Field
@@ -90,7 +89,7 @@ class File extends Field
         $rules[$this->column] = $fieldRules;
         $attributes[$this->column] = $this->label;
 
-        return Validator::make($input, $rules, $this->validationMessages, $attributes);
+        return \validator($input, $rules, $this->getValidationMessages(), $attributes);
     }
 
     /**
@@ -124,8 +123,8 @@ class File extends Field
 
         $path = null;
 
-        if (!is_null($this->storage_permission)) {
-            $path = $this->storage->putFileAs($this->getDirectory(), $file, $this->name, $this->storage_permission);
+        if (!is_null($this->storagePermission)) {
+            $path = $this->storage->putFileAs($this->getDirectory(), $file, $this->name, $this->storagePermission);
         } else {
             $path = $this->storage->putFileAs($this->getDirectory(), $file, $this->name);
         }
@@ -217,7 +216,7 @@ EOT;
      */
     public function render()
     {
-        $this->options(['overwriteInitial' => true]);
+        $this->options(['overwriteInitial' => true, 'msgPlaceholder' => trans('admin.choose_file')]);
 
         $this->setupDefaultOptions();
 

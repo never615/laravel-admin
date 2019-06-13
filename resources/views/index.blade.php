@@ -31,6 +31,7 @@
     @include('admin::partials.sidebar')
 
     <div class="content-wrapper" id="pjax-container">
+        {!! Admin::style() !!}
         <div id="app">
         @yield('content')
         </div>
@@ -41,7 +42,9 @@
 
 </div>
 
-<button id="totop" title="Go to top" style="display: none;"><i class="fa fa-angle-double-up"></i></button>
+{!! Admin::html() !!}
+
+<button id="totop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up"></i></button>
 
 <script>
     function LA() {}
