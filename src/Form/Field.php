@@ -744,6 +744,7 @@ class Field implements Renderable
     {
         if (is_array($this->rules)) {
             array_delete($this->rules, $rule);
+
             return;
         }
 

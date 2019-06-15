@@ -282,6 +282,16 @@ class Column
     }
 
     /**
+     * Get original column value.
+     *
+     * @return mixed
+     */
+    public function getOriginal()
+    {
+        return $this->original;
+    }
+
+    /**
      * Get name of this column.
      *
      * @return mixed
@@ -437,6 +447,24 @@ class Column
     }
 
     /**
+     * Replace output value with giving map.
+     *
+     * @param array $replacements
+     *
+     * @return $this
+     */
+    public function replace(array $replacements)
+    {
+        return $this->display(function ($value) use ($replacements) {
+            if (isset($replacements[$value])) {
+                return $replacements[$value];
+            }
+
+            return $value;
+        });
+    }
+
+    /**
      * Render this column with the given view.
      *
      * @param string $view
@@ -521,7 +549,6 @@ class Column
     public function loading($values = [], $others = [])
     {
         return $this->display(function ($value) use ($values, $others) {
-
             $values = (array) $values;
 
             if (in_array($value, $values)) {
@@ -535,7 +562,7 @@ class Column
     /**
      * Display column as an font-awesome icon based on it's value.
      *
-     * @param array $setting
+     * @param array  $setting
      * @param string $default
      *
      * @return $this
@@ -543,7 +570,6 @@ class Column
     public function icon(array $setting, $default = '')
     {
         return $this->display(function ($value) use ($setting, $default) {
-
             $fa = '';
 
             if (isset($setting[$value])) {

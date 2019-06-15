@@ -175,6 +175,7 @@ trait UploadField
      * Indicates if the underlying field is downloadable.
      *
      * @param bool $downloadable
+     *
      * @return $this
      */
     public function downloadable($downloadable = true)
@@ -459,6 +460,14 @@ trait UploadField
      */
     public function destroy()
     {
+        if ($this->retainable) {
+            return;
+        }
+
+        if (method_exists($this, 'destroyThumbnail')) {
+            $this->destroyThumbnail();
+        }
+
         if (is_array($this->original)) {
             foreach ($this->original as $item) {
                 if (!$this->retainable && $this->storage->exists($item)) {
@@ -466,7 +475,7 @@ trait UploadField
                 }
             }
         } else {
-            if (!$this->retainable && $this->storage->exists($this->original)) {
+            if ($this->storage->exists($this->original)) {
                 $this->storage->delete($this->original);
             }
         }
