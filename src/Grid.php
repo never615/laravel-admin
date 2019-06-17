@@ -367,7 +367,7 @@ class Grid
         $column->setGrid($this);
 
         return tap($column, function ($value) {
-            $this->columns->put($value->getName(), $value);
+            $this->columns->push($value);
         });
     }
 
