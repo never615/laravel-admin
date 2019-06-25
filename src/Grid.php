@@ -30,8 +30,8 @@ class Grid
         Concerns\HasTotalRow,
         Concerns\CanHidesColumns,
         Macroable {
-            __call as macroCall;
-        }
+        __call as macroCall;
+    }
 
     /**
      * The grid data model instance.
@@ -151,14 +151,14 @@ class Grid
      * @var array
      */
     protected $options = [
-        'show_pagination'        => true,
-        'show_tools'             => true,
-        'show_filter'            => true,
-        'show_exporter'          => true,
-        'show_actions'           => true,
-        'show_row_selector'      => true,
-        'show_create_btn'        => true,
-        'show_column_selector'   => true,
+        'show_pagination'      => true,
+        'show_tools'           => true,
+        'show_filter'          => true,
+        'show_exporter'        => true,
+        'show_actions'         => true,
+        'show_row_selector'    => true,
+        'show_create_btn'      => true,
+        'show_column_selector' => true,
     ];
 
     /**
@@ -312,7 +312,6 @@ class Grid
      */
     public function column($name, $label = '')
     {
-
         if (Str::contains($name, '.')) {
             return $this->addRelationColumn($name, $label);
         }
@@ -364,6 +363,8 @@ class Grid
      */
     protected function addColumn($column = '', $label = '')
     {
+        $label = $label ?? admin_translate($column, $this->model()->getTable());
+
         $column = new Column($column, $label);
         $column->setGrid($this);
 
