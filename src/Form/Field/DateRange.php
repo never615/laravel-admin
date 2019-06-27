@@ -26,12 +26,11 @@ class DateRange extends Field
 
     public function __construct($column, $arguments)
     {
-        $this->arguments = $arguments;
-
         $this->column['start'] = $column;
         $this->column['end'] = $arguments[0];
 
         array_shift($arguments);
+        $this->arguments = $arguments;
         $this->label = $this->formatLabel($arguments);
         $this->id = $this->formatId($this->column);
 
