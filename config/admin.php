@@ -117,6 +117,8 @@ return [
 
         'controller' => App\Admin\Controllers\AuthController::class,
 
+        'guard' => 'admin',
+
         'guards' => [
             'admin' => [
                 'driver'   => 'session',

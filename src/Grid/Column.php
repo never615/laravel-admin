@@ -4,7 +4,6 @@ namespace Encore\Admin\Grid;
 
 use Carbon\Carbon;
 use Closure;
-use Encore\Admin\Admin;
 use Encore\Admin\Grid;
 use Encore\Admin\Grid\Displayers\AbstractDisplayer;
 use Illuminate\Contracts\Support\Arrayable;
@@ -16,27 +15,31 @@ use Illuminate\Support\Str;
 /**
  * Class Column.
  *
- * @method Displayers\Editable      editable()
- * @method Displayers\SwitchDisplay switch ($states = [])
- * @method Displayers\SwitchGroup   switchGroup($columns = [], $states = [])
- * @method Displayers\Select        select($options = [])
- * @method Displayers\Image         image($server = '', $width = 200, $height = 200)
- * @method Displayers\Label         label($style = 'success')
- * @method Displayers\Button        button($style = null)
- * @method Displayers\Link          link($href = '', $target = '_blank')
- * @method Displayers\Badge         badge($style = 'red')
- * @method Displayers\ProgressBar   progressBar($style = 'primary', $size = 'sm', $max = 100)
- * @method Displayers\Radio         radio($options = [])
- * @method Displayers\Checkbox      checkbox($options = [])
- * @method Displayers\Orderable     orderable($column, $label = '')
- * @method Displayers\Table         table($titles = [])
- * @method Displayers\Expand        expand($callback = null)
- * @method Displayers\Modal         modal($callback = null)
- * @method Displayers\Carousel      carousel(int $width = 300, int $height = 200, $server = '')
- * @method Displayers\Download      download($server = '')
+ * @method $this editable()
+ * @method $this switch ($states = [])
+ * @method $this switchGroup($columns = [], $states = [])
+ * @method $this select($options = [])
+ * @method $this image($server = '', $width = 200, $height = 200)
+ * @method $this label($style = 'success')
+ * @method $this button($style = null)
+ * @method $this link($href = '', $target = '_blank')
+ * @method $this badge($style = 'red')
+ * @method $this progressBar($style = 'primary', $size = 'sm', $max = 100)
+ * @method $this radio($options = [])
+ * @method $this checkbox($options = [])
+ * @method $this orderable($column, $label = '')
+ * @method $this table($titles = [])
+ * @method $this expand($callback = null)
+ * @method $this modal($callback = null)
+ * @method $this carousel(int $width = 300, int $height = 200, $server = '')
+ * @method $this downloadable($server = '')
+ * @method $this copyable()
+ * @method $this qrcode($formatter = null, $width = 150, $height = 150)
  */
 class Column
 {
+    use Column\HasHeader;
+
     const SELECT_COLUMN_NAME = '__row_selector__';
 
     const ACTION_COLUMN_NAME = '__actions__';
@@ -66,34 +69,6 @@ class Column
      * @var mixed
      */
     protected $original;
-
-    /**
-     * Is column sortable.
-     *
-     * @var bool
-     */
-    protected $sortable = false;
-
-    /**
-     * Sort arguments.
-     *
-     * @var array
-     */
-    protected $sort;
-
-    /**
-     * Help message.
-     *
-     * @var string
-     */
-    protected $help = '';
-
-    /**
-     * Cast Name.
-     *
-     * @var array
-     */
-    protected $cast;
 
     /**
      * Attributes of column.
@@ -356,39 +331,53 @@ class Column
     }
 
     /**
-     * Set sort value.
-     *
-     * @param bool $sort
-     *
-     * @return $this
-     */
-    public function sort($sort)
-    {
-        $this->sortable = $sort;
-
-        return $this;
-    }
-
-    /**
      * Mark this column as sortable.
      *
-     * @return $this
+     * @param null|string $cast
+     *
+     * @return Column|string
      */
-    public function sortable()
+    public function sortable($cast = null)
     {
-        return $this->sort(true);
+        return $this->addSorter($cast);
     }
 
     /**
      * Set cast name for sortable.
      *
      * @return $this
+     *
+     * @deprecated Use `$column->sortable($cast)` instead.
      */
     public function cast($cast)
     {
         $this->cast = $cast;
 
         return $this;
+    }
+
+    /**
+     * Set help message for column.
+     *
+     * @param string $help
+     *
+     * @return $this|string
+     */
+    public function help($help = '')
+    {
+        return $this->addHelp($help);
+    }
+
+    /**
+     * Set column filter.
+     *
+     * @param null $builder
+     *
+     * @return $this
+     */
+    public function filter($builder = null)
+    {
+        return $this->addFilter(...func_get_args());
     }
 
     /**
@@ -742,95 +731,6 @@ class Column
         }
 
         return $item;
-    }
-
-    /**
-     * Create the column sorter.
-     *
-     * @return string
-     */
-    public function sorter()
-    {
-        if (!$this->sortable) {
-            return '';
-        }
-
-        $icon = 'fa-sort';
-        $type = 'desc';
-
-        if ($this->isSorted()) {
-            $type = $this->sort['type'] == 'desc' ? 'asc' : 'desc';
-            $icon .= "-amount-{$this->sort['type']}";
-        }
-
-        // set sort value
-        $sort = ['column' => $this->name, 'type' => $type];
-        if (isset($this->cast)) {
-            $sort['cast'] = $this->cast;
-        }
-
-        $query = app('request')->all();
-        $query = array_merge($query, [$this->grid->model()->getSortName() => $sort]);
-
-        $url = url()->current().'?'.http_build_query($query);
-
-        return "<a class=\"fa fa-fw $icon\" href=\"$url\"></a>";
-    }
-
-    /**
-     * Determine if this column is currently sorted.
-     *
-     * @return bool
-     */
-    protected function isSorted()
-    {
-        $this->sort = app('request')->get($this->grid->model()->getSortName());
-
-        if (empty($this->sort)) {
-            return false;
-        }
-
-        return isset($this->sort['column']) && $this->sort['column'] == $this->name;
-    }
-
-    /**
-     * Set help message for column.
-     *
-     * @param string $help
-     *
-     * @return $this|string
-     */
-    public function help($help = '')
-    {
-        if (!empty($help)) {
-            $this->help = $help;
-
-            return $this;
-        }
-
-        if (empty($this->help)) {
-            return '';
-        }
-
-        Admin::script("$('.column-help').popover();");
-
-        $data = [
-            'container' => 'body',
-            'toggle'    => 'popover',
-            'trigger'   => 'hover',
-            'placement' => 'bottom',
-            'content'   => $this->help,
-        ];
-
-        $data = collect($data)->map(function ($val, $key) {
-            return "data-{$key}=\"{$val}\"";
-        })->implode(' ');
-
-        return <<<HELP
-<a href="javascript:void(0);" class="column-help" {$data}>
-    <i class="fa fa-question-circle"></i>
-</a>
-HELP;
     }
 
     /**

@@ -29,6 +29,7 @@ class Grid
         Concerns\HasTools,
         Concerns\HasTotalRow,
         Concerns\CanHidesColumns,
+        Concerns\HasHotKeys,
         Macroable {
         __call as macroCall;
     }
@@ -571,8 +572,21 @@ class Grid
             return;
         }
 
+        $checkAllBox = "<input type=\"checkbox\" class=\"{$this->getSelectAllName()}\" />&nbsp;";
+
         $this->prependColumn(Column::SELECT_COLUMN_NAME, ' ')
-            ->displayUsing(Displayers\RowSelector::class);
+            ->displayUsing(Displayers\RowSelector::class)
+            ->addHeader($checkAllBox);
+    }
+
+    /**
+     * Apply column filter to grid query.
+     *
+     * @return void
+     */
+    protected function applyColumnFilter()
+    {
+        $this->columns->each->bindFilterQuery($this->model());
     }
 
     /**
@@ -587,6 +601,8 @@ class Grid
         }
 
         $this->applyQuickSearch();
+
+        $this->applyColumnFilter();
 
         $collection = $this->applyFilter(false);
 
@@ -903,7 +919,9 @@ class Grid
             'expand'      => Displayers\Expand::class,
             'modal'       => Displayers\Modal::class,
             'carousel'    => Displayers\Carousel::class,
-            'download'    => Displayers\Download::class,
+            'downloadable'=> Displayers\Downloadable::class,
+            'copyable'    => Displayers\Copyable::class,
+            'qrcode'      => Displayers\QRCode::class,
         ];
 
         foreach ($map as $abstract => $class) {

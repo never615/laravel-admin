@@ -25,7 +25,7 @@ class Admin
      *
      * @var string
      */
-    const VERSION = '1.7.0';
+    const VERSION = '1.7.2';
 
     /**
      * @var Navbar
@@ -236,13 +236,25 @@ class Admin
     }
 
     /**
-     * Get current login user.
+     * Get the currently authenticated user.
      *
-     * @return mixed
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
     public function user()
     {
-        return Auth::guard('admin')->user();
+        return $this->guard()->user();
+    }
+
+    /**
+     * Attempt to get the guard from the local cache.
+     *
+     * @return \Illuminate\Contracts\Auth\Guard|\Illuminate\Contracts\Auth\StatefulGuard
+     */
+    public function guard()
+    {
+        $guard = config('admin.auth.guard') ?: 'admin';
+
+        return Auth::guard($guard);
     }
 
     /**
