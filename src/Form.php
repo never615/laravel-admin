@@ -52,7 +52,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @method Field\Number         number($column, $label = '')
  * @method Field\Currency       currency($column, $label = '')
  * @method Field\HasMany        hasMany($relationName, $label = '', $callback)
- * @method Field\SwitchField    switch($column, $label = '')
+ * @method Field\SwitchField    switch ($column, $label = '')
  * @method Field\Display        display($column, $label = '')
  * @method Field\Rate           rate($column, $label = '')
  * @method Field\Divider        divider($title = '')
@@ -334,9 +334,10 @@ class Form implements Renderable
                 'message' => trans('admin.delete_succeeded'),
             ];
         } catch (\Exception $exception) {
+            \Log::warning($exception);
             $response = [
                 'status'  => false,
-                'message' => $exception->getMessage() ?: trans('admin.delete_failed'),
+                'message' => "存在关联数据,无法删除" ?: trans('admin.delete_failed'),
             ];
         }
 
@@ -513,7 +514,7 @@ class Form implements Renderable
         }
 
 
-        /* @var Model $this->model */
+        /* @var Model $this ->model */
         $builder = $this->model();
 
         if ($this->isSoftDeletes) {
