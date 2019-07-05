@@ -36,6 +36,13 @@ class Tools implements Renderable
     protected $prepends;
 
     /**
+     * diy translate
+     *
+     * @var array
+     */
+    protected $trans;
+
+    /**
      * Create a new Tools instance.
      *
      * @param Builder $builder
@@ -217,6 +224,8 @@ HTML;
             'delete'         => trans('admin.delete'),
         ];
 
+        $trans = array_merge($trans, $this->trans);
+
         $class = uniqid();
 
         $script = <<<SCRIPT
@@ -356,5 +365,11 @@ HTML;
         }
 
         return $output.$this->renderCustomTools($this->appends);
+    }
+
+
+    public function setTrans($tans)
+    {
+        $this->trans = $tans;
     }
 }
