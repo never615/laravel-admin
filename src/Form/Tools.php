@@ -40,7 +40,7 @@ class Tools implements Renderable
      *
      * @var array
      */
-    protected $trans;
+    protected $trans = [];
 
     /**
      * Create a new Tools instance.
