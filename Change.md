@@ -27,9 +27,20 @@
     'exporter'=>Encore\Admin\Grid\Exporters\CsvExporter::class,
 ```
 
-#### 调用Field的addElementClass方式的时候,不会覆盖原Field自动生成的class
+#### Field增加`addElementClass2()`方法
+用该方法添加class不会覆盖原Field自动生成的class
 
 #### 授权中间件,根据请求的Accept做不同响应
+`Encore\Admin\Middleware\Authenticate`:
+```
+  if ($request->expectsJson()) {
+                return response()
+                    ->json(['error' => "未授权,请登录"], 401);
+            } else {
+                return redirect()->guest($redirectTo);
+            }
+
+```
 
 #### 处理部分form的view文件,添加class以便于使用js代码控制整体隐藏和显示
 * `resources/views/form/display.blade.php`添加了`{{$class}}`,
@@ -47,10 +58,20 @@
 管理端的异常处理者,抛出正常抛出的异常,通过文字描述大于30,因为程序异常的话,是大量的堆栈信息.
 记录到laravel.log便于查看和排查问题.(主要也是在laravel.log记录的error级别的异常报警,便于线上发生问题及时修复)
 ```
-        \Log::warning($exception);
-         if(strlen($exception->getMessage())>30){
-            \Log::error("管理端错误");
+  if (!($exception instanceof ResourceException)) {
+            if (strlen($exception->getMessage()) > 25) {
+                \Log::error("管理端错误");
+            }
+            \Log::warning($exception);
         }
 ```
 
-#### 修改`Encore\Admin\Form\Field`,当rules(验证规则)包含required时,自动调用required方法
+#### form->destory失败时的异常处理优化
+修改文件:`Encore\Admin\Form`中的`destroy()`方法
+不返回异常退栈信息,提示存在关联数据无法删除,然后打印错误到日志.
+
+
+#### 修改`Encore\Admin\Form\Tools`,增加设置翻译内容的方法(`setTrans()`),主要用户调整删除弹框提示语.
+
+#### 导出支持swoole
+修改`Grid`
