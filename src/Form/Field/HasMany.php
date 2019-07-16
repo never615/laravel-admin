@@ -418,7 +418,6 @@ class HasMany extends Field
                     ->fill($data);
             }
         } else {
-
             if (empty($this->value)) {
                 return [];
             }
