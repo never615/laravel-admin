@@ -47,7 +47,7 @@ return [
     'input'                 => '输入',
     'succeeded'             => '成功',
     'failed'                => '失败',
-    'delete_confirm'        => '确认删除?',
+    'delete_confirm'        => '确认删除?<br>若有关联的数据也将一同删除且无法恢复',
     'delete_succeeded'      => '删除成功 !',
     'delete_failed'         => '删除失败 !',
     'update_succeeded'      => '更新成功 !',
@@ -98,9 +98,9 @@ return [
         'filter_clear'       => '显示全部',
         'filter_placeholder' => '过滤',
     ],
-    'grid_items_selected'    => '已选择 {n} 项',
-    'menu_titles'            => [],
-    'prev'                   => '上一步',
-    'next'                   => '下一步',
-    'quick_create'           => '快速创建'
+    'grid_items_selected'   => '已选择 {n} 项',
+    'menu_titles'           => [],
+    'prev'                  => '上一步',
+    'next'                  => '下一步',
+    'quick_create'          => '快速创建',
 ];
