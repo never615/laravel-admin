@@ -724,9 +724,11 @@ class Field implements Renderable
             return $rules;
         }
 
-        foreach ($rules as &$rule) {
-            if (is_string($rule)) {
-                $rule = str_replace('{{id}}', $id, $rule);
+        if (is_array($rules)) {
+            foreach ($rules as &$rule) {
+                if (is_string($rule)) {
+                    $rule = str_replace('{{id}}', $id, $rule);
+                }
             }
         }
 
@@ -985,11 +987,36 @@ class Field implements Renderable
     }
 
     /**
+     * Set Field style.
+     *
+     * @param string $attr
+     * @param string $value
+     *
+     * @return $this
+     */
+    public function style($attr, $value)
+    {
+        return $this->attribute('style', "{$attr}: {$value}");
+    }
+
+    /**
+     * Set Field width.
+     *
+     * @param string $width
+     *
+     * @return $this
+     */
+    public function width($width)
+    {
+        return $this->style('width', $width);
+    }
+
+    /**
      * Specifies a regular expression against which to validate the value of the input.
      *
      * @param string $regexp
      *
-     * @return Field
+     * @return $this
      */
     public function pattern($regexp)
     {
@@ -1001,7 +1028,7 @@ class Field implements Renderable
      *
      * @param bool $isLabelAsterisked
      *
-     * @return Field
+     * @return $this
      */
     public function required($isLabelAsterisked = true)
     {
@@ -1015,7 +1042,7 @@ class Field implements Renderable
     /**
      * Set the field automatically get focus.
      *
-     * @return Field
+     * @return $this
      */
     public function autofocus()
     {
@@ -1025,7 +1052,7 @@ class Field implements Renderable
     /**
      * Set the field as readonly mode.
      *
-     * @return Field
+     * @return $this
      */
     public function readonly()
     {
@@ -1035,7 +1062,7 @@ class Field implements Renderable
     /**
      * Set field as disabled.
      *
-     * @return Field
+     * @return $this
      */
     public function disable()
     {
@@ -1047,7 +1074,7 @@ class Field implements Renderable
      *
      * @param string $placeholder
      *
-     * @return Field
+     * @return $this
      */
     public function placeholder($placeholder = '')
     {

@@ -30,6 +30,7 @@ class Grid
         Concerns\HasTotalRow,
         Concerns\CanHidesColumns,
         Concerns\HasHotKeys,
+        Concerns\HasQuickCreate,
         Macroable {
         __call as macroCall;
     }
@@ -505,16 +506,6 @@ class Grid
     }
 
     /**
-     * Disable all actions.
-     *
-     * @return $this
-     */
-    public function disableActions(bool $disable = true)
-    {
-        return $this->option('show_actions', !$disable);
-    }
-
-    /**
      * Set grid action callback.
      *
      * @param Closure|string $actions
@@ -532,6 +523,44 @@ class Grid
         }
 
         return $this;
+    }
+
+    /**
+     * Disable all actions.
+     *
+     * @return $this
+     */
+    public function disableActions(bool $disable = true)
+    {
+        return $this->option('show_actions', !$disable);
+    }
+
+    /**
+     * Set grid batch-action callback.
+     *
+     * @param Closure $closure
+     *
+     * @return $this
+     */
+    public function batchActions(Closure $closure)
+    {
+        $this->tools(function (Tools $tools) use ($closure) {
+            $tools->batch($closure);
+        });
+
+        return $this;
+    }
+
+    /**
+     * @param bool $disable
+     *
+     * @return Grid|mixed
+     */
+    public function disableBatchActions(bool $disable = true)
+    {
+        $this->tools->disableBatchActions($disable);
+
+        return $this->option('show_row_selector', !$disable);
     }
 
     /**
@@ -556,9 +585,7 @@ class Grid
      */
     public function disableRowSelector(bool $disable = true)
     {
-        $this->tools->disableBatchActions($disable);
-
-        return $this->option('show_row_selector', !$disable);
+        return $this->disableBatchActions($disable);
     }
 
     /**

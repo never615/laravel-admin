@@ -25,7 +25,7 @@
     {!! $grid->renderHeader() !!}
 
     <!-- /.box-header -->
-    <div class="box-body no-padding">
+    <div class="box-body table-responsive no-padding">
         <table class="table table-hover" id="{{ $grid->tableID }}">
             <thead>
                 <tr>
@@ -35,7 +35,16 @@
                 </tr>
             </thead>
 
+            @if ($grid->hasQuickCreate())
+                {!! $grid->renderQuickCreate() !!}
+            @endif
+
             <tbody>
+
+                @if($grid->rows()->isEmpty())
+                    @include('admin::grid.empty-grid')
+                @endif
+
                 @foreach($grid->rows() as $row)
                 <tr {!! $row->getRowAttributes() !!}>
                     @foreach($grid->visibleColumnNames() as $name)
