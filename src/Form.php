@@ -386,7 +386,8 @@ class Form implements Renderable
             return $response;
         }
 
-        DB::transaction(function () {
+        $response = null;
+        DB::transaction(function () use (&$response) {
             $inserts = $this->prepareInsert($this->updates);
 
             foreach ($inserts as $column => $value) {
@@ -396,9 +397,11 @@ class Form implements Renderable
             $this->model->save();
 
             $this->updateRelation($this->relations);
+
+            $response = $this->callSaved();
         });
 
-        if (($response = $this->callSaved()) instanceof Response) {
+        if ($response && $response instanceof Response) {
             return $response;
         }
 
