@@ -30,6 +30,7 @@ class Grid
         Concerns\HasTotalRow,
         Concerns\HasHotKeys,
         Concerns\HasQuickCreate,
+        Concerns\HasActions,
         Concerns\CanHidesColumns,
         Concerns\CanFixColumns,
         Macroable {
@@ -135,23 +136,9 @@ class Grid
     public $perPage = 20;
 
     /**
-     * Callback for grid actions.
-     *
-     * @var Closure
-     */
-    protected $actionsCallback;
-
-    /**
      * @var []callable
      */
     protected $renderingCallbacks = [];
-
-    /**
-     * Actions column display class.
-     *
-     * @var string
-     */
-    protected $actionsClass = Displayers\Actions::class;
 
     /**
      * Options for grid.
@@ -512,79 +499,6 @@ class Grid
     }
 
     /**
-     * Set grid action callback.
-     *
-     * @param Closure|string $actions
-     *
-     * @return $this
-     */
-    public function actions($actions)
-    {
-        if ($actions instanceof Closure) {
-            $this->actionsCallback = $actions;
-        }
-
-        if (is_string($actions) && is_subclass_of($actions, Displayers\Actions::class)) {
-            $this->actionsClass = $actions;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Disable all actions.
-     *
-     * @return $this
-     */
-    public function disableActions(bool $disable = true)
-    {
-        return $this->option('show_actions', !$disable);
-    }
-
-    /**
-     * Set grid batch-action callback.
-     *
-     * @param Closure $closure
-     *
-     * @return $this
-     */
-    public function batchActions(Closure $closure)
-    {
-        $this->tools(function (Tools $tools) use ($closure) {
-            $tools->batch($closure);
-        });
-
-        return $this;
-    }
-
-    /**
-     * @param bool $disable
-     *
-     * @return Grid|mixed
-     */
-    public function disableBatchActions(bool $disable = true)
-    {
-        $this->tools->disableBatchActions($disable);
-
-        return $this->option('show_row_selector', !$disable);
-    }
-
-    /**
-     * Add `actions` column for grid.
-     *
-     * @return void
-     */
-    protected function appendActionsColumn()
-    {
-        if (!$this->option('show_actions')) {
-            return;
-        }
-
-        $this->addColumn(Column::ACTION_COLUMN_NAME, trans('admin.action'))
-            ->displayUsing($this->actionsClass, [$this->actionsCallback]);
-    }
-
-    /**
      * Disable row selector.
      *
      * @return Grid|mixed
@@ -667,7 +581,7 @@ class Grid
     protected function buildRows(array $data)
     {
         $this->rows = collect($data)->map(function ($model, $number) {
-            return new Row($number, $model);
+            return new Row($number, $model, $this->keyName);
         });
 
         if ($this->rowsCallback) {
@@ -925,41 +839,6 @@ class Grid
         }
 
         return $this->addColumn($method, $label);
-    }
-
-    /**
-     * Register column displayers.
-     *
-     * @return void.
-     */
-    public static function registerColumnDisplayer()
-    {
-        $map = [
-            'editable'    => Displayers\Editable::class,
-            'switch'      => Displayers\SwitchDisplay::class,
-            'switchGroup' => Displayers\SwitchGroup::class,
-            'select'      => Displayers\Select::class,
-            'image'       => Displayers\Image::class,
-            'label'       => Displayers\Label::class,
-            'button'      => Displayers\Button::class,
-            'link'        => Displayers\Link::class,
-            'badge'       => Displayers\Badge::class,
-            'progressBar' => Displayers\ProgressBar::class,
-            'radio'       => Displayers\Radio::class,
-            'checkbox'    => Displayers\Checkbox::class,
-            'orderable'   => Displayers\Orderable::class,
-            'table'       => Displayers\Table::class,
-            'expand'      => Displayers\Expand::class,
-            'modal'       => Displayers\Modal::class,
-            'carousel'    => Displayers\Carousel::class,
-            'downloadable'=> Displayers\Downloadable::class,
-            'copyable'    => Displayers\Copyable::class,
-            'qrcode'      => Displayers\QRCode::class,
-        ];
-
-        foreach ($map as $abstract => $class) {
-            Column::extend($abstract, $class);
-        }
     }
 
     /**

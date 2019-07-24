@@ -1166,13 +1166,13 @@ class Field implements Renderable
      *
      * @return array
      */
-    protected function getElementClass()
+    public function getElementClass()
     {
         if (!$this->elementClass) {
             $name = $this->elementName ?: $this->formatName($this->column);
             $defaultElementClass = (array) str_replace(['[', ']'], '_', $name);
 
-            $this->elementClass=$defaultElementClass;
+            $this->elementClass = $defaultElementClass;
 
             if (Arr::isAssoc($defaultElementClass)) {
                 $classes = [];
@@ -1182,8 +1182,8 @@ class Field implements Renderable
                 foreach ($defaultElementClass as $index => $class) {
                     $class = is_array($class) ? $class : explode(" ", $class);
 
-                        $class = array_unique(array_merge($class, $this->addClass));
-                        $classes[$index] = $class;
+                    $class = array_unique(array_merge($class, $this->addClass));
+                    $classes[$index] = $class;
                 }
                 $this->elementClass = $classes;
             } else {
@@ -1252,9 +1252,9 @@ class Field implements Renderable
     public function addElementClass($class)
     {
         if (is_array($class) || is_string($class)) {
-            $this->elementClass = array_merge($this->elementClass, (array) $class);
-            $this->elementClass = array_unique($this->elementClass);
+            $this->elementClass = array_unique(array_merge($this->elementClass, (array) $class));
         }
+
         return $this;
     }
 
@@ -1314,8 +1314,7 @@ class Field implements Renderable
      *
      * @return $this
      */
-    public function setGroupClass($class)
-    : self
+    public function setGroupClass($class): self
     {
         if (is_array($class)) {
             $this->groupClass = array_merge($this->groupClass, $class);
@@ -1333,8 +1332,7 @@ class Field implements Renderable
      *
      * @return string
      */
-    protected function getGroupClass($default = false)
-    : string
+    protected function getGroupClass($default = false): string
     {
         return ($default ? 'form-group ' : '').implode(' ', array_filter($this->groupClass));
     }

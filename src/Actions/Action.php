@@ -31,12 +31,11 @@ use Illuminate\Http\Request;
  * @method Field\Date           date($column, $label = '')
  * @method Field\Datetime       datetime($column, $label = '')
  * @method Field\Time           time($column, $label = '')
+ * @method Field\Hidden         hidden($column, $label = '')
  */
 abstract class Action implements Renderable
 {
     use Authorizable;
-
-    const INPUT_NAME = '_input';
 
     /**
      * @var Response
@@ -365,7 +364,7 @@ var actionResolver = function (response) {
         };
         
         var actionCatcher = function (request) {
-            if (typeof request.responseJSON === 'object') {
+            if (request && typeof request.responseJSON === 'object') {
                 $.admin.toastr.error(request.responseJSON.message, '', {positionClass:"toast-bottom-center", timeOut: 10000}).css("width","500px")
             }
         };
