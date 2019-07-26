@@ -183,6 +183,17 @@ if (!function_exists('admin_translate')) {
             $modelName = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', end($nameList))), '_');
         }
 
+        if (str_contains($column, ".")) {
+            try {
+                $tempKeys = explode(".", $column);
+
+                return admin_translate($tempKeys[1], $tempKeys[0]);
+            } catch (\Exception $exception) {
+                \Log::warning("admin_translate");
+                \Log::warning($exception);
+            }
+        }
+
         /*
          * ExampleString with banana => example_string_with_banana
          */
