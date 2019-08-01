@@ -206,7 +206,7 @@ if (!function_exists('admin_translate')) {
          */
         $transLateKeys = [
             'admin2.'.$modelName.'.'.$columnLower,
-//            'admin2.'.str_plural($modelName).'.'.$columnLower,
+            'admin2.'.str_plural($modelName).'.'.$columnLower,
             'admin2.'.$columnLower,
             'validation.attributes.'.$columnLower,
             'admin.'.$modelName.'.'.$columnLower,
