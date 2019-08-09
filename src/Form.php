@@ -445,8 +445,11 @@ class Form implements Renderable
             $this->model->save();
 
             $this->updateRelation($this->relations);
+            \Log::debug(11);
 
             $response = $this->callSaved();
+            \Log::debug(22);
+
         });
 
         if ($response && $response instanceof Response) {
@@ -618,11 +621,12 @@ class Form implements Renderable
             $this->model->save();
 
             $this->updateRelation($this->relations);
+
+            if (($result = $this->callSaved()) instanceof Response) {
+                return $result;
+            }
         });
 
-        if (($result = $this->callSaved()) instanceof Response) {
-            return $result;
-        }
 
         if ($response = $this->ajaxResponse(trans('admin.update_succeeded'))) {
             return $response;
