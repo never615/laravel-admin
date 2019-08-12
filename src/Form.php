@@ -445,11 +445,8 @@ class Form implements Renderable
             $this->model->save();
 
             $this->updateRelation($this->relations);
-            \Log::debug(11);
 
             $response = $this->callSaved();
-            \Log::debug(22);
-
         });
 
         if ($response && $response instanceof Response) {
@@ -1357,9 +1354,9 @@ class Form implements Renderable
      *
      * @return $this
      */
-    public function row(Closure $callback)
+    public function row(Closure $callback,$width=null)
     {
-        $this->rows[] = new Row($callback, $this);
+        $this->rows[] = new Row($callback, $this,$width);
 
         return $this;
     }

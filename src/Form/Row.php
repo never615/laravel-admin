@@ -41,11 +41,15 @@ class Row implements Renderable
      * @param \Closure $callback
      * @param Form     $form
      */
-    public function __construct(\Closure $callback, Form $form)
+    public function __construct(\Closure $callback, Form $form, $width = null)
     {
         $this->callback = $callback;
 
         $this->form = $form;
+
+        if($width){
+            $this->defaultFieldWidth=$width;
+        }
 
         call_user_func($this->callback, $this);
     }
