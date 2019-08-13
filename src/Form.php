@@ -1719,7 +1719,6 @@ class Form implements Renderable
         ];
     }
 
-
     /**
      * Add a new layout column.
      *
@@ -1736,7 +1735,6 @@ class Form implements Renderable
 
         return $this;
     }
-
 
     /**
      * Initialize filter layout.
