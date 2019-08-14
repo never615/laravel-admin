@@ -770,7 +770,7 @@ class Grid
             return $this->resourcePath;
         }
 
-        return url()->current();
+        return url(app('request')->getPathInfo());
     }
 
     /**
