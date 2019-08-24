@@ -4,6 +4,7 @@ namespace Encore\Admin\Grid;
 
 use Carbon\Carbon;
 use Closure;
+use Encore\Admin\Actions\RowAction;
 use Encore\Admin\Grid;
 use Encore\Admin\Grid\Displayers\AbstractDisplayer;
 use Illuminate\Contracts\Support\Arrayable;
@@ -35,8 +36,8 @@ use Illuminate\Support\Str;
  * @method $this downloadable($server = '')
  * @method $this copyable()
  * @method $this qrcode($formatter = null, $width = 150, $height = 150)
- * @method $this prefix($prefix)
- * @method $this suffix($suffix)
+ * @method $this prefix($prefix, $delimiter = '&nbsp;')
+ * @method $this suffix($suffix, $delimiter = '&nbsp;')
  */
 class Column
 {
@@ -706,6 +707,54 @@ class Column
 
             return $bool ? '<i class="fa fa-check text-green"></i>' : '<i class="fa fa-close text-red"></i>';
         });
+    }
+
+    /**
+     * Display column using a grid row action.
+     *
+     * @param string $action
+     *
+     * @return $this
+     */
+    public function action($action)
+    {
+        if (!is_subclass_of($action, RowAction::class)) {
+            throw new \InvalidArgumentException("Action class [$action] must be sub-class of [Encore\Admin\Actions\GridAction]");
+        }
+
+        $grid = $this->grid;
+
+        return $this->display(function ($_, $column) use ($action, $grid) {
+            /** @var RowAction $action */
+            $action = new $action();
+
+            return $action
+                ->asColumn()
+                ->setGrid($grid)
+                ->setColumn($column)
+                ->setRow($this);
+        });
+    }
+
+    /**
+     * Add a `dot` before column text.
+     *
+     * @param array  $options
+     * @param string $default
+     *
+     * @return $this
+     */
+    public function dot($options = [], $default = '')
+    {
+        return $this->prefix(function ($_, $original) use ($options, $default) {
+            if (is_null($original)) {
+                $style = $default;
+            } else {
+                $style = Arr::get($options, $original);
+            }
+
+            return "<span class=\"label-{$style}\" style='width: 8px;height: 8px;padding: 0;border-radius: 50%;display: inline-block;'></span>";
+        }, '&nbsp;&nbsp;');
     }
 
     /**
