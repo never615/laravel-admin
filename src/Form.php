@@ -619,7 +619,9 @@ class Form implements Renderable
             return $response;
         }
 
-        DB::transaction(function () {
+        $response = null;
+
+        DB::transaction(function () use (&$response){
             $updates = $this->prepareUpdate($this->updates);
 
             foreach ($updates as $column => $value) {
@@ -631,10 +633,12 @@ class Form implements Renderable
 
             $this->updateRelation($this->relations);
 
-            if (($result = $this->callSaved()) instanceof Response) {
-                return $result;
-            }
+            $response = $this->callSaved();
         });
+
+        if ($response && $response instanceof Response) {
+            return $response;
+        }
 
 
         if ($response = $this->ajaxResponse(trans('admin.update_succeeded'))) {
