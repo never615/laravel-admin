@@ -621,7 +621,7 @@ class Form implements Renderable
 
         $response = null;
 
-        DB::transaction(function () use (&$response){
+        DB::transaction(function () use (&$response) {
             $updates = $this->prepareUpdate($this->updates);
 
             foreach ($updates as $column => $value) {
@@ -881,7 +881,6 @@ class Form implements Renderable
                     break;
                 case $relation instanceof Relations\BelongsTo:
                 case $relation instanceof Relations\MorphTo:
-
                     $parent = $this->model->$name;
 
                     // if related is empty
@@ -896,7 +895,8 @@ class Form implements Renderable
                     $parent->save();
 
                     // When in creating, associate two models
-                    $foreignKeyMethod = version_compare(app()->version(), '5.8.0', '<') ? 'getForeignKey' : 'getForeignKeyName';
+                    $foreignKeyMethod = version_compare(app()->version(), '5.8.0',
+                        '<') ? 'getForeignKey' : 'getForeignKeyName';
                     if (!$this->model->{$relation->{$foreignKeyMethod}()}) {
                         $this->model->{$relation->{$foreignKeyMethod}()} = $parent->getKey();
 
@@ -905,40 +905,77 @@ class Form implements Renderable
 
                     break;
                 case $relation instanceof Relations\MorphOne:
-                    //一对一关联数据,如果设置的关联表的column是主键,则查找相关对象,然后设置对应的关联key
-                    $relationPrimaryKeyName = $relation->getModel()->getKeyName();
-                    if (array_key_exists($relationPrimaryKeyName, $prepared[$name])) {
-                        if ($prepared[$name][$relationPrimaryKeyName]) {
-                            //使用这种模式其他设置关联对象的其他设置将会无法保存
-                            //todo 优化
-                            //要把其他关联关系移除
-                            $relation->update([
-                                $relation->getForeignKeyName() => null,
-                                $relation->getMorphType()      => null,
-                            ]);
+                    $related = $this->model->$name;
+                    if (is_null($related)) {
+                        $related = $relation->make();
+                    }
 
-                            $related = $relation->getModel()::findOrFail(array_get($prepared[$name],
-                                $relationPrimaryKeyName));
+                    $relationPrimaryKeyName = $relation->getModel()->getKeyName();
+
+                    if (array_key_exists($relationPrimaryKeyName, $prepared[$name])) {
+                        //如果设置条目有关联对象的主键,则优先处理该值
+                        $primaryKeyValue = $prepared[$name][$relationPrimaryKeyName];
+
+                        $relation->update([
+                            $relation->getForeignKeyName() => null,
+                            $relation->getMorphType()      => null,
+                        ]);
+
+                        $newRelated = $relation->getModel()::find($primaryKeyValue);
+                        if ($newRelated) {
+                            $related = $newRelated;
 
                             $morphType = $relation->getMorphType();
-                            $related->$morphType = $relation->getMorphClass();
+                            $newRelated->$morphType = $relation->getMorphClass();
                             $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
                             $localKey = array_last(explode('.', $qualifiedParentKeyName));
                             $related->{$relation->getForeignKeyName()} = $this->model->{$localKey};
                             $related->save();
-                        }
-                    } else {
-                        $related = $this->model->$name;
-                        if (is_null($related)) {
-                            $related = $relation->make();
+                        } else {
+                            $relation->delete();
                         }
 
-                        foreach ($prepared[$name] as $column => $value) {
-                            $related->setAttribute($column, $value);
-                        }
-                        $related->save();
+                        unset($prepared[$name][$relationPrimaryKeyName]);
                     }
 
+                    foreach ($prepared[$name] as $column => $value) {
+                        $related->setAttribute($column, $value);
+                    }
+                    $related->save();
+
+                    //一对一关联数据,如果设置的关联表的列名是主键,则查找相关对象,然后设置对应的关联key(type和id)
+//                    $relationPrimaryKeyName = $relation->getModel()->getKeyName();
+//                    if (array_key_exists($relationPrimaryKeyName, $prepared[$name])) {
+//                        if ($prepared[$name][$relationPrimaryKeyName]) {
+//                            //使用这种模式其他设置关联对象的其他设置将会无法保存
+//                            //todo 优化
+//                            //要把其他关联关系移除
+//                            $relation->update([
+//                                $relation->getForeignKeyName() => null,
+//                                $relation->getMorphType()      => null,
+//                            ]);
+//
+//                            $related = $relation->getModel()::findOrFail(array_get($prepared[$name],
+//                                $relationPrimaryKeyName));
+//
+//                            $morphType = $relation->getMorphType();
+//                            $related->$morphType = $relation->getMorphClass();
+//                            $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
+//                            $localKey = array_last(explode('.', $qualifiedParentKeyName));
+//                            $related->{$relation->getForeignKeyName()} = $this->model->{$localKey};
+//                            $related->save();
+//                        }
+//                    } else {
+//                        $related = $this->model->$name;
+//                        if (is_null($related)) {
+//                            $related = $relation->make();
+//                        }
+//
+//                        foreach ($prepared[$name] as $column => $value) {
+//                            $related->setAttribute($column, $value);
+//                        }
+//                        $related->save();
+//                    }
                     break;
                 case $relation instanceof Relations\HasMany:
                 case $relation instanceof Relations\MorphMany:
@@ -1370,9 +1407,9 @@ class Form implements Renderable
      *
      * @return $this
      */
-    public function row(Closure $callback,$width=null)
+    public function row(Closure $callback, $width = null)
     {
-        $this->rows[] = new Row($callback, $this,$width);
+        $this->rows[] = new Row($callback, $this, $width);
 
         return $this;
     }
@@ -1559,7 +1596,7 @@ class Form implements Renderable
     }
 
     /**
-<<<<<<< HEAD
+     * <<<<<<< HEAD
      * Register builtin fields.
      *
      * @return void
