@@ -906,9 +906,9 @@ class Form implements Renderable
                     break;
                 case $relation instanceof Relations\MorphOne:
                     $related = $this->model->$name;
-                    if (is_null($related)) {
-                        $related = $relation->make();
-                    }
+//                    if (is_null($related)) {
+//                        $related = $relation->make();
+//                    }
 
                     $relationPrimaryKeyName = $relation->getModel()->getKeyName();
 
@@ -931,17 +931,17 @@ class Form implements Renderable
                             $localKey = array_last(explode('.', $qualifiedParentKeyName));
                             $related->{$relation->getForeignKeyName()} = $this->model->{$localKey};
                             $related->save();
-                        } else {
-                            $relation->delete();
                         }
 
                         unset($prepared[$name][$relationPrimaryKeyName]);
                     }
 
-                    foreach ($prepared[$name] as $column => $value) {
-                        $related->setAttribute($column, $value);
+                    if ($related) {
+                        foreach ($prepared[$name] as $column => $value) {
+                            $related->setAttribute($column, $value);
+                        }
+                        $related->save();
                     }
-                    $related->save();
 
                     //一对一关联数据,如果设置的关联表的列名是主键,则查找相关对象,然后设置对应的关联key(type和id)
 //                    $relationPrimaryKeyName = $relation->getModel()->getKeyName();
