@@ -546,10 +546,10 @@ class Field implements Renderable
             return;
         }
 
-        // Only text field has `required` attribute.
-        if (!$this instanceof Form\Field\Text) {
-            return;
-        }
+//        // Only text field has `required` attribute.
+//        if (!$this instanceof Form\Field\Text) {
+//            return;
+//        }
 
         $this->required();
     }
