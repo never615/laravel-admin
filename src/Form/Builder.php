@@ -125,7 +125,7 @@ class Builder
      */
     public function hideFieldsByCreate($fields)
     {
-        $this->hideFieldsByCreate = array_merge($this->hideFieldsByCreate, (array)$fields);
+        $this->hideFieldsByCreate = array_merge($this->hideFieldsByCreate, (array) $fields);
     }
 
 
@@ -540,7 +540,7 @@ class Builder
      */
     protected function removeReservedFields()
     {
-        if (!$this->isMode(static::MODE_CREATE)) {
+        if (!$this->isCreating()) {
             return;
         }
 
@@ -551,6 +551,7 @@ class Builder
         ];
 
         $reservedColumns = array_merge($reservedColumns, $this->hideFieldsByCreate);
+        $this->form->getLayout()->removeReservedFields($reservedColumns);
 
         $this->fields = $this->fields()->reject(function (Field $field) use ($reservedColumns) {
             return in_array($field->column(), $reservedColumns);
