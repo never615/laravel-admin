@@ -40,7 +40,7 @@ class Grid
     /**
      * The grid data model instance.
      *
-     * @var \Encore\Admin\Grid\Model
+     * @var \Encore\Admin\Grid\Model|\Illuminate\Database\Eloquent\Builder
      */
     protected $model;
 
@@ -146,14 +146,15 @@ class Grid
      * @var array
      */
     protected $options = [
-        'show_pagination'      => true,
-        'show_tools'           => true,
-        'show_filter'          => true,
-        'show_exporter'        => true,
-        'show_actions'         => true,
-        'show_row_selector'    => true,
-        'show_create_btn'      => true,
-        'show_column_selector' => true,
+        'show_pagination'        => true,
+        'show_tools'             => true,
+        'show_filter'            => true,
+        'show_exporter'          => true,
+        'show_actions'           => true,
+        'show_row_selector'      => true,
+        'show_create_btn'        => true,
+        'show_column_selector'   => true,
+        'show_define_empty_page' => true,
     ];
 
     /**
@@ -435,7 +436,7 @@ class Grid
     /**
      * Get Grid model.
      *
-     * @return Model
+     * @return Model|\Illuminate\Database\Eloquent\Builder
      */
     public function model()
     {
@@ -740,6 +741,26 @@ class Grid
     public function disableCreateButton(bool $disable = true)
     {
         return $this->option('show_create_btn', !$disable);
+    }
+
+    /**
+     * Remove define empty page on grid.
+     *
+     * @return $this
+     */
+    public function disableDefineEmptyPage(bool $disable = true)
+    {
+        return $this->option('show_define_empty_page', !$disable);
+    }
+
+    /**
+     * If grid show define empty page on grid.
+     *
+     * @return bool
+     */
+    public function showDefineEmptyPage()
+    {
+        return $this->option('show_define_empty_page');
     }
 
     /**
