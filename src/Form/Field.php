@@ -779,9 +779,9 @@ class Field implements Renderable
     /**
      * Get key for error message.
      *
-     * @return string
+     * @return string|array
      */
-    public function getErrorKey(): string
+    public function getErrorKey()
     {
         return $this->errorKey ?: $this->column;
     }
