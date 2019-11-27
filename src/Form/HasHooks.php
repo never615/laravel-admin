@@ -92,6 +92,17 @@ trait HasHooks
     }
 
     /**
+     * Set saveInTransaction callback.
+     *
+     * @param Closure $callback
+     *
+     * @return $this
+     */
+    public function saveInTransaction(Closure $callback){
+        return $this->registerHook('saveInTransaction',$callback);
+    }
+
+    /**
      * Set saved callback.
      *
      * @param Closure $callback
@@ -151,6 +162,15 @@ trait HasHooks
     protected function callSaving()
     {
         return $this->callHooks('saving');
+    }
+
+    /**
+     * Call callSaveInTransaction callback.
+     *
+     * @return mixed
+     */
+    protected function callSaveInTransaction(){
+        return $this->callHooks('saveInTransaction');
     }
 
     /**
