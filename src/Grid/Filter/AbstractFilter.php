@@ -105,7 +105,7 @@ abstract class AbstractFilter
     {
         $this->column = $column;
         $this->label = $label;
-        $this->label = $this->formatLabel($label);
+        //$this->label = $this->formatLabel($label);
         $this->id = $this->formatId($column);
 
         $this->setupDefaultPresenter();

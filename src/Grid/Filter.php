@@ -661,6 +661,7 @@ class Filter implements Renderable
     public function __call($method, $arguments)
     {
         if ($filter = $this->resolveFilter($method, $arguments)) {
+            $filter->setTable($this->model->getTable());
             return $this->addFilter($filter);
         }
 
