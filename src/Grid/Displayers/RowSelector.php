@@ -3,6 +3,7 @@
 namespace Encore\Admin\Grid\Displayers;
 
 use Encore\Admin\Admin;
+use Illuminate\Support\Facades\Request;
 
 class RowSelector extends AbstractDisplayer
 {
@@ -22,7 +23,12 @@ EOT;
 
         $selected = trans('admin.grid_items_selected');
 
+        //增加通过url传参来控制高亮
+        $selectId=Request::input('select-id');
+
         return <<<EOT
+$("input[data-id^='{$selectId}']").closest('tr').css('background-color', '#86b0ed');
+
 $('.{$rowName}-checkbox').iCheck({checkboxClass:'icheckbox_minimal-blue'}).on('ifChanged', function () {
     
     var id = $(this).data('id');
