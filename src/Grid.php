@@ -1013,6 +1013,8 @@ class Grid
     {
         $this->handleExportRequest(true);
 
+        Admin::script($this->script());
+
         try {
             $this->build();
         } catch (\Exception $e) {
@@ -1022,5 +1024,21 @@ class Grid
         $this->callRenderingCallback();
 
         return view($this->view, $this->variables())->render();
+    }
+
+    protected function script()
+    {
+        return <<<EOT
+//表格支持双击进入详情页
+$('#{$this->tableID}').find('tr td').not("tr td:first-child").bind('click',function()
+//$("tr td").not("tr td:first-child").bind('click',function()
+            {
+                //var id = $(this).closest('tr').find('.grid-row-checkbox').data('id');
+                var url = $(this).closest('tr').find('.grid-row-edit').attr("href");
+
+                //alert(url);
+                window.open(url, "_blank"); 
+            })
+EOT;
     }
 }

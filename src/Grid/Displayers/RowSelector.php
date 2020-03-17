@@ -26,8 +26,11 @@ EOT;
         //增加通过url传参来控制高亮
         $selectId=Request::input('select-id');
 
+
+
         return <<<EOT
-$("input[data-id^='{$selectId}']").closest('tr').css('background-color', '#86b0ed');
+
+$("input[data-id^='{$selectId}']").closest('tr').css('background-color', '#c1d0e5');
 
 $('.{$rowName}-checkbox').iCheck({checkboxClass:'icheckbox_minimal-blue'}).on('ifChanged', function () {
     
