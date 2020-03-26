@@ -1030,8 +1030,8 @@ class Grid
     {
         return <<<EOT
 //表格支持双击进入详情页
-$('#{$this->tableID}').find('tr td').not("tr td:first-child").bind('click',function()
-//$("tr td").not("tr td:first-child").bind('click',function()
+$('#{$this->tableID}').find('tr td').not("tr td:first-child").bind('dblclick',function()
+//$("tr td").not("tr td:first-child").bind('dblclick',function()
             {
                 //var id = $(this).closest('tr').find('.grid-row-checkbox').data('id');
                 var url = $(this).closest('tr').find('.grid-row-edit').attr("href");
