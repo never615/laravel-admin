@@ -8,18 +8,21 @@ use Mallto\Tool\Exception\ResourceException;
 
 class Handler
 {
+
     /**
      * Render exception.
      *
      * @param \Exception $exception
      *
      * @return string
+     * @throws \Throwable
      */
     public static function renderException(\Exception $exception)
     {
         $error = new MessageBag([
             'type'    => get_class($exception),
-            'message' => $exception->getMessage(),
+            'message' => '操作错误,请检查',
+            //'message' => $exception->getMessage(),
             'file'    => $exception->getFile(),
             'line'    => $exception->getLine(),
             'trace'   => $exception->getTraceAsString(),
