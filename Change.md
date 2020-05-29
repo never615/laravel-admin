@@ -73,5 +73,17 @@
 
 #### 修改`Encore\Admin\Form\Tools`,增加设置翻译内容的方法(`setTrans()`),主要用户调整删除弹框提示语.
 
+
+#### 修改 `Encore\Admin\Form::updateRelation`
+支持MorphOne类型可以在select控件上直接选择关联对象配置
+
 #### 导出支持swoole
-修改`Grid`
+修改`CanExportGrid的handleExportRequest()`改为public,加了这几行代码:
+```
+        if ($this->builder) {
+            //要加这几行,不然没有过滤器无效了
+            call_user_func($this->builder, $this);
+        
+            return $this->getExporter($scope)->export();
+        }
+```
