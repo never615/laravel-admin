@@ -3,6 +3,8 @@
 * 修改helpers文件,增加的`admin_translate()`和`admin_translate_arr()`方法
 * 修改`\Encore\Admin\Form\Field`的`formatLabel()`,`setForm()`,`__construct`.
 * 修改`Encore\Admin\Grid`中的`__call()`
+* 修改`Encore\Admin\Grid`中的`new Column($column, $label,$this);`,加了第三个参数.同步Column构造也改了
+* 修改`Encore\Admin\Column`中的`formatLabel`
 * 修改`Encore\Admin\Grid\Filter\AbstractFilter`中的`formatLabel() __construct() setTable`
 * 修改`Encore\Admin\Grid\Filter`中的`__call()`
 * 修改`src/Form/Field/DateRange.php`的构造函数和setForm()
