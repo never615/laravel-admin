@@ -222,7 +222,8 @@ if (!function_exists('admin_translate')) {
             }
         }
         if (!$label) {
-            $label = str_replace(['.', '_'], ' ', $fallback ? $fallback : ucfirst($column));
+            //$label = str_replace(['.', '_'], ' ', $fallback ? $fallback : ucfirst($column));
+            $label = str_replace(['.', '_'], ' ', $fallback ? $fallback : $column);
         }
 
         return (string) $label;
