@@ -105,6 +105,11 @@ class Builder
     protected $title;
 
     /**
+     * @var string
+     */
+    protected $formClass;
+
+    /**
      * Builder constructor.
      *
      * @param Form $form
@@ -137,6 +142,8 @@ class Builder
     {
         $this->tools = new Tools($this);
         $this->footer = new Footer($this);
+
+        $this->formClass = 'model-form-'.uniqid();
     }
 
     /**
@@ -461,7 +468,7 @@ class Builder
     public function hasFile(): bool
     {
         foreach ($this->fields() as $field) {
-            if ($field instanceof Field\File) {
+            if ($field instanceof Field\File || $field instanceof Field\MultipleFile) {
                 return true;
             }
         }
@@ -506,9 +513,8 @@ class Builder
 
         $attributes['action'] = $this->getAction();
         $attributes['method'] = Arr::get($options, 'method', 'post');
+        $attributes['class'] = implode(' ', ['form-horizontal', $this->formClass]);
         $attributes['accept-charset'] = 'UTF-8';
-
-        $attributes['class'] = Arr::get($options, 'class');
 
         if ($this->hasFile()) {
             $attributes['enctype'] = 'multipart/form-data';
@@ -536,6 +542,38 @@ class Builder
     }
 
     /**
+     * @param string $message
+     */
+    public function confirm(string $message)
+    {
+        $trans = [
+            'confirm' => trans('admin.confirm'),
+            'cancel'  => trans('admin.cancel'),
+        ];
+
+        $script = <<<SCRIPT
+$('form.{$this->formClass} button[type=submit]').click(function (e) {
+    e.preventDefault();
+    var form = $(this).parents('form');
+    swal({
+        title: "$message",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "{$trans['confirm']}",
+        cancelButtonText: "{$trans['cancel']}",
+    }).then(function (result) {
+        if (result.value) {
+          form.submit();
+        }
+    });
+});
+SCRIPT;
+
+        Admin::script($script);
+    }
+
+    /**
      * Remove reserved fields like `id` `created_at` `updated_at` in form fields.
      *
      * @return void
@@ -547,12 +585,16 @@ class Builder
         }
 
         $reservedColumns = [
-            $this->form->model()->getKeyName(),
             $this->form->model()->getCreatedAtColumn(),
             $this->form->model()->getUpdatedAtColumn(),
         ];
 
         $reservedColumns = array_merge($reservedColumns, $this->hideFieldsByCreate);
+
+        if ($this->form->model()->incrementing) {
+            $reservedColumns[] = $this->form->model()->getKeyName();
+        }
+
         $this->form->getLayout()->removeReservedFields($reservedColumns);
 
         $this->fields = $this->fields()->reject(function (Field $field) use ($reservedColumns) {
@@ -581,18 +623,11 @@ class Builder
     }
 
     /**
-     * Render form.
-     *
-     * @return string
+     * Add script for tab form.
      */
-    public function render(): string
+    protected function addTabformScript()
     {
-        $this->removeReservedFields();
-
-        $tabObj = $this->form->setTab();
-
-        if (!$tabObj->isEmpty()) {
-            $script = <<<'SCRIPT'
+        $script = <<<'SCRIPT'
 
 var hash = document.location.hash;
 if (hash) {
@@ -615,8 +650,39 @@ if ($('.has-error').length) {
 }
 
 SCRIPT;
-            Admin::script($script);
+        Admin::script($script);
+    }
+
+    protected function addCascadeScript()
+    {
+        $script = <<<SCRIPT
+(function () {
+    $('form.{$this->formClass}').submit(function (e) {
+        e.preventDefault();
+        $(this).find('div.cascade-group.hide :input').attr('disabled', true);
+    });
+})();
+SCRIPT;
+
+        Admin::script($script);
+    }
+
+    /**
+     * Render form.
+     *
+     * @return string
+     */
+    public function render(): string
+    {
+        $this->removeReservedFields();
+
+        $tabObj = $this->form->setTab();
+
+        if (!$tabObj->isEmpty()) {
+            $this->addTabformScript();
         }
+
+        $this->addCascadeScript();
 
         $data = [
             'form'   => $this,

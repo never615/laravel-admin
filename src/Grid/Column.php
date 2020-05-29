@@ -39,6 +39,7 @@ use Illuminate\Support\Str;
  * @method $this prefix($prefix, $delimiter = '&nbsp;')
  * @method $this suffix($suffix, $delimiter = '&nbsp;')
  * @method $this secret($dotCount = 6)
+ * @method $this limit($limit = 100, $end = '...')
  */
 class Column
 {
@@ -113,30 +114,33 @@ class Column
      * @var array
      */
     public static $displayers = [
-        'editable'    => Displayers\Editable::class,
-        'switch'      => Displayers\SwitchDisplay::class,
-        'switchGroup' => Displayers\SwitchGroup::class,
-        'select'      => Displayers\Select::class,
-        'image'       => Displayers\Image::class,
-        'label'       => Displayers\Label::class,
-        'button'      => Displayers\Button::class,
-        'link'        => Displayers\Link::class,
-        'badge'       => Displayers\Badge::class,
-        'progressBar' => Displayers\ProgressBar::class,
-        'progress'    => Displayers\ProgressBar::class,
-        'radio'       => Displayers\Radio::class,
-        'checkbox'    => Displayers\Checkbox::class,
-        'orderable'   => Displayers\Orderable::class,
-        'table'       => Displayers\Table::class,
-        'expand'      => Displayers\Expand::class,
-        'modal'       => Displayers\Modal::class,
-        'carousel'    => Displayers\Carousel::class,
-        'downloadable'=> Displayers\Downloadable::class,
-        'copyable'    => Displayers\Copyable::class,
-        'qrcode'      => Displayers\QRCode::class,
-        'prefix'      => Displayers\Prefix::class,
-        'suffix'      => Displayers\Suffix::class,
-        'secret'      => Displayers\Secret::class,
+        'editable'      => Displayers\Editable::class,
+        'switch'        => Displayers\SwitchDisplay::class,
+        'switchGroup'   => Displayers\SwitchGroup::class,
+        'select'        => Displayers\Select::class,
+        'image'         => Displayers\Image::class,
+        'label'         => Displayers\Label::class,
+        'button'        => Displayers\Button::class,
+        'link'          => Displayers\Link::class,
+        'badge'         => Displayers\Badge::class,
+        'progressBar'   => Displayers\ProgressBar::class,
+        'progress'      => Displayers\ProgressBar::class,
+        'radio'         => Displayers\Radio::class,
+        'checkbox'      => Displayers\Checkbox::class,
+        'orderable'     => Displayers\Orderable::class,
+        'table'         => Displayers\Table::class,
+        'expand'        => Displayers\Expand::class,
+        'modal'         => Displayers\Modal::class,
+        'carousel'      => Displayers\Carousel::class,
+        'downloadable'  => Displayers\Downloadable::class,
+        'copyable'      => Displayers\Copyable::class,
+        'qrcode'        => Displayers\QRCode::class,
+        'prefix'        => Displayers\Prefix::class,
+        'suffix'        => Displayers\Suffix::class,
+        'secret'        => Displayers\Secret::class,
+        'limit'         => Displayers\Limit::class,
+        'belongsTo'     => Displayers\BelongsTo::class,
+        'belongsToMany' => Displayers\BelongsToMany::class,
     ];
 
     /**
@@ -166,12 +170,16 @@ class Column
      */
     protected $searchable = false;
 
+
     /**
      * @param string $name
      * @param string $label
+     * @param null   $grid
      */
-    public function __construct($name, $label)
+    public function __construct($name, $label,$grid=null)
     {
+        $this->setGrid($grid);
+
         $this->name = $name;
 
         $this->label = $this->formatLabel($label);
@@ -384,8 +392,8 @@ class Column
         if ($label) {
             return $label;
         }
-
-        $label = ucfirst($this->name);
+        $label = admin_translate($label, $this->grid->model()->getTable());
+        //$label = ucfirst($this->name);
 
         return __(str_replace(['.', '_'], ' ', $label));
     }
@@ -794,11 +802,39 @@ class Column
             if (is_null($original)) {
                 $style = $default;
             } else {
-                $style = Arr::get($options, $original);
+                $style = Arr::get($options, $original, $default);
             }
 
             return "<span class=\"label-{$style}\" style='width: 8px;height: 8px;padding: 0;border-radius: 50%;display: inline-block;'></span>";
         }, '&nbsp;&nbsp;');
+    }
+
+    /**
+     * @param string $selectable
+     *
+     * @return $this
+     */
+    public function belongsTo($selectable)
+    {
+        if (method_exists($selectable, 'display')) {
+            $this->display($selectable::display());
+        }
+
+        return $this->displayUsing(Grid\Displayers\BelongsTo::class, [$selectable]);
+    }
+
+    /**
+     * @param string $selectable
+     *
+     * @return $this
+     */
+    public function belongsToMany($selectable)
+    {
+        if (method_exists($selectable, 'display')) {
+            $this->display($selectable::display());
+        }
+
+        return $this->displayUsing(Grid\Displayers\BelongsToMany::class, [$selectable]);
     }
 
     /**

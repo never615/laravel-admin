@@ -5,11 +5,15 @@ namespace Encore\Admin;
 use Closure;
 use Encore\Admin\Exception\Handler;
 use Encore\Admin\Form\Builder;
+use Encore\Admin\Form\Concerns\HandleCascadeFields;
+use Encore\Admin\Form\Concerns\HasFields;
+use Encore\Admin\Form\Concerns\HasHooks;
 use Encore\Admin\Form\Field;
-use Encore\Admin\Form\HasHooks;
 use Encore\Admin\Form\Layout\Layout;
 use Encore\Admin\Form\Row;
 use Encore\Admin\Form\Tab;
+use Encore\Admin\Traits\ShouldSnakeAttributes;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations;
@@ -75,7 +79,9 @@ use Symfony\Component\HttpFoundation\Response;
 class Form implements Renderable
 {
     use HasHooks;
-
+    use HasFields;
+    use HandleCascadeFields;
+    use ShouldSnakeAttributes;
     /**
      * Remove flag in `has many` form.
      */
@@ -125,68 +131,6 @@ class Form implements Renderable
     protected $layout;
 
     /**
-     * Available fields.
-     *
-     * @var array
-     */
-    public static $availableFields = [
-        'button'         => Field\Button::class,
-        'checkbox'       => Field\Checkbox::class,
-        'color'          => Field\Color::class,
-        'currency'       => Field\Currency::class,
-        'date'           => Field\Date::class,
-        'dateRange'      => Field\DateRange::class,
-        'datetime'       => Field\Datetime::class,
-        'dateTimeRange'  => Field\DatetimeRange::class,
-        'datetimeRange'  => Field\DatetimeRange::class,
-        'decimal'        => Field\Decimal::class,
-        'display'        => Field\Display::class,
-        'divider'        => Field\Divider::class,
-        'embeds'         => Field\Embeds::class,
-        'email'          => Field\Email::class,
-        'file'           => Field\File::class,
-        'hasMany'        => Field\HasMany::class,
-        'hidden'         => Field\Hidden::class,
-        'id'             => Field\Id::class,
-        'image'          => Field\Image::class,
-        'ip'             => Field\Ip::class,
-        'mobile'         => Field\Mobile::class,
-        'month'          => Field\Month::class,
-        'multipleSelect' => Field\MultipleSelect::class,
-        'number'         => Field\Number::class,
-        'password'       => Field\Password::class,
-        'radio'          => Field\Radio::class,
-        'rate'           => Field\Rate::class,
-        'select'         => Field\Select::class,
-        'slider'         => Field\Slider::class,
-        'switch'         => Field\SwitchField::class,
-        'text'           => Field\Text::class,
-        'textarea'       => Field\Textarea::class,
-        'time'           => Field\Time::class,
-        'timeRange'      => Field\TimeRange::class,
-        'url'            => Field\Url::class,
-        'year'           => Field\Year::class,
-        'html'           => Field\Html::class,
-        'tags'           => Field\Tags::class,
-        'icon'           => Field\Icon::class,
-        'multipleFile'   => Field\MultipleFile::class,
-        'multipleImage'  => Field\MultipleImage::class,
-        'captcha'        => Field\Captcha::class,
-        'listbox'        => Field\Listbox::class,
-        'table'          => Field\Table::class,
-        'timezone'       => Field\Timezone::class,
-        'keyValue'       => Field\KeyValue::class,
-        'list'           => Field\ListField::class,
-    ];
-
-    /**
-     * Form field alias.
-     *
-     * @var array
-     */
-    public static $fieldAlias = [];
-
-    /**
      * Ignored saving fields.
      *
      * @var array
@@ -218,13 +162,6 @@ class Form implements Renderable
     protected $isSoftDeletes = false;
 
     /**
-     * Initialization closure array.
-     *
-     * @var []Closure
-     */
-    protected static $initCallbacks;
-
-    /**
      * Create a new form instance.
      *
      * @param          $model
@@ -248,30 +185,6 @@ class Form implements Renderable
     }
 
     /**
-     * Initialize with user pre-defined default disables, etc.
-     *
-     * @param Closure $callback
-     */
-    public static function init(Closure $callback = null)
-    {
-        static::$initCallbacks[] = $callback;
-    }
-
-    /**
-     * Call the initialization closure array in sequence.
-     */
-    protected function callInitCallbacks()
-    {
-        if (empty(static::$initCallbacks)) {
-            return;
-        }
-
-        foreach (static::$initCallbacks as $callback) {
-            $callback($this);
-        }
-    }
-
-    /**
      * @param Field $field
      *
      * @return $this
@@ -283,7 +196,7 @@ class Form implements Renderable
         $width = $this->builder->getWidth();
         $field->setWidth($width['field'], $width['label']);
 
-        $this->builder->fields()->push($field);
+        $this->fields()->push($field);
         $this->layout->addField($field);
 
         return $this;
@@ -303,6 +216,14 @@ class Form implements Renderable
     public function builder(): Builder
     {
         return $this->builder;
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function fields()
+    {
+        return $this->builder()->fields();
     }
 
     /**
@@ -408,7 +329,7 @@ class Form implements Renderable
             \Log::warning($exception);
             $response = [
                 'status'  => false,
-                'message' => "存在关联数据,无法删除" ?: trans('admin.delete_failed'),
+                'message' => '存在关联数据,无法删除',
             ];
         }
 
@@ -430,7 +351,7 @@ class Form implements Renderable
 
         $data = $model->toArray();
 
-        $this->builder->fields()->filter(function ($field) {
+        $this->fields()->filter(function ($field) {
             return $field instanceof Field\File;
         })->each(function (Field\File $file) use ($data) {
             $file->setOriginal($data);
@@ -519,12 +440,46 @@ class Form implements Renderable
         // ajax but not pjax
         if ($request->ajax() && !$request->pjax()) {
             return response()->json([
-                'status'  => true,
-                'message' => $message,
+                'status'    => true,
+                'message'   => $message,
+                'display'   => $this->applayFieldDisplay(),
             ]);
         }
 
         return false;
+    }
+
+    /**
+     * @return array
+     */
+    protected function applayFieldDisplay()
+    {
+        $editable = [];
+
+        /** @var Field $field */
+        foreach ($this->fields() as $field) {
+            if (!\request()->has($field->column())) {
+                continue;
+            }
+
+            $newValue = $this->model->fresh()->getAttribute($field->column());
+
+            if ($newValue instanceof Arrayable) {
+                $newValue = $newValue->toArray();
+            }
+
+            if ($field instanceof Field\BelongsTo || $field instanceof Field\BelongsToMany) {
+                $selectable = $field->getSelectable();
+
+                if (method_exists($selectable, 'display')) {
+                    $display = $selectable::display();
+
+                    $editable[$field->column()] = $display->call($this->model, $newValue);
+                }
+            }
+        }
+
+        return $editable;
     }
 
     /**
@@ -607,7 +562,6 @@ class Form implements Renderable
         if (($data = $this->handleColumnUpdates($id, $data)) instanceof Response) {
             return $data;
         }
-
 
         /* @var Model $this ->model */
         $builder = $this->model();
@@ -881,146 +835,70 @@ class Form implements Renderable
                     }
                     break;
                 case $relation instanceof Relations\HasOne:
-
-                    $related = $this->model->$name;
-
-                    // if related is empty
-                    if (is_null($related)) {
-                        $related = $relation->getRelated();
-                        $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
-                        $localKey = Arr::last(explode('.', $qualifiedParentKeyName));
-                        $related->{$relation->getForeignKeyName()} = $this->model->{$localKey};
-                    }
-
-                    foreach ($prepared[$name] as $column => $value) {
-                        $related->setAttribute($column, $value);
-                    }
-
-                    $related->save();
-                    break;
-                case $relation instanceof Relations\BelongsTo:
-                case $relation instanceof Relations\MorphTo:
-                    $parent = $this->model->$name;
-
-                    // if related is empty
-                    if (is_null($parent)) {
-                        $parent = $relation->getRelated();
-                    }
-
-                    foreach ($prepared[$name] as $column => $value) {
-                        $parent->setAttribute($column, $value);
-                    }
-
-                    $parent->save();
-
-                    // When in creating, associate two models
-                    $foreignKeyMethod = version_compare(app()->version(), '5.8.0',
-                        '<') ? 'getForeignKey' : 'getForeignKeyName';
-                    if (!$this->model->{$relation->{$foreignKeyMethod}()}) {
-                        $this->model->{$relation->{$foreignKeyMethod}()} = $parent->getKey();
-
-                        $this->model->save();
-                    }
-
-                    break;
                 case $relation instanceof Relations\MorphOne:
-                    $related = $this->model->$name;
-//                    if ($related === null) {
-//                        $related = $relation->make();
-//                    }
-
                     $relationPrimaryKeyName = $relation->getModel()->getKeyName();
-
                     if (array_key_exists($relationPrimaryKeyName, $prepared[$name])) {
-                        //如果设置条目有关联对象的主键,则优先处理该值
+                        //如果修改的属性是关联对象的主键,则关联这两个对象
                         $primaryKeyValue = $prepared[$name][$relationPrimaryKeyName];
 
-                        $relation->update([
-                            $relation->getForeignKeyName() => null,
-                            $relation->getMorphType()      => null,
-                        ]);
-
-                        $newRelated = $relation->getModel()::find($primaryKeyValue);
-                        if ($newRelated) {
-                            $related = $newRelated;
-
+                        $related = $relation->getModel()::find($primaryKeyValue);
+                        if ($related) {
                             $morphType = $relation->getMorphType();
-                            $newRelated->$morphType = $relation->getMorphClass();
+                            $related->$morphType = $relation->getMorphClass();
                             $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
                             $localKey = array_last(explode('.', $qualifiedParentKeyName));
                             $related->{$relation->getForeignKeyName()} = $this->model->{$localKey};
                             $related->save();
                         }
+                    }else{
+                        $related = $this->model->getRelationValue($name) ?: $relation->getRelated();
 
-                        unset($prepared[$name][$relationPrimaryKeyName]);
-
-                    }
-
-                    if ($related) {
                         foreach ($prepared[$name] as $column => $value) {
                             $related->setAttribute($column, $value);
                         }
-                        $related->save();
+
+                        // save child
+                        $relation->save($related);
+                    }
+                break;
+                case $relation instanceof Relations\BelongsTo:
+                case $relation instanceof Relations\MorphTo:
+                    $related = $this->model->getRelationValue($name) ?: $relation->getRelated();
+
+                    foreach ($prepared[$name] as $column => $value) {
+                        $related->setAttribute($column, $value);
                     }
 
-                    //一对一关联数据,如果设置的关联表的列名是主键,则查找相关对象,然后设置对应的关联key(type和id)
-//                    $relationPrimaryKeyName = $relation->getModel()->getKeyName();
-//                    if (array_key_exists($relationPrimaryKeyName, $prepared[$name])) {
-//                        if ($prepared[$name][$relationPrimaryKeyName]) {
-//                            //使用这种模式其他设置关联对象的其他设置将会无法保存
-//                            //todo 优化
-//                            //要把其他关联关系移除
-//                            $relation->update([
-//                                $relation->getForeignKeyName() => null,
-//                                $relation->getMorphType()      => null,
-//                            ]);
-//
-//                            $related = $relation->getModel()::findOrFail(array_get($prepared[$name],
-//                                $relationPrimaryKeyName));
-//
-//                            $morphType = $relation->getMorphType();
-//                            $related->$morphType = $relation->getMorphClass();
-//                            $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
-//                            $localKey = array_last(explode('.', $qualifiedParentKeyName));
-//                            $related->{$relation->getForeignKeyName()} = $this->model->{$localKey};
-//                            $related->save();
-//                        }
-//                    } else {
-//                        $related = $this->model->$name;
-//                        if (is_null($related)) {
-//                            $related = $relation->make();
-//                        }
-//
-//                        foreach ($prepared[$name] as $column => $value) {
-//                            $related->setAttribute($column, $value);
-//                        }
-//                        $related->save();
-//                    }
+                    // save parent
+                    $related->save();
+
+                    // save child (self)
+                    $relation->associate($related)->save();
                     break;
                 case $relation instanceof Relations\HasMany:
                 case $relation instanceof Relations\MorphMany:
-
                     foreach ($prepared[$name] as $related) {
-                        /** @var Relations\Relation $relation */
-                        $relation = $this->model()->$name();
+                        /** @var Relations\HasOneOrMany $relation */
+                        $relation = $this->model->$name();
 
                         $keyName = $relation->getRelated()->getKeyName();
 
-                        $instance = $relation->findOrNew(Arr::get($related, $keyName));
+                        /** @var Model $child */
+                        $child = $relation->findOrNew(Arr::get($related, $keyName));
 
-                        if ($related[static::REMOVE_FLAG_NAME] == 1) {
-                            $instance->delete();
-
+                        if (Arr::get($related, static::REMOVE_FLAG_NAME) == 1) {
+                            $child->delete();
                             continue;
                         }
 
                         Arr::forget($related, static::REMOVE_FLAG_NAME);
 
-                        $instance->fill($related);
+                        foreach ($related as $colum => $value) {
+                            $child->setAttribute($colum, $value);
+                        }
 
-                        $instance->save();
+                        $child->save();
                     }
-
                     break;
             }
         }
@@ -1039,7 +917,7 @@ class Form implements Renderable
         $prepared = [];
 
         /** @var Field $field */
-        foreach ($this->builder->fields() as $field) {
+        foreach ($this->fields() as $field) {
             $columns = $field->column();
 
             // If column not in input array data, then continue.
@@ -1186,7 +1064,7 @@ class Form implements Renderable
      */
     protected function getFieldByColumn($column)
     {
-        return $this->builder->fields()->first(
+        return $this->fields()->first(
             function (Field $field) use ($column) {
                 if (is_array($field->column())) {
                     return in_array($column, $field->column());
@@ -1204,11 +1082,9 @@ class Form implements Renderable
      */
     protected function setFieldOriginalValue()
     {
-//        static::doNotSnakeAttributes($this->model);
-
         $values = $this->model->toArray();
 
-        $this->builder->fields()->each(function (Field $field) use ($values) {
+        $this->fields()->each(function (Field $field) use ($values) {
             $field->setOriginal($values);
         });
     }
@@ -1234,11 +1110,9 @@ class Form implements Renderable
 
         $this->callEditing();
 
-//        static::doNotSnakeAttributes($this->model);
-
         $data = $this->model->toArray();
 
-        $this->builder->fields()->each(function (Field $field) use ($data) {
+        $this->fields()->each(function (Field $field) use ($data) {
             if (!in_array($field->column(), $this->ignored, true)) {
                 $field->fill($data);
             }
@@ -1267,20 +1141,6 @@ class Form implements Renderable
     }
 
     /**
-     * Don't snake case attributes.
-     *
-     * @param Model $model
-     *
-     * @return void
-     */
-    protected static function doNotSnakeAttributes(Model $model)
-    {
-        $class = get_class($model);
-
-        $class::$snakeAttributes = false;
-    }
-
-    /**
      * Get validation messages.
      *
      * @param array $input
@@ -1292,7 +1152,7 @@ class Form implements Renderable
         $failedValidators = [];
 
         /** @var Field $field */
-        foreach ($this->builder->fields() as $field) {
+        foreach ($this->fields() as $field) {
             if (!$validator = $field->getValidator($input)) {
                 continue;
             }
@@ -1335,7 +1195,7 @@ class Form implements Renderable
         $relations = $columns = [];
 
         /** @var Field $field */
-        foreach ($this->builder->fields() as $field) {
+        foreach ($this->fields() as $field) {
             $columns[] = $field->column();
         }
 
@@ -1421,6 +1281,33 @@ class Form implements Renderable
     }
 
     /**
+     * Set a submit confirm.
+     *
+     * @param string $message
+     * @param string $on
+     *
+     * @return $this
+     */
+    public function confirm(string $message, $on = null)
+    {
+        if ($on && !in_array($on, ['create', 'edit'])) {
+            throw new \InvalidArgumentException("The second paramater `\$on` must be one of ['create', 'edit']");
+        }
+
+        if ($on == 'create' && !$this->isCreating()) {
+            return;
+        }
+
+        if ($on == 'edit' && !$this->isEditing()) {
+            return;
+        }
+
+        $this->builder()->confirm($message);
+
+        return $this;
+    }
+
+    /**
      * Add a row in form.
      *
      * @param Closure $callback
@@ -1475,7 +1362,7 @@ class Form implements Renderable
      */
     public function isEditing(): bool
     {
-        return Str::endsWith(\request()->route()->getName(), '.edit', '.update');
+        return Str::endsWith(\request()->route()->getName(), ['.edit', '.update']);
     }
 
     /**
@@ -1615,174 +1502,6 @@ class Form implements Renderable
         }
 
         return Arr::set($this->inputs, $key, $value);
-    }
-
-    /**
-     * <<<<<<< HEAD
-     * Register builtin fields.
-     *
-     * @return void
-     */
-    public static function registerBuiltinFields()
-    {
-        $map = [
-            'button'         => Field\Button::class,
-            'checkbox'       => Field\Checkbox::class,
-            'color'          => Field\Color::class,
-            'currency'       => Field\Currency::class,
-            'date'           => Field\Date::class,
-            'dateRange'      => Field\DateRange::class,
-            'datetime'       => Field\Datetime::class,
-            'dateTimeRange'  => Field\DatetimeRange::class,
-            'datetimeRange'  => Field\DatetimeRange::class,
-            'decimal'        => Field\Decimal::class,
-            'display'        => Field\Display::class,
-            'divider'        => Field\Divider::class,
-            'embeds'         => Field\Embeds::class,
-            'email'          => Field\Email::class,
-            'file'           => Field\File::class,
-            'hasMany'        => Field\HasMany::class,
-            'hidden'         => Field\Hidden::class,
-            'id'             => Field\Id::class,
-            'image'          => Field\Image::class,
-            'ip'             => Field\Ip::class,
-            'mobile'         => Field\Mobile::class,
-            'month'          => Field\Month::class,
-            'multipleSelect' => Field\MultipleSelect::class,
-            'number'         => Field\Number::class,
-            'password'       => Field\Password::class,
-            'radio'          => Field\Radio::class,
-            'rate'           => Field\Rate::class,
-            'select'         => Field\Select::class,
-            'slider'         => Field\Slider::class,
-            'switch'         => Field\SwitchField::class,
-            'text'           => Field\Text::class,
-            'textarea'       => Field\Textarea::class,
-            'time'           => Field\Time::class,
-            'timeRange'      => Field\TimeRange::class,
-            'url'            => Field\Url::class,
-            'year'           => Field\Year::class,
-            'html'           => Field\Html::class,
-            'tags'           => Field\Tags::class,
-            'icon'           => Field\Icon::class,
-            'multipleFile'   => Field\MultipleFile::class,
-            'multipleImage'  => Field\MultipleImage::class,
-            'captcha'        => Field\Captcha::class,
-            'listbox'        => Field\Listbox::class,
-            'table'          => Field\Table::class,
-            'timezone'       => Field\Timezone::class,
-            'keyValue'       => Field\KeyValue::class,
-            'list'           => Field\ListField::class,
-        ];
-
-        foreach ($map as $abstract => $class) {
-            static::extend($abstract, $class);
-        }
-    }
-
-
-    /**
-     * Hide fields to create.
-     *
-     * @param string|array $fields
-     *
-     * @return $this
-     */
-    public function hideFieldsByCreate($fields)
-    {
-        $this->builder->hideFieldsByCreate($fields);
-
-        return $this;
-    }
-
-    /**
-     * Register custom field.
-     *
-     * @param string $abstract
-     * @param string $class
-     *
-     * @return void
-     */
-    public static function extend($abstract, $class)
-    {
-        static::$availableFields[$abstract] = $class;
-    }
-
-    /**
-     * Set form field alias.
-     *
-     * @param string $field
-     * @param string $alias
-     *
-     * @return void
-     */
-    public static function alias($field, $alias)
-    {
-        static::$fieldAlias[$alias] = $field;
-    }
-
-    /**
-     * Remove registered field.
-     *
-     * @param array|string $abstract
-     */
-    public static function forget($abstract)
-    {
-        Arr::forget(static::$availableFields, $abstract);
-    }
-
-    /**
-     * Find field class.
-     *
-     * @param string $method
-     *
-     * @return bool|mixed
-     */
-    public static function findFieldClass($method)
-    {
-        // If alias exists.
-        if (isset(static::$fieldAlias[$method])) {
-            $method = static::$fieldAlias[$method];
-        }
-
-        $class = Arr::get(static::$availableFields, $method);
-
-        if (class_exists($class)) {
-            return $class;
-        }
-
-        return false;
-    }
-
-    /**
-     * Collect assets required by registered field.
-     *
-     * @return array
-     */
-    public static function collectFieldAssets(): array
-    {
-        if (!empty(static::$collectedAssets)) {
-            return static::$collectedAssets;
-        }
-
-        $css = collect();
-        $js = collect();
-
-        foreach (static::$availableFields as $field) {
-            if (!method_exists($field, 'getAssets')) {
-                continue;
-            }
-
-            $assets = call_user_func([$field, 'getAssets']);
-
-            $css->push(Arr::get($assets, 'css'));
-            $js->push(Arr::get($assets, 'js'));
-        }
-
-        return static::$collectedAssets = [
-            'css' => $css->flatten()->unique()->filter()->toArray(),
-            'js'  => $js->flatten()->unique()->filter()->toArray(),
-        ];
     }
 
     /**
