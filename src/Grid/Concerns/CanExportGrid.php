@@ -18,9 +18,11 @@ trait CanExportGrid
     /**
      * Handle export request.
      *
+     * 要用pulic方法,因为兼容swoole,需要外部调用
+     *
      * @param bool $forceExport
      */
-    protected function handleExportRequest($forceExport = false)
+    public function handleExportRequest($forceExport = false)
     {
         if (!$scope = request(Exporter::$queryName)) {
             return;
@@ -34,6 +36,7 @@ trait CanExportGrid
         $this->disablePagination();
 
         if ($this->builder) {
+            //要加这几行,不然没有过滤器无效了
             call_user_func($this->builder, $this);
 
             return $this->getExporter($scope)->export();
