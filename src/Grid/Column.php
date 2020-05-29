@@ -392,7 +392,7 @@ class Column
         if ($label) {
             return $label;
         }
-        $label = admin_translate($label, $this->grid->model()->getTable());
+        $label = admin_translate($this->name, $this->grid->model()->getTable());
         //$label = ucfirst($this->name);
 
         return __(str_replace(['.', '_'], ' ', $label));
