@@ -1586,4 +1586,18 @@ class Form implements Renderable
     {
         return $this->layout;
     }
+
+    /**
+     * Hide fields to create.
+     *
+     * @param string|array $fields
+     *
+     * @return $this
+     */
+    public function hideFieldsByCreate($fields)
+    {
+        $this->builder->hideFieldsByCreate($fields);
+
+        return $this;
+    }
 }
