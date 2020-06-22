@@ -313,4 +313,60 @@ trait HasAssets
     {
         return admin_asset(static::$jQuery);
     }
+
+    /**
+     * @param $component
+     */
+    public static function component($component, $data = [])
+    {
+        $str = view($component, $data)->render();
+
+        $dom = new \DOMDocument();
+
+        libxml_use_internal_errors(true);
+
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $str);
+
+        libxml_use_internal_errors(false);
+
+        if ($dom->getElementsByTagName('body')->length <= 0) {
+            return;
+        }
+
+        $body = $dom->getElementsByTagName('body')[0];
+
+        $render = '';
+
+        foreach ($body->childNodes as $child) {
+
+            if ($child instanceof \DOMElement && $child->tagName == 'style') {
+                static::style($child->nodeValue);
+            }
+
+            if ($child instanceof \DOMElement && $child->tagName == 'script') {
+                static::script(';(function () {' . $child->nodeValue . '})();');
+            }
+
+            if ($child instanceof \DOMElement && $child->tagName == 'template') {
+
+                $html = '';
+
+                foreach ($child->childNodes as $childNode) {
+                    $html .= $child->ownerDocument->saveHTML($childNode);
+                }
+
+                if ($html) {
+                    static::html($html);
+                }
+            }
+
+            if ($child instanceof \DOMElement && in_array($child->tagName, ['template', 'style', 'script'])) {
+                continue;
+            }
+
+            $render .= $body->ownerDocument->saveHTML($child);
+        }
+
+        return $render;
+    }
 }

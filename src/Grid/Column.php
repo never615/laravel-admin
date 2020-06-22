@@ -31,7 +31,7 @@ use Illuminate\Support\Str;
  * @method $this orderable($column, $label = '')
  * @method $this table($titles = [])
  * @method $this expand($callback = null)
- * @method $this modal($callback = null)
+ * @method $this modal($title, $callback = null)
  * @method $this carousel(int $width = 300, int $height = 200, $server = '')
  * @method $this downloadable($server = '')
  * @method $this copyable()
@@ -139,8 +139,6 @@ class Column
         'suffix'        => Displayers\Suffix::class,
         'secret'        => Displayers\Secret::class,
         'limit'         => Displayers\Limit::class,
-        'belongsTo'     => Displayers\BelongsTo::class,
-        'belongsToMany' => Displayers\BelongsToMany::class,
     ];
 
     /**
@@ -514,11 +512,9 @@ class Column
      */
     public function bindSearchQuery(Model $model)
     {
-        if (!$this->searchable || !request()->has($this->getName())) {
-            return;
+        if ($this->searchable && ($value = request($this->getName())) != '') {
+            $model->where($this->getName(), $value);
         }
-
-        $model->where($this->getName(), request($this->getName()));
     }
 
     /**
@@ -592,6 +588,29 @@ class Column
 
             return $value;
         });
+    }
+
+    /**
+     * @param string|Closure $input
+     * @param string $seperator
+     *
+     * @return $this
+     */
+    public function repeat($input, $seperator = '')
+    {
+        if (is_string($input)) {
+            $input = function () use ($input) {
+                return $input;
+            };
+        }
+
+        if ($input instanceof Closure) {
+            return $this->display(function ($value) use ($input, $seperator) {
+                return join($seperator, array_fill(0, (int) $value, $input->call($this, [$value])));
+            });
+        }
+
+        return $this;
     }
 
     /**
@@ -731,20 +750,6 @@ class Column
     }
 
     /**
-     * Returns a string formatted according to the given format string.
-     *
-     * @param string $format
-     *
-     * @return $this
-     */
-    public function date($format)
-    {
-        return $this->display(function ($value) use ($format) {
-            return date($format, strtotime($value));
-        });
-    }
-
-    /**
      * Display column as boolean , `✓` for true, and `✗` for false.
      *
      * @param array $map
@@ -758,6 +763,19 @@ class Column
             $bool = empty($map) ? boolval($value) : Arr::get($map, $value, $default);
 
             return $bool ? '<i class="fa fa-check text-green"></i>' : '<i class="fa fa-close text-red"></i>';
+        });
+    }
+
+    /**
+     * Display column as a default value if empty.
+     *
+     * @param string $default
+     * @return $this
+     */
+    public function default($default = '-')
+    {
+        return $this->display(function ($value) use ($default) {
+            return $value ?: $default;
         });
     }
 
@@ -835,6 +853,62 @@ class Column
         }
 
         return $this->displayUsing(Grid\Displayers\BelongsToMany::class, [$selectable]);
+    }
+
+    /**
+     * Upload file.
+     *
+     * @return $this
+     */
+    public function upload()
+    {
+        return $this->displayUsing(Grid\Displayers\Upload::class);
+    }
+
+    /**
+     * Upload many files.
+     *
+     * @return $this
+     */
+    public function uplaodMany()
+    {
+        return $this->displayUsing(Grid\Displayers\Upload::class, [true]);
+    }
+
+    /**
+     * Grid inline datetime picker.
+     *
+     * @param string $format
+     *
+     * @return $this
+     */
+    public function datetime($format = 'YYYY-MM-DD HH:mm:ss')
+    {
+        return $this->displayUsing(Grid\Displayers\Datetime::class, [$format]);
+    }
+
+    /**
+     * Grid inline date picker.
+     *
+     * @param string $format
+     *
+     * @return $this
+     */
+    public function date()
+    {
+        return $this->datetime('YYYY-MM-DD');
+    }
+
+    /**
+     * Grid inline time picker.
+     *
+     * @param string $format
+     *
+     * @return $this
+     */
+    public function time()
+    {
+        return $this->datetime('HH:mm:ss');
     }
 
     /**

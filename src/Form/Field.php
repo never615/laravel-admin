@@ -1250,7 +1250,7 @@ class Field implements Renderable
      *
      * @return mixed
      */
-    protected function getElementClassString()
+    public function getElementClassString()
     {
         $elementClass = $this->getElementClass();
 
@@ -1272,7 +1272,7 @@ class Field implements Renderable
      *
      * @return string|array
      */
-    protected function getElementClassSelector()
+    public function getElementClassSelector()
     {
         $elementClass = $this->getElementClass();
 
@@ -1409,7 +1409,7 @@ class Field implements Renderable
      *
      * @return $this
      */
-    protected function addVariables(array $variables = []): self
+    public function addVariables(array $variables = []): self
     {
         $this->variables = array_merge($this->variables, $variables);
 
@@ -1574,6 +1574,9 @@ class Field implements Renderable
         return view($this->getView(), $this->variables());
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|string
+     */
     protected function fieldRender()
     {
         return self::render();
