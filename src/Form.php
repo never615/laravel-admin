@@ -839,16 +839,34 @@ class Form implements Renderable
                     $relationPrimaryKeyName = $relation->getModel()->getKeyName();
                     if (array_key_exists($relationPrimaryKeyName, $prepared[$name])) {
                         //如果修改的属性是关联对象的主键,则关联这两个对象
+
+                        //关联对象主键对应的值
                         $primaryKeyValue = $prepared[$name][$relationPrimaryKeyName];
 
                         $related = $relation->getModel()::find($primaryKeyValue);
-                        if ($related) {
-                            $morphType = $relation->getMorphType();
-                            $related->$morphType = $relation->getMorphClass();
-                            $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
-                            $localKey = array_last(explode('.', $qualifiedParentKeyName));
-                            $related->{$relation->getForeignKeyName()} = $this->model->{$localKey};
-                            $related->save();
+
+                        $morphType = $relation->getMorphType();
+                        $morphId = $relation->getForeignKeyName();
+
+                        $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
+                        $localKey = array_last(explode('.', $qualifiedParentKeyName));
+
+                        if ( ! $primaryKeyValue) {
+                            //不存在,移除关联关系
+                            $relation->getModel()::query()->where([
+                                $morphType => $relation->getMorphClass(),
+                                $morphId   => $this->model->{$localKey},
+
+                            ])->update([
+                                $morphType => null,
+                                $morphId   => null,
+                            ]);
+                        } else {
+                            if ($related) {
+                                $related->$morphType = $relation->getMorphClass();
+                                $related->$morphId = $this->model->{$localKey};
+                                $related->save();
+                            }
                         }
                     }else{
                         $related = $this->model->getRelationValue($name) ?: $relation->getRelated();
