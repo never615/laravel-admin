@@ -79,10 +79,12 @@ STYLE;
             $optionsHtml .= "<li><a href='javascript:void(0);' data-value='{$option}'><i class=\"fa fa-check text-green $invisible\"></i>{$text}</a></li>";
         }
 
+        $optiosValue=$options[$this->value]??"";
+
         return <<<HTML
 <div class="dropdown grid-select-{$this->column->getName()}" key="{$this->getKey()}">
   <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
-    <span class="select-text text-muted">{$options[$this->value]}</span>
+    <span class="select-text text-muted">{$optiosValue}</span>
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu">
