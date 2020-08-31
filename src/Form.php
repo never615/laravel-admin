@@ -851,22 +851,19 @@ class Form implements Renderable
                         $qualifiedParentKeyName = $relation->getQualifiedParentKeyName();
                         $localKey = array_last(explode('.', $qualifiedParentKeyName));
 
-                        if ( ! $primaryKeyValue) {
-                            //不存在,移除关联关系
-                            $relation->getModel()::query()->where([
-                                $morphType => $relation->getMorphClass(),
-                                $morphId   => $this->model->{$localKey},
+                        //移除关联关系
+                        $relation->getModel()::query()->where([
+                            $morphType => $relation->getMorphClass(),
+                            $morphId   => $this->model->{$localKey},
+                        ])->update([
+                            $morphType => null,
+                            $morphId   => null,
+                        ]);
 
-                            ])->update([
-                                $morphType => null,
-                                $morphId   => null,
-                            ]);
-                        } else {
-                            if ($related) {
-                                $related->$morphType = $relation->getMorphClass();
-                                $related->$morphId = $this->model->{$localKey};
-                                $related->save();
-                            }
+                        if ($related) {
+                            $related->$morphType = $relation->getMorphClass();
+                            $related->$morphId = $this->model->{$localKey};
+                            $related->save();
                         }
                     }else{
                         $related = $this->model->getRelationValue($name) ?: $relation->getRelated();
