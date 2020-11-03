@@ -1,48 +1,26 @@
 @extends('admin::grid.inline-edit.comm')
 
-<span class="ie-wrap">
-    <a
-        href="javascript:void(0);"
-        class="{{ $trigger }}"
-        data-toggle="popover"
-        data-target="{{ $target }}"
-        data-value="{{ $value }}"
-        data-original="{{ $value }}"
-    >
-        <i class="fa fa-clock-o"></i>
-        <span class="ie-display">{{ $value }}</span>
-    </a>
-    @component('admin::grid.inline-edit.partials.template', compact('name', 'target', 'key'))
-        <input class="form-control ie-input" value="{__VAL__}"/>
-    @endcomponent
-</span>
+@section('field')
+    <input class="form-control ie-input"/>
+@endsection
 
-<style>
-    .{{ $trigger }} {
-        padding: 3px;
-        border-radius: 3px;
-        color:#777;
-    }
+@section('assert')
+    <style>
+        .ie-content-{{ $name }} .ie-container  {
+            height: 290px;
+        }
 
-    .{{ $trigger }}:hover {
-        text-decoration: none;
-        background-color: #ddd;
-        color:#777;
-    }
+        .ie-content-{{ $name }} .ie-input {
+            display: none;
+        }
+    </style>
 
-    .ie-content-{{ $name }} .ie-container  {
-        height: 290px;
-    }
-
-    .ie-content-{{ $name }} .ie-input {
-        display: none;
-    }
-</style>
-
-<script>
-    @component('admin::grid.inline-edit.partials..popover', compact('trigger'))
-        // open popover
-        @slot('popover')
+    <script>
+        @component('admin::grid.inline-edit.partials.popover', compact('trigger'))
+            @slot('content')
+            $template.find('input').attr('value', $trigger.data('value'));
+            @endslot
+            @slot('shown')
             var $input  = $popover.find('.ie-input');
 
             $popover.find('.ie-container').datetimepicker({
@@ -54,24 +32,17 @@
                 var date = event.date.format('{{ $format }}');
                 $input.val(date);
             });
-        @endslot
+            @endslot
+        @endcomponent
+    </script>
 
-        // popover content
-        @slot('content')
-            $(this)
-                .parents('.ie-wrap')
-                .find('template')
-                .html()
-                .replace('{__VAL__}', $(this).data('value'));
-        @endslot
+    {{--after submit--}}
+    <script>
+    @component('admin::grid.inline-edit.partials.submit', compact('resource', 'name'))
+        $popover.data('display').html(val);
     @endcomponent
-</script>
+    </script>
 
-{{--after submit--}}
-<script>
-@component('admin::grid.inline-edit.partials.submit', compact('resource', 'name'))
-    $popover.data('display').html(val);
-@endcomponent
-</script>
+@endsection
 
 

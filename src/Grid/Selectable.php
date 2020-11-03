@@ -45,12 +45,13 @@ abstract class Selectable
 
     /**
      * Selectable constructor.
+     *
      * @param $key
      * @param $multiple
      */
     public function __construct($multiple = false, $key = '')
     {
-        $this->key      = $key;
+        $this->key = $key ?: $this->key;
         $this->multiple = $multiple;
 
         $this->initGrid();

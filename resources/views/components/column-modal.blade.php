@@ -10,7 +10,7 @@
                 <h4 class="modal-title">{{ $title }}</h4>
             </div>
             <div class="modal-body">
-                {{ $html }}
+                {!! $html !!}
             </div>
         </div>
     </div>
@@ -31,7 +31,7 @@
 
 @if($async)
 <script>
-    var modal = $('.grid-modal');
+    var modal = $('#grid-modal-{{ $name }}');
     var modalBody = modal.find('.modal-body');
 
     var load = function (url) {

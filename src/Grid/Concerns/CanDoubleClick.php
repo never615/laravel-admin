@@ -13,7 +13,7 @@ trait CanDoubleClick
      */
     public function enableDblClick()
     {
-        $script=<<<SCRIPT
+        $script = <<<SCRIPT
 $('body').on('dblclick', 'table#{$this->tableID}>tbody>tr', function(e) {
     var url = "{$this->resource()}/"+$(this).data('key')+"/edit";
     $.admin.redirect(url);

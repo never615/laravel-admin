@@ -18,8 +18,8 @@ EOT;
 
     protected function script()
     {
-        $allName = $this->grid->getSelectAllName();
-        $rowName = $this->grid->getGridRowName();
+        $all = $this->grid->getSelectAllName();
+        $row = $this->grid->getGridRowName();
 
         $selected = trans('admin.grid_items_selected');
 
@@ -30,10 +30,10 @@ EOT;
 
         return <<<EOT
 
-$("input[data-id^='{$selectId}']").closest('tr').css('background-color', '#c1d0e5');
+//$("input[data-id^='{$selectId}']").closest('tr').css('background-color', '#c1d0e5');
 
-$('.{$rowName}-checkbox').iCheck({checkboxClass:'icheckbox_minimal-blue'}).on('ifChanged', function () {
-    
+$('.{$row}-checkbox').iCheck({checkboxClass:'icheckbox_minimal-blue'}).on('ifChanged', function () {
+
     var id = $(this).data('id');
 
     if (this.checked) {
@@ -44,24 +44,24 @@ $('.{$rowName}-checkbox').iCheck({checkboxClass:'icheckbox_minimal-blue'}).on('i
         $(this).closest('tr').css('background-color', '');
     }
 }).on('ifClicked', function () {
-    
+
     var id = $(this).data('id');
-    
+
     if (this.checked) {
         $.admin.grid.unselect(id);
     } else {
         $.admin.grid.select(id);
     }
-    
+
     var selected = $.admin.grid.selected().length;
-    
+
     if (selected > 0) {
-        $('.{$allName}-btn').show();
+        $('.{$all}-btn').show();
     } else {
-        $('.{$allName}-btn').hide();
+        $('.{$all}-btn').hide();
     }
-    
-    $('.{$allName}-btn .selected').html("{$selected}".replace('{n}', selected));
+
+    $('.{$all}-btn .selected').html("{$selected}".replace('{n}', selected));
 });
 
 EOT;

@@ -30,30 +30,34 @@ class DateRange extends Field
         $this->column['end'] = $arguments[0];
 
         array_shift($arguments);
-        $this->arguments = $arguments;
+        //$this->arguments = $arguments;
         $this->label = $this->formatLabel($arguments);
         $this->id = $this->formatId($this->column);
 
         $this->options(['format' => $this->format]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function value($value = null)
-    {
-        if (is_null($value)) {
-            if (!is_null($this->value) && is_null($this->value['start']) && is_null($this->value['end'])) {
-                return $this->getDefault();
-            }
-
-            return $this->value;
-        }
-
-        $this->value = $value;
-
-        return $this;
-    }
+    ///**
+    // * Set or get value of the field.
+    // *
+    // * @param null $value
+    // *
+    // * @return mixed
+    // */
+    //public function value($value = null)
+    //{
+    //    if (is_null($value)) {
+    //        if (!is_null($this->value) && is_null($this->value['start']) && is_null($this->value['end'])) {
+    //            return $this->getDefault();
+    //        }
+    //
+    //        return $this->value;
+    //    }
+    //
+    //    $this->value = $value;
+    //
+    //    return $this;
+    //}
 
 
     /**

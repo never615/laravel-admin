@@ -52,9 +52,9 @@ class Textarea extends Field
             $this->addPickBtn($btn);
         });
 
-        return parent::render()->with([
+        return parent::fieldRender([
             'append' => $this->append,
-            'rows'   => $this->rows
+            'rows'   => $this->rows,
         ]);
     }
 
@@ -63,7 +63,7 @@ class Textarea extends Field
      */
     protected function addPickBtn($btn)
     {
-        $style = <<<STYLE
+        $style = <<<'STYLE'
 .textarea-picker {
     padding: 5px;
     border-bottom: 1px solid #d2d6de;
@@ -87,6 +87,7 @@ STYLE;
     {$btn}
 </div>
 HTML;
+
         return $this;
     }
 }
