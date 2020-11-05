@@ -952,8 +952,8 @@ $('#{$this->tableID}').find('tr td').not("tr td:first-child").bind('dblclick',fu
                 var url = $(this).closest('tr').find('.grid-row-edit').attr("href");
 
                 //alert(url);
-                window.open(url, "_blank"); 
-            })
+                window.open(url, "_blank");
+            });
 EOT;
     }
 }
