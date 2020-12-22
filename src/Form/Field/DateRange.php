@@ -2,10 +2,12 @@
 
 namespace Encore\Admin\Form\Field;
 
+use Encore\Admin\Form;
 use Encore\Admin\Form\Field;
 
 class DateRange extends Field
 {
+
     protected static $css = [
         '/vendor/laravel-admin/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
     ];
@@ -24,6 +26,7 @@ class DateRange extends Field
      */
     protected $column = [];
 
+
     public function __construct($column, $arguments)
     {
         $this->column['start'] = $column;
@@ -34,7 +37,20 @@ class DateRange extends Field
         $this->label = $this->formatLabel($arguments);
         $this->id = $this->formatId($this->column);
 
-        $this->options(['format' => $this->format]);
+        $this->options([ 'format' => $this->format ]);
+    }
+
+
+    /**
+     * @param Form $form
+     *
+     * @return $this
+     */
+    public function setForm(Form $form = null)
+    {
+        $this->form = $form;
+
+        return $this;
     }
 
     ///**
@@ -59,7 +75,6 @@ class DateRange extends Field
     //    return $this;
     //}
 
-
     /**
      * {@inheritdoc}
      */
@@ -71,6 +86,7 @@ class DateRange extends Field
 
         return $value;
     }
+
 
     public function render()
     {
