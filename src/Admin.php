@@ -235,6 +235,13 @@ class Admin
         static::$favicon = $favicon;
     }
 
+    public $user;
+
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
     /**
      * Get the currently authenticated user.
      *
@@ -242,7 +249,11 @@ class Admin
      */
     public function user()
     {
-        return $this->guard()->user();
+        if ($this->user) {
+            return $this->user;
+        } else {
+            return $this->guard()->user();
+        }
     }
 
     /**
