@@ -77,7 +77,6 @@ abstract class AbstractExporter implements ExporterInterface
         return $this->grid->getFilter()->chunk($callback, $count);
     }
 
-
     /**
      * @param callable $callback
      * @param int      $count
@@ -91,7 +90,6 @@ abstract class AbstractExporter implements ExporterInterface
         return $this->grid->getFilter()->chunkById($callback, $count);
     }
 
-
     /**
      * @return \Illuminate\Support\Collection
      */
@@ -99,7 +97,6 @@ abstract class AbstractExporter implements ExporterInterface
     {
         return collect($this->getData());
     }
-
 
     /**
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
@@ -139,7 +136,7 @@ abstract class AbstractExporter implements ExporterInterface
             return $this;
         }
 
-        [ $scope, $args ] = explode(':', $scope);
+        list($scope, $args) = explode(':', $scope);
 
         if ($scope == Grid\Exporter::SCOPE_CURRENT_PAGE) {
             $this->grid->model()->usePaginate(true);
