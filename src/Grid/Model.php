@@ -334,7 +334,6 @@ class Model
         return $this->model->chunk($count, $callback);
     }
 
-
     /**
      * @param     $callback
      * @param int $count
@@ -357,7 +356,6 @@ class Model
 
         return $this->model->chunkById($count, $callback);
     }
-
 
     /**
      * Add conditions to grid model.
@@ -596,7 +594,7 @@ class Model
      */
     protected function setRelationSort($column)
     {
-        [ $relationName, $relationColumn ] = explode('.', $column);
+        list($relationName, $relationColumn) = explode('.', $column);
 
         if ($this->queries->contains(function ($query) use ($relationName) {
             return $query['method'] == 'with' && in_array($relationName, $query['arguments']);
