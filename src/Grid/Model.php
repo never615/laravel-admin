@@ -334,6 +334,32 @@ class Model
         return $this->model->chunk($count, $callback);
     }
 
+
+    /**
+     * @param callable $callback
+     * @param int      $count
+     * @param null     $column
+     * @param null     $alias
+     *
+     * @return bool
+     */
+    public function chunkById(callable $callback, $count = 100, $column = null, $alias = null)
+    {
+        if ($this->usePaginate) {
+            return $this->buildData(false)->chunk($count)->each($callback);
+        }
+
+        $this->setSort();
+
+        $this->queries->reject(function ($query) {
+            return $query['method'] == 'paginate' || $query['method'] == 'orderBy' || $query['method'] == 'orderByDesc';
+        })->each(function ($query) {
+            $this->model = $this->model->{$query['method']}(...$query['arguments']);
+        });
+
+        return $this->model->chunkById($count, $callback, $column, $alias);
+    }
+
     /**
      * Add conditions to grid model.
      *

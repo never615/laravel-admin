@@ -78,6 +78,19 @@ abstract class AbstractExporter implements ExporterInterface
     }
 
     /**
+     * @param callable $callback
+     * @param int      $count
+     *
+     * @return bool
+     */
+    public function chunkById(callable $callback, $count = 100, $column = null, $alias = null)
+    {
+        $this->grid->applyQuery();
+
+        return $this->grid->getFilter()->chunkById($callback, $count, $column, $alias);
+    }
+
+    /**
      * @return \Illuminate\Support\Collection
      */
     public function getCollection()
