@@ -30,7 +30,7 @@ EOT;
 
         return <<<EOT
 
-//$("input[data-id^='{$selectId}']").closest('tr').css('background-color', '#c1d0e5');
+$("input[data-id^='{$selectId}']").closest('tr').css('background-color', '#c1d0e5');
 
 $('.{$row}-checkbox').iCheck({checkboxClass:'icheckbox_minimal-blue'}).on('ifChanged', function () {
 
